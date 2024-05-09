@@ -1,5 +1,8 @@
 import 'dotenv/config'
 
+/* Tại sao lại phải có file này mà k dùng trực tiếp file .env? => Tránh import file .env nhiều lần,
+thay vào đó import 1 lần ở file này thôi ! Nhớ nha Huyy */
+
 export const env = {
   DB_NAME: process.env.DB_NAME,
   DB_USERNAME: process.env.DB_USERNAME,
