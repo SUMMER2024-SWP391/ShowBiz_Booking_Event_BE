@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
-import { LoginReqBody, RegisterReqBody } from '~/models/requests/User.requests'
+import { LoginReqBody, RegisterReqBody } from '~/modules/user/user.requests'
 import { ParamsDictionary } from 'express-serve-static-core'
-import userService from '~/services/users.services'
-import { USER_MESSAGES } from '~/constants/messages'
+import userService from '~/modules/user/user.services'
+import { USER_MESSAGES } from '~/modules/user/user.messages'
 import { ObjectId } from 'mongodb'
-import User from '~/models/schemas/User.schema'
+import User from '~/modules/user/user.schema'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -23,6 +23,7 @@ export const registerController = async (
   next: NextFunction
 ) => {
   const result = await userService.register(req.body)
+
   return res.json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
     result

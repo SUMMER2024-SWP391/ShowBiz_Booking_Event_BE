@@ -1,7 +1,7 @@
 import { ParamSchema, checkSchema } from 'express-validator'
-import { USER_MESSAGES } from '~/constants/messages'
-import databaseService from '~/services/database.services'
-import userService from '~/services/users.services'
+import { USER_MESSAGES } from '~/modules/user/user.messages'
+import databaseService from '~/database/database.services'
+import userService from '~/modules/user/user.services'
 import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 

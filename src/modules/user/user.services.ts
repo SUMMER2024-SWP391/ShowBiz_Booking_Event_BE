@@ -1,11 +1,11 @@
-import User from '~/models/schemas/User.schema'
-import databaseService from './database.services'
-import { RegisterReqBody } from '~/models/requests/User.requests'
+import User from '~/modules/user/user.schema'
+import databaseService from '../../database/database.services'
+import { RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
-import RefreshToken from '../models/schemas/RefreshToken.schema'
+import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
 
 class UserService {
@@ -82,6 +82,7 @@ class UserService {
         token: refresh_token
       })
     )
+
     return { access_token, refresh_token }
   }
 }

@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import User from './models/schemas/User.schema'
+import User from './modules/user/user.schema'
 import { TokenPayload } from './models/requests/User.request'
 
 declare module 'express' {

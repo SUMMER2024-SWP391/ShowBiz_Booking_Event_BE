@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { USER_MESSAGES } from '../constants/messages'
+import { USER_MESSAGES } from '../modules/user/user.messages'
 
 type ErrorsType = Record<
   string,
