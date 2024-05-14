@@ -6,17 +6,20 @@ import usersRouter from './modules/user/user.routes'
 import databaseService from './database/database.services'
 import { defaultErrorHandler } from './errors/error.middlewares'
 import { env } from './config/environment'
+import cors from 'cors'
 
 const file = fs.readFileSync('./swagger-ui.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
 
 const app = express()
+// Enable CORS
+app.use(cors())
 const PORT = env.PORT
 databaseService.connect()
 
 app.use(express.json())
 
-// All routes
+// All routes - add your routes here
 app.use('/users', usersRouter)
 
 app.use(defaultErrorHandler)
