@@ -12,8 +12,15 @@ const file = fs.readFileSync('./swagger-ui.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
 
 const app = express()
+
 // Enable CORS
-app.use(cors())
+const corsOption = {
+  origin: 'http://localhost:3000' || process.env.PRODUCTION_FRONTEND_URL,
+  credentials: true, // access-control-allow-credentials:true
+  allowedHeaders: ['Content-Type', 'Authorization'], // access-control-allow-headers
+  optionSuccessStatus: 200
+}
+app.use(cors(corsOption))
 const PORT = env.PORT
 databaseService.connect()
 
