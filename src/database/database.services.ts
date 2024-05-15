@@ -3,7 +3,7 @@ import User from '~/modules/user/user.schema'
 import { env } from '~/config/environment'
 import RefreshToken from '~/modules/refreshToken/refreshToken.schema'
 
-const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@cluster0.ic4ersm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 
 class DatabaseService {
   private client: MongoClient
