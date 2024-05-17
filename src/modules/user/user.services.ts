@@ -9,29 +9,32 @@ import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
 
 class UserService {
-  private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
     return signToken({
-      payload: { user_id, type: TokenType.ACCESS_TOKEN, verify },
+      payload: { user_id, type: TokenType.ACCESS_TOKEN, verify_status },
       privateKey: env.JWT_SECRET_ACCESS_TOKEN as string,
       options: { expiresIn: env.ACCESS_TOKEN_EXPIRES_IN }
     })
   }
 
-  private signRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signRefreshToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
     return signToken({
-      payload: { user_id, type: TokenType.REFRESH_TOKEN, verify },
+      payload: { user_id, type: TokenType.REFRESH_TOKEN, verify_status },
       privateKey: env.JWT_SECRET_REFRESH_TOKEN as string,
       options: { expiresIn: env.REFRESH_TOKEN_EXPIRES_IN }
     })
   }
 
-  private signAccessAndRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
-    return Promise.all([this.signAccessToken({ user_id, verify }), this.signRefreshToken({ user_id, verify })])
+  private signAccessAndRefreshToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
+    return Promise.all([
+      this.signAccessToken({ user_id, verify_status }),
+      this.signRefreshToken({ user_id, verify_status })
+    ])
   }
 
-  private signEmailVerifyToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signEmailVerifyToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
     return signToken({
-      payload: { user_id, type: TokenType.EMAIL_VERIFY_TOKEN, verify },
+      payload: { user_id, type: TokenType.EMAIL_VERIFY_TOKEN, verify_status },
       privateKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: { expiresIn: env.EMAIL_VERIFY_TOKEN_EXPIRES_IN }
     })
@@ -45,23 +48,24 @@ class UserService {
     const user_id = new ObjectId()
     const email_verify_token = await this.signEmailVerifyToken({
       user_id: user_id.toString(),
-      verify: UserVerifyStatus.UNVERIFIED
+      verify_status: UserVerifyStatus.UNVERIFIED
     })
-
+    const { email, user_name, phone_number, password, date_of_birth } = payload
     await databaseService.users.insertOne(
       new User({
-        ...payload,
         _id: user_id,
-        username: `user_${user_id.toString()}`,
+        user_name,
+        email,
         email_verify_token,
-        password: hashPassword(payload.password),
-        date_of_birth: new Date(payload.date_of_birth)
+        phone_number,
+        password: hashPassword(password),
+        date_of_birth: new Date(date_of_birth)
       })
     )
 
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id: user_id.toString(),
-      verify: UserVerifyStatus.UNVERIFIED
+      verify_status: UserVerifyStatus.UNVERIFIED
     })
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
@@ -74,8 +78,8 @@ class UserService {
     return { access_token, refresh_token }
   }
 
-  async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify })
+  async login({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify_status })
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),

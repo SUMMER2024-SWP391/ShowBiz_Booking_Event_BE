@@ -7,8 +7,9 @@ export interface LoginReqBody {
 }
 
 export interface RegisterReqBody {
-  name: string
+  user_name: string
   email: string
+  phone_number: string
   password: string
   confirm_password: string
   date_of_birth: string

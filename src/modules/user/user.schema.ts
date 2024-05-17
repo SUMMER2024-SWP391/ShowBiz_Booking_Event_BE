@@ -3,60 +3,49 @@ import { UserVerifyStatus } from '~/constants/enums'
 
 interface UserType {
   _id?: ObjectId
-  name: string
+  user_name?: string
   email: string
-  date_of_birth: Date
+  date_of_birth?: Date
   password: string
+  phone_number?: string
   created_at?: Date
   updated_at?: Date
   email_verify_token?: string
   forgot_password_token?: string
-  verify?: UserVerifyStatus
-
-  bio?: string
-  location?: string
-  website?: string
-  username?: string
+  verify_status?: UserVerifyStatus
   avatar?: string
-  cover_photo?: string
+  point?: number
 }
 
 export default class User {
   _id?: ObjectId
-  name: string
+  user_name?: string
   email: string
   date_of_birth: Date
   password: string
-  created_at: Date
-  updated_at: Date
-  email_verify_token: string
-  forgot_password_token: string
-  verify: UserVerifyStatus
-
-  bio: string
-  location: string
-  website: string
-  username: string
-  avatar: string
-  cover_photo: string
+  phone_number?: string
+  created_at?: Date
+  updated_at?: Date
+  email_verify_token?: string
+  forgot_password_token?: string
+  verify_status?: UserVerifyStatus
+  avatar?: string
+  point?: number
 
   constructor(user: UserType) {
     const date = new Date()
-    this._id = user._id
-    this.name = user.name || ''
+    this._id = user._id || new ObjectId()
+    this.user_name = user.user_name || ''
     this.email = user.email
-    this.date_of_birth = user.date_of_birth || new Date()
+    this.date_of_birth = user.date_of_birth || date
     this.password = user.password
+    this.phone_number = user.phone_number || ''
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
-    this.verify = user.verify || UserVerifyStatus.UNVERIFIED
-    this.bio = user.bio || ''
-    this.location = user.location || ''
-    this.website = user.website || ''
-    this.username = user.username || ''
+    this.verify_status = user.verify_status || UserVerifyStatus.UNVERIFIED
     this.avatar = user.avatar || ''
-    this.cover_photo = user.cover_photo || ''
+    this.point = user.point || 0
   }
 }
