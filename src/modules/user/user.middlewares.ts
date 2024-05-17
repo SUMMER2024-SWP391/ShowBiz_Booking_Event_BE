@@ -113,7 +113,7 @@ export const loginValidator = validate(
 export const registerValidator = validate(
   checkSchema(
     {
-      name: nameSchema,
+      user_name: nameSchema,
       email: {
         notEmpty: { errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED },
         isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
