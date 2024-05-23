@@ -5,12 +5,12 @@ import userService from '~/modules/user/user.services'
 import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 import { ErrorWithStatus } from '~/models/Errors'
-import HTTP_STATUS from '~/constants/httpStatus'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { Request } from 'express'
 import { env } from '~/config/environment'
+import { StatusCodes } from 'http-status-codes'
 
 const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -153,7 +153,7 @@ export const accessTokenValidator = validate(
             if (!access_token) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
-                status: HTTP_STATUS.UNAUTHORIZED
+                status: StatusCodes.UNAUTHORIZED
               })
             }
 
@@ -167,7 +167,7 @@ export const accessTokenValidator = validate(
             } catch (error) {
               throw new ErrorWithStatus({
                 message: capitalize((error as JsonWebTokenError).message),
-                status: HTTP_STATUS.UNAUTHORIZED
+                status: StatusCodes.UNAUTHORIZED
               })
             }
             return true
@@ -199,7 +199,7 @@ export const refreshTokenValidator = validate(
               if (refresh_token === null) {
                 throw new ErrorWithStatus({
                   message: USER_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,
-                  status: HTTP_STATUS.UNAUTHORIZED
+                  status: StatusCodes.UNAUTHORIZED
                 })
               }
               ;(req as Request).decoded_refresh_token = decoded_refresh_token
@@ -207,7 +207,7 @@ export const refreshTokenValidator = validate(
               if (error instanceof JsonWebTokenError) {
                 throw new ErrorWithStatus({
                   message: capitalize((error as JsonWebTokenError).message),
-                  status: HTTP_STATUS.UNAUTHORIZED
+                  status: StatusCodes.UNAUTHORIZED
                 })
               }
               throw error
