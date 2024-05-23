@@ -10,7 +10,6 @@ import { env } from '~/config/environment'
 import { USER_MESSAGES } from './user.messages'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
-import { USER_MESSAGES } from './user.messages'
 import { StatusCodes } from 'http-status-codes'
 import { verify } from 'crypto'
 
@@ -100,7 +99,7 @@ class UserService {
     await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
     return { message: USER_MESSAGES.LOGOUT_SUCCESS }
   }
-  
+
   private async getOauthGoogleToken(code: string) {
     const body = {
       code,
