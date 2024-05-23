@@ -31,6 +31,10 @@ class DatabaseService {
   get refresh_tokens(): Collection<RefreshToken> {
     return this.db.collection(env.DB_COLLECTION_REFRESH_TOKENS as string)
   }
+
+  get events(): Collection<Event> {
+    return this.db.collection(env.DB_COLLECTION_EVENTS as string)
+  }
 }
 
 const databaseService = new DatabaseService()

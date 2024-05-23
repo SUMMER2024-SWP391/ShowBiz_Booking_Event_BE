@@ -30,5 +30,11 @@ export const USER_MESSAGES = {
   EMAIL_ALREADY_EXISTED: 'Email already existed!',
 
   // Gmail
-  GMAIL_NOT_VERIFIED: 'Gmail not verified yet!'
+  GMAIL_NOT_VERIFIED: 'Gmail not verified yet!',
+
+  // access token
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required!',
+
+  // user
+  USER_NOT_VERIFIED: 'User not verified yet!'
 } as const
