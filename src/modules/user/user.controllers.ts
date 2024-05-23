@@ -6,6 +6,7 @@ import { USER_MESSAGES } from '~/modules/user/user.messages'
 import { ObjectId } from 'mongodb'
 import User from '~/modules/user/user.schema'
 import { UserVerifyStatus } from '~/constants/enums'
+import { env } from '~/config/environment'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -19,6 +20,14 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
     message: USER_MESSAGES.LOGIN_SUCCESS,
     result
   })
+}
+
+export const oauthController = async (req: Request, res: Response) => {
+  const { code } = req.query
+  const result = await userService.oauth(code as string)
+  const urlRedirect = `${env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.verify_status}`
+
+  return res.redirect(urlRedirect)
 }
 
 export const registerController = async (

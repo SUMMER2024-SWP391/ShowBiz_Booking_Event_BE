@@ -7,6 +7,8 @@ import {
   refreshTokenValidator,
   registerValidator
 } from '~/modules/user/user.middlewares'
+import { loginController, oauthController, registerController } from '~/modules/user/user.controllers'
+import { loginValidator, registerValidator } from '~/modules/user/user.middlewares'
 import { wrapAsync } from '~/utils/handler'
 
 const usersRouter = Router()
@@ -31,7 +33,6 @@ usersRouter.post('/login', loginValidator, wrapAsync(loginController))
  */
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
 
-/**
  * * Description: logout
  * Path: /logout
  * Method: POST
@@ -39,4 +40,13 @@ usersRouter.post('/register', registerValidator, wrapAsync(registerController))
  * Body: { refresh_token: string }
  */
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
+
+/*
+ * * Description: OAuth with Google
+ * Path: /oauth/login
+ * Method: GET
+ * Query: { code: string }
+ */
+usersRouter.get('/oauth/google', wrapAsync(oauthController))
+
 export default usersRouter
