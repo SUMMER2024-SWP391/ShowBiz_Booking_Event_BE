@@ -11,6 +11,7 @@ import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { Request } from 'express'
 import { config } from 'dotenv'
+import { env } from '~/config/environment'
 
 config()
 
@@ -162,7 +163,7 @@ export const accessTokenValidator = validate(
             try {
               const decoded_authorization = await verifyToken({
                 token: access_token,
-                secretOrPublicKey: process.env.JWR_SECRET_ACCESS_TOKEN as string
+                secretOrPublicKey: env.JWT_SECRET_ACCESS_TOKEN as string
               })
 
               ;(req as Request).decoded_authorization = decoded_authorization
@@ -191,7 +192,7 @@ export const refreshTokenValidator = validate(
             try {
               const decoded_refresh_token = await verifyToken({
                 token: value,
-                secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+                secretOrPublicKey: env.JWT_SECRET_REFRESH_TOKEN as string
               })
               const refresh_token = await databaseService.refresh_tokens.findOne({
                 token: value
