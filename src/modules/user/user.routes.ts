@@ -1,6 +1,12 @@
 import { Router } from 'express'
-import { loginController, registerController } from '~/modules/user/user.controllers'
-import { loginValidator, registerValidator } from '~/modules/user/user.middlewares'
+import { access } from 'fs'
+import { loginController, logoutController, registerController } from '~/modules/user/user.controllers'
+import {
+  accessTokenValidator,
+  loginValidator,
+  refreshTokenValidator,
+  registerValidator
+} from '~/modules/user/user.middlewares'
 import { wrapAsync } from '~/utils/handler'
 
 const usersRouter = Router()
@@ -25,4 +31,12 @@ usersRouter.post('/login', loginValidator, wrapAsync(loginController))
  */
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
 
+/**
+ * * Description: logout
+ * Path: /logout
+ * Method: POST
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Body: { refresh_token: string }
+ */
+usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
 export default usersRouter
