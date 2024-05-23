@@ -10,10 +10,7 @@ import { verifyToken } from '~/utils/jwt'
 import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { Request } from 'express'
-import { config } from 'dotenv'
 import { env } from '~/config/environment'
-
-config()
 
 const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },

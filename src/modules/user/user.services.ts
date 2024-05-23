@@ -8,9 +8,6 @@ import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
 import { USER_MESSAGES } from './user.messages'
-import { config } from 'dotenv'
-
-config()
 
 class UserService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
