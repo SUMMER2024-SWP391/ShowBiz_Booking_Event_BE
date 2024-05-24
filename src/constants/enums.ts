@@ -28,3 +28,8 @@ export enum EventCategory {
   FREE,
   PAID // có phí
 }
+
+export enum UserRole {
+  CheckingStaff, //0
+  Visitor //1
+}

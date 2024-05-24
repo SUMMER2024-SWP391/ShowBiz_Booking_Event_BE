@@ -7,9 +7,9 @@ import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
+import { USER_MESSAGES } from './user.messages'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
-import { USER_MESSAGES } from './user.messages'
 import { StatusCodes } from 'http-status-codes'
 import { verify } from 'crypto'
 
@@ -93,6 +93,11 @@ class UserService {
     )
 
     return { access_token, refresh_token }
+  }
+
+  async logout(refresh_token: string) {
+    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+    return { message: USER_MESSAGES.LOGOUT_SUCCESS }
   }
 
   private async getOauthGoogleToken(code: string) {

@@ -2,7 +2,12 @@ export const USER_MESSAGES = {
   VALIDATION_ERROR: 'VALIDATION ERROR!',
 
   LOGIN_SUCCESS: 'Login success!',
+  LOGOUT_SUCCESS: 'Logout success!',
   REGISTER_SUCCESS: 'Register success!',
+
+  // access token
+  USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist!',
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required!',
 
   // password
   PASSWORD_IS_REQUIRED: 'Password is required!',

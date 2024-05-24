@@ -3,7 +3,7 @@ import User from './modules/user/user.schema'
 import { TokenPayload } from './models/requests/User.request'
 
 declare module 'express' {
-  interface Request {
+  interface Request extends express.Request {
     user?: User
     decoded_authorization?: TokenPayload
     decoded_refresh_token?: TokenPayload

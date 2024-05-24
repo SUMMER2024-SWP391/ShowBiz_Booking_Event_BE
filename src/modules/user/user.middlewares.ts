@@ -11,6 +11,10 @@ import { EventCategory, EventTypeEnum, LocationType, UserVerifyStatus } from '~/
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import { EVENT_MESSAGES } from '../event/event.messages'
+import { verifyToken } from '~/utils/jwt'
+import { capitalize } from '~/utils/capitalize'
+import { JsonWebTokenError } from 'jsonwebtoken'
+import { env } from '~/config/environment'
 
 const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -150,6 +154,33 @@ export const accessTokenValidator = validate(
           options: async (value: string, { req }) => {
             const access_token = (value || '').split(' ')[1]
             return await verifyAccessToken(access_token, req as Request)
+          } 
+        },
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            const access_token = value.split(' ')[1]
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
+                status: StatusCodes.UNAUTHORIZED
+              })
+            }
+
+            try {
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublicKey: env.JWT_SECRET_ACCESS_TOKEN as string
+              })
+
+              ;(req as Request).decoded_authorization = decoded_authorization
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: capitalize((error as JsonWebTokenError).message),
+                status: StatusCodes.UNAUTHORIZED
+              })
+            }
+            return true
           }
         }
       }
@@ -170,3 +201,45 @@ export const verifiedUserValidator = (req: Request, res: Response, next: NextFun
   }
   next()
 }
+
+export const refreshTokenValidator = validate(
+  checkSchema(
+    {
+      refresh_token: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            try {
+              const decoded_refresh_token = await verifyToken({
+                token: value,
+                secretOrPublicKey: env.JWT_SECRET_REFRESH_TOKEN as string
+              })
+              const refresh_token = await databaseService.refresh_tokens.findOne({
+                token: value
+              })
+
+              //check xem token này có tồn tại trong db ko ha
+              if (refresh_token === null) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,
+                  status: StatusCodes.UNAUTHORIZED
+                })
+              }
+              ;(req as Request).decoded_refresh_token = decoded_refresh_token
+            } catch (error) {
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: capitalize((error as JsonWebTokenError).message),
+                  status: StatusCodes.UNAUTHORIZED
+                })
+              }
+              throw error
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
