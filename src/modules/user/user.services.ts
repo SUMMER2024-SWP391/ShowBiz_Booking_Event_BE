@@ -29,14 +29,14 @@ class UserService {
     })
   }
 
-  private signAccessAndRefreshToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
+  signAccessAndRefreshToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
     return Promise.all([
       this.signAccessToken({ user_id, verify_status }),
       this.signRefreshToken({ user_id, verify_status })
     ])
   }
 
-  private signEmailVerifyToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
+  signEmailVerifyToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
     return signToken({
       payload: { user_id, type: TokenType.EMAIL_VERIFY_TOKEN, verify_status },
       privateKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,

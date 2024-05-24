@@ -3,6 +3,7 @@ import User from '~/modules/user/user.schema'
 import { env } from '~/config/environment'
 import RefreshToken from '~/modules/refreshToken/refreshToken.schema'
 import Event from '~/modules/event/event.schema'
+import EventOperator from '~/modules/event_operator/event_operator.schema'
 
 const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 
@@ -35,6 +36,10 @@ class DatabaseService {
 
   get events(): Collection<Event> {
     return this.db.collection(env.DB_COLLECTION_EVENTS as string)
+  }
+
+  get event_operators(): Collection<EventOperator> {
+    return this.db.collection(env.DB_COLLECTION_EVENT_OPERATORS as string)
   }
 }
 
