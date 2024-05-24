@@ -48,6 +48,15 @@ class UserService {
     return Boolean(await databaseService.users.findOne({ email }))
   }
 
+  async checkPhoneNumberExist(phone_number: string) {
+    return Boolean(await databaseService.users.findOne({ phone_number }))
+  }
+
+  async logout(refresh_token: string) {
+    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+    return { message: USER_MESSAGES.LOGOUT_SUCCESS }
+  }
+
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
     const email_verify_token = await this.signEmailVerifyToken({
@@ -84,6 +93,7 @@ class UserService {
 
   async login({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify_status })
+    const expiresInOfAccessToken = env.ACCESS_TOKEN_EXPIRES_IN
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -91,12 +101,11 @@ class UserService {
       })
     )
 
-    return { access_token, refresh_token }
+    return { access_token, refresh_token, expiresInOfAccessToken }
   }
 
-  async logout(refresh_token: string) {
-    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
-    return { message: USER_MESSAGES.LOGOUT_SUCCESS }
+  async findUserById(user_id: string) {
+    return databaseService.users.findOne({ _id: new ObjectId(user_id) })
   }
 
   private async getOauthGoogleToken(code: string) {

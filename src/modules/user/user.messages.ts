@@ -36,6 +36,11 @@ export const USER_MESSAGES = {
   // Gmail
   GMAIL_NOT_VERIFIED: 'Gmail not verified yet!',
 
+  //phone number
+  PHONE_NUMBER_IS_INVALID: 'Phone number is invalid!',
+  PHONE_NUMBER_IS_REQUIRED: 'Phone number is required!',
+  PHONE_NUMBER_ALREADY_EXIST: 'Phone number already exist!'
+
   // access token
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required!',
 
