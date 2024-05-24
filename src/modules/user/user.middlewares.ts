@@ -14,7 +14,7 @@ import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { env } from '~/config/environment'
 
-const passwordSchema: ParamSchema = {
+export const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
   isLength: {
     options: { min: 6, max: 50 },
@@ -32,7 +32,7 @@ const passwordSchema: ParamSchema = {
   }
 }
 
-const confirmPasswordSchema: ParamSchema = {
+export const confirmPasswordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED },
   isLength: {
     options: { min: 6, max: 50 },
@@ -57,7 +57,7 @@ const confirmPasswordSchema: ParamSchema = {
   }
 }
 
-const nameSchema: ParamSchema = {
+export const nameSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.NAME_IS_REQUIRED },
   isString: { errorMessage: USER_MESSAGES.NAME_MUST_BE_A_STRING },
   trim: true,

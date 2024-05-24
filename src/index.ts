@@ -9,6 +9,7 @@ import { env } from './config/environment'
 import cors from 'cors'
 import { corsOption } from './config/cors'
 import eventsRouter from './modules/event/event.routes'
+import eOperatorRouter from './modules/event_operator/event_operator.routes'
 
 const file = fs.readFileSync('./swagger-ui.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
@@ -25,6 +26,7 @@ app.use(express.json())
 // All routes - add your routes here
 app.use('/users', usersRouter)
 app.use('/events', eventsRouter)
+app.use('/e-operators', eOperatorRouter)
 
 app.use(defaultErrorHandler)
 // Swagger
