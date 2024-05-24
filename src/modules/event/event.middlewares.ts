@@ -3,6 +3,7 @@ import { EventTypeEnum, LocationType } from '~/constants/enums'
 import { validate } from '~/utils/validation'
 import { EVENT_MESSAGES } from './event.messages'
 import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
+import eventService from './event.services'
 
 export const createEventValidator = validate(
   checkSchema(
@@ -68,5 +69,40 @@ export const createEventValidator = validate(
       }
     },
     ['body']
+  )
+)
+
+export const paginationValidator = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: true,
+        custom: {
+          options: async (value, { req }) => {
+            const num = Number(value)
+            if (num > 100 || num < 1) {
+              throw new Error('1 <= limit <= 100')
+            }
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: true,
+        custom: {
+          options: async (value, { req }) => {
+            const num = Number(value)
+            const result = await eventService.getAllEventList()
+
+            if (num < 1) throw new Error(EVENT_MESSAGES.PAGE_MUST_BE_POSITIVE)
+
+            if (num > Math.ceil(result / Number(req.query?.limit))) throw new Error(EVENT_MESSAGES.INVALID_PAGE)
+
+            return true
+          }
+        }
+      }
+    },
+    ['query']
   )
 )

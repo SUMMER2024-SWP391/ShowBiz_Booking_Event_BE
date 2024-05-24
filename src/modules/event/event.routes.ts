@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, verifiedUserValidator } from '../user/user.middlewares'
-import { createEventValidator } from './event.middlewares'
-import { createEventController } from './event.controllers'
+import { createEventValidator, paginationValidator } from './event.middlewares'
+import { createEventController, getEventListController } from './event.controllers'
 
 const eventsRouter = Router()
 
 /**
  * * Description: Create new event
- * Path: /create
+ * Path: /
  * Method: POST
  * Header: { Authorization: Bearer <access_token> }
  * Body: { name: string, capacity: number, type_event: EventTypeEnum,
@@ -22,5 +22,13 @@ eventsRouter.post(
   createEventValidator,
   wrapAsync(createEventController)
 )
+
+/**
+ * * Description: Get event list(pagination)
+ * Path: /
+ * Method: GET
+ * Query: { page: number, limit: number }
+ */
+eventsRouter.get('/', paginationValidator, wrapAsync(getEventListController))
 
 export default eventsRouter

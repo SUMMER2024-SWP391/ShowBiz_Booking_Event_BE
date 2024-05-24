@@ -16,3 +16,8 @@ export interface EventRequestBody {
   event_operator_id: ObjectId
   status: EventCategory
 }
+
+export interface Pagination {
+  limit: string
+  page: string
+}
