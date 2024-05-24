@@ -7,7 +7,6 @@ export const USER_MESSAGES = {
 
   // access token
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist!',
-  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required!',
 
   // password
   PASSWORD_IS_REQUIRED: 'Password is required!',

@@ -4,13 +4,11 @@ import databaseService from '~/database/database.services'
 import userService from '~/modules/user/user.services'
 import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
-import { verifyAccessToken } from '~/utils/common'
 import { Request, Response, NextFunction } from 'express'
 import { TokenPayload } from './user.requests'
-import { EventCategory, EventTypeEnum, LocationType, UserVerifyStatus } from '~/constants/enums'
+import { UserVerifyStatus } from '~/constants/enums'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
-import { EVENT_MESSAGES } from '../event/event.messages'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
@@ -150,12 +148,6 @@ export const accessTokenValidator = validate(
   checkSchema(
     {
       Authorization: {
-        custom: {
-          options: async (value: string, { req }) => {
-            const access_token = (value || '').split(' ')[1]
-            return await verifyAccessToken(access_token, req as Request)
-          } 
-        },
         trim: true,
         custom: {
           options: async (value, { req }) => {

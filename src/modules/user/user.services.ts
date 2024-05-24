@@ -11,7 +11,6 @@ import { USER_MESSAGES } from './user.messages'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
-import { verify } from 'crypto'
 
 class UserService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
