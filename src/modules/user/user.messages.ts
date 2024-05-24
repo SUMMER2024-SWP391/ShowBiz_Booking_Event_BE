@@ -35,5 +35,10 @@ export const USER_MESSAGES = {
   EMAIL_ALREADY_EXISTED: 'Email already existed!',
 
   // Gmail
-  GMAIL_NOT_VERIFIED: 'Gmail not verified yet!'
+  GMAIL_NOT_VERIFIED: 'Gmail not verified yet!',
+
+  //phone number
+  PHONE_NUMBER_IS_INVALID: 'Phone number is invalid!',
+  PHONE_NUMBER_IS_REQUIRED: 'Phone number is required!',
+  PHONE_NUMBER_ALREADY_EXIST: 'Phone number already exist!'
 } as const

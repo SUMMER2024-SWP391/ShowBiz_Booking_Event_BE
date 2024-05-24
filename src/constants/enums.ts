@@ -12,6 +12,6 @@ export enum TokenType {
 }
 
 export enum UserRole {
-  CheckingStaff, //0
-  Visitor //1
+  Visitor, //0
+  CheckingStaff //1
 }

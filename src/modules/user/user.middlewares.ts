@@ -11,6 +11,7 @@ import { JsonWebTokenError } from 'jsonwebtoken'
 import { Request } from 'express'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
+import { REGEX_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
 
 const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -75,6 +76,25 @@ const dateOfBirthSchema: ParamSchema = {
   errorMessage: USER_MESSAGES.DATE_OF_BIRTH_BE_ISO8601
 }
 
+const phoneNumberSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED
+  },
+  trim: true,
+  custom: {
+    options: async (value, { req }) => {
+      if (!REGEX_PHONE_NUMBER_VIETNAM.test(value)) {
+        throw new Error(USER_MESSAGES.PHONE_NUMBER_IS_INVALID)
+      }
+      const isExist = await userService.checkPhoneNumberExist(value)
+      if (isExist) {
+        throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXIST)
+      }
+      return true
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -127,6 +147,10 @@ export const registerValidator = validate(
         trim: true,
         custom: {
           options: async (value) => {
+            if (!REGEX_EMAIL.test(value)) {
+              throw new Error(USER_MESSAGES.EMAIL_IS_INVALID)
+            }
+
             const isExistEmail = await userService.checkEmailExist(value)
             if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
 
@@ -134,6 +158,7 @@ export const registerValidator = validate(
           }
         }
       },
+      phone_number: phoneNumberSchema,
       password: passwordSchema,
       confirm_password: confirmPasswordSchema,
       date_of_birth: dateOfBirthSchema
