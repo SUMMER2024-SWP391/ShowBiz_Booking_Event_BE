@@ -40,7 +40,7 @@ export const createEventValidator = validate(
         isString: { errorMessage: 'Time start must be a string' },
         notEmpty: { errorMessage: 'Time start is required' },
         custom: {
-          options: (value, { req }) => {
+          options: (value) => {
             if (!REGEX_TIME.test(value)) throw new Error('Time start must be in the format hh:mm:ss')
             if (new Date(value) < new Date()) throw new Error('Time start must be in the future')
 

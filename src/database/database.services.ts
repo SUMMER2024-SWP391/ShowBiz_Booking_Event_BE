@@ -2,6 +2,7 @@ import { Collection, Db, MongoClient } from 'mongodb'
 import User from '~/modules/user/user.schema'
 import { env } from '~/config/environment'
 import RefreshToken from '~/modules/refreshToken/refreshToken.schema'
+import Event from '~/modules/event/event.schema'
 
 const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 

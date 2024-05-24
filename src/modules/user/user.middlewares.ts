@@ -160,7 +160,6 @@ export const accessTokenValidator = validate(
 
 export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
   const { verify_status } = req.decoded_authorization as TokenPayload
-  console.log('🚀 ~ verify:', verify_status)
   if (verify_status !== UserVerifyStatus.VERIFIED) {
     return next(
       new ErrorWithStatus({
