@@ -4,13 +4,17 @@ import databaseService from '~/database/database.services'
 import userService from '~/modules/user/user.services'
 import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
+import { verifyAccessToken } from '~/utils/common'
+import { Request, Response, NextFunction } from 'express'
+import { TokenPayload } from './user.requests'
+import { EventCategory, EventTypeEnum, LocationType, UserVerifyStatus } from '~/constants/enums'
 import { ErrorWithStatus } from '~/models/Errors'
+import { StatusCodes } from 'http-status-codes'
+import { EVENT_MESSAGES } from '../event/event.messages'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
-import { Request } from 'express'
 import { env } from '~/config/environment'
-import { StatusCodes } from 'http-status-codes'
 
 const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -146,6 +150,12 @@ export const accessTokenValidator = validate(
   checkSchema(
     {
       Authorization: {
+        custom: {
+          options: async (value: string, { req }) => {
+            const access_token = (value || '').split(' ')[1]
+            return await verifyAccessToken(access_token, req as Request)
+          } 
+        },
         trim: true,
         custom: {
           options: async (value, { req }) => {
@@ -178,6 +188,19 @@ export const accessTokenValidator = validate(
     ['headers']
   )
 )
+
+export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
+  const { verify_status } = req.decoded_authorization as TokenPayload
+  if (verify_status !== UserVerifyStatus.VERIFIED) {
+    return next(
+      new ErrorWithStatus({
+        message: USER_MESSAGES.USER_NOT_VERIFIED,
+        status: StatusCodes.FORBIDDEN
+      })
+    )
+  }
+  next()
+}
 
 export const refreshTokenValidator = validate(
   checkSchema(

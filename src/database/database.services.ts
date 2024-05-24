@@ -2,6 +2,7 @@ import { Collection, Db, MongoClient } from 'mongodb'
 import User from '~/modules/user/user.schema'
 import { env } from '~/config/environment'
 import RefreshToken from '~/modules/refreshToken/refreshToken.schema'
+import Event from '~/modules/event/event.schema'
 
 const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 
@@ -30,6 +31,10 @@ class DatabaseService {
 
   get refresh_tokens(): Collection<RefreshToken> {
     return this.db.collection(env.DB_COLLECTION_REFRESH_TOKENS as string)
+  }
+
+  get events(): Collection<Event> {
+    return this.db.collection(env.DB_COLLECTION_EVENTS as string)
   }
 }
 
