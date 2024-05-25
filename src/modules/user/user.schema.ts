@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserVerifyStatus } from '~/constants/enums'
 
 interface UserType {
   _id?: ObjectId
@@ -15,7 +15,7 @@ interface UserType {
   verify_status?: UserVerifyStatus
   avatar?: string
   point?: number
-  role?: number
+  role?: UserRole
   status?: number
 }
 
@@ -33,7 +33,7 @@ export default class User {
   verify_status?: UserVerifyStatus
   avatar?: string
   point?: number
-  role?: number
+  role?: UserRole
   status?: number
 
   constructor(user: UserType) {
@@ -51,7 +51,7 @@ export default class User {
     this.verify_status = user.verify_status || UserVerifyStatus.UNVERIFIED
     this.avatar = user.avatar || ''
     this.point = user.point || 0
-    this.role = user.role || 0
+    this.role = user.role || UserRole.Visitor
     this.status = user.status || 1
   }
 }

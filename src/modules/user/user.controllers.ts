@@ -25,7 +25,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
       token,
       user: {
         user_id: user_id.toString(),
-        user_name: userInfor?.user_name,
+        user_name: userInfor?.user_name ? userInfor.user_name : '',
         role: UserRole[userInfor?.role as number],
         status: userInfor?.status
       }
