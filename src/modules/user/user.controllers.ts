@@ -14,19 +14,21 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   const user = req.user as User
   const user_id = user._id as ObjectId
   const userInfor = await userService.findUserById(user_id.toString())
-  const result = await userService.login({
+  const token = await userService.login({
     user_id: user_id.toString(),
     verify_status: user.verify_status as UserVerifyStatus
   })
 
   res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
-    result,
-    user: {
-      user_id: user_id.toString(),
-      user_name: userInfor?.user_name,
-      role: UserRole[userInfor?.role as number],
-      status: userInfor?.status
+    data: {
+      token,
+      user: {
+        user_id: user_id.toString(),
+        user_name: userInfor?.user_name,
+        role: UserRole[userInfor?.role as number],
+        status: userInfor?.status
+      }
     }
   })
 }
