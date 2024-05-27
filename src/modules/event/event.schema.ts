@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { EventCategory, EventTypeEnum, LocationType } from '~/constants/enums'
+import { EventCategory, EventStatus, EventTypeEnum, LocationType } from '~/constants/enums'
 
 interface EventType {
   _id?: ObjectId
@@ -15,7 +15,8 @@ interface EventType {
   event_operator_id: ObjectId
   image?: string
   qr_code?: string
-  status?: EventCategory
+  category?: EventCategory
+  status: EventCategory
 }
 
 export default class Event {
@@ -32,7 +33,8 @@ export default class Event {
   event_operator_id: ObjectId
   image: string
   qr_code: string
-  status: EventCategory
+  category: EventCategory
+  status: EventStatus
 
   constructor({
     _id,
@@ -62,6 +64,7 @@ export default class Event {
     this.event_operator_id = event_operator_id
     this.image = image || ''
     this.qr_code = qr_code || ''
-    this.status = ticket_price === 0 ? EventCategory.FREE : EventCategory.PAID
+    this.category = ticket_price === 0 ? EventCategory.FREE : EventCategory.PAID
+    this.status = EventStatus.PENDING
   }
 }
