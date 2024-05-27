@@ -5,7 +5,7 @@ interface EventOperatorType {
   email: string
   password: string
   name: string
-  create_at?: Date
+  created_at?: Date
 }
 
 export default class EventOperator {
@@ -13,13 +13,13 @@ export default class EventOperator {
   email: string
   password: string
   name: string
-  create_at?: Date
+  created_at?: Date
 
-  constructor({ _id, email, password, create_at, name }: EventOperatorType) {
+  constructor({ _id, email, password, created_at, name }: EventOperatorType) {
     this._id = _id || new ObjectId()
     this.email = email
     this.password = password
     this.name = name || ''
-    this.create_at = create_at || new Date()
+    this.created_at = created_at || new Date()
   }
 }
