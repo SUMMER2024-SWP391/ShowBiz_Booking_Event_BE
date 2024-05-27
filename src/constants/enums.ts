@@ -33,3 +33,9 @@ export enum UserRole {
   Visitor, //0
   CheckingStaff //1
 }
+
+export enum EventStatus {
+  PENDING, //0
+  APPROVED, //1
+  REJECTED //2
+}
