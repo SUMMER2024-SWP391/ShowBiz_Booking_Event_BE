@@ -59,3 +59,18 @@ export const USER_MESSAGES = {
 
   NOT_AN_ADMIN: 'You are not an Admin!'
 } as const
+
+export const EVENT_OPERATOR_MESSAGES = {
+  REGISTER_SUCCESS: 'Register event operator account successfully',
+  LOGIN_SUCCESS: 'Login successfully'
+} as const
+
+export const EVENT_MESSAGES = {
+  INVALID_TYPE: 'Invalid type!',
+  CREATE_EVENT_SUCCESS: 'Create event successfully!',
+  GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
+
+  //PAGE
+  INVALID_PAGE: 'Page out of range!',
+  PAGE_MUST_BE_POSITIVE: 'Page must be positive number!'
+} as const

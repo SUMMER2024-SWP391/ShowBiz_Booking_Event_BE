@@ -1,9 +1,9 @@
 import { checkSchema } from 'express-validator'
 import { EventTypeEnum, LocationType } from '~/constants/enums'
 import { validate } from '~/utils/validation'
-import { EVENT_MESSAGES } from './event.messages'
 import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
 import eventService from './event.services'
+import { EVENT_MESSAGES } from '../user/user.messages'
 
 export const createEventValidator = validate(
   checkSchema(
