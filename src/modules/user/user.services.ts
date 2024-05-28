@@ -234,6 +234,10 @@ class UserService {
 
     return newUser.value
   }
+
+  async getAccount() {
+    return await databaseService.users.find({}).toArray()
+  }
 }
 
 const userService = new UserService()
