@@ -49,6 +49,7 @@ export const USER_MESSAGES = {
   // user
   USER_NOT_VERIFIED: 'User not verified yet!',
   USER_NOT_FOUND: 'User not found!',
+  GET_USER_BY_ID_SUCCESS: 'Get user by id success!',
 
   // admin
   CREATE_ACCOUNT_SUCCESS: 'Create account success!',
