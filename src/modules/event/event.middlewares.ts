@@ -76,6 +76,7 @@ export const paginationValidator = validate(
   checkSchema(
     {
       limit: {
+        optional: true,
         isNumeric: true,
         custom: {
           options: async (value, { req }) => {
@@ -88,6 +89,7 @@ export const paginationValidator = validate(
         }
       },
       page: {
+        optional: true,
         isNumeric: true,
         custom: {
           options: async (value, { req }) => {
