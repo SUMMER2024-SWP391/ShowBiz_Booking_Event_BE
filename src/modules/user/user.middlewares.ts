@@ -290,3 +290,53 @@ export const refreshTokenValidator = validate(
     ['body']
   )
 )
+
+export const updateAccValidator = validate(
+  checkSchema({
+    user_name: {
+      optional: true
+    },
+    role: {
+      optional: true,
+      isNumeric: true,
+      isIn: {
+        options: [UserRole],
+        errorMessage: 'Role must be either visitor, staff or admin'
+      }
+    },
+    date_of_birth: {
+      ...dateOfBirthSchema,
+      optional: true
+    },
+    phone_number: {
+      ...phoneNumberSchema,
+      optional: true
+    },
+    email: {
+      optional: true,
+      isEmail: true,
+      custom: {
+        options: async (value) => {
+          const isExistEmail = await userService.checkEmailExist(value)
+          if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
+
+          return true
+        }
+      }
+    },
+    avatar: {
+      optional: true
+    },
+    point: {
+      optional: true
+    },
+    verify_status: {
+      optional: true,
+      isNumeric: true,
+      isIn: {
+        options: [UserVerifyStatus],
+        errorMessage: 'Verify status must be either unverified or verified'
+      }
+    }
+  })
+)
