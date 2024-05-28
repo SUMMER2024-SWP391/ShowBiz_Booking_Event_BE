@@ -16,7 +16,6 @@ interface UserType {
   avatar?: string
   point?: number
   role?: UserRole
-  status?: number
 }
 
 export default class User {
@@ -34,7 +33,6 @@ export default class User {
   avatar?: string
   point?: number
   role?: UserRole
-  status?: number
 
   constructor(user: UserType) {
     const date = new Date()
@@ -52,6 +50,5 @@ export default class User {
     this.avatar = user.avatar || ''
     this.point = user.point || 0
     this.role = user.role || UserRole.Visitor
-    this.status = user.status || 1
   }
 }

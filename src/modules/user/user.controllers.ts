@@ -11,7 +11,7 @@ import { env } from '~/config/environment'
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
-  const userInfor = await userService.findUserById(user_id.toString())
+  const userInfo = await userService.findUserById(user_id.toString())
   const result = await userService.login({
     user_id: user_id.toString(),
     verify_status: user.verify_status as UserVerifyStatus
@@ -23,9 +23,9 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
       result,
       user: {
         user_id: user_id.toString(),
-        user_name: userInfor?.user_name ? userInfor.user_name : '',
-        role: UserRole[userInfor?.role as number],
-        status: userInfor?.status
+        user_name: userInfo?.user_name ? userInfo.user_name : '',
+        role: UserRole[userInfo?.role as number],
+        verify: userInfo?.verify_status
       }
     }
   })

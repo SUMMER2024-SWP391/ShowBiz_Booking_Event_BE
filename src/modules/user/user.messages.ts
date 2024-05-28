@@ -1,6 +1,8 @@
 export const USER_MESSAGES = {
   VALIDATION_ERROR: 'VALIDATION ERROR!',
 
+  UNAUTHORIZED: 'UNAUTHORIZED! Not have enough permission!',
+
   LOGIN_SUCCESS: 'Login success!',
   LOGOUT_SUCCESS: 'Logout success!',
   REGISTER_SUCCESS: 'Register success!',
@@ -45,5 +47,11 @@ export const USER_MESSAGES = {
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required!',
 
   // user
-  USER_NOT_VERIFIED: 'User not verified yet!'
+  USER_NOT_VERIFIED: 'User not verified yet!',
+  USER_NOT_FOUND: 'User not found!',
+
+  // admin
+  CREATE_ACCOUNT_SUCCESS: 'Create account success!',
+
+  NOT_AN_ADMIN: 'You are not an Admin!'
 } as const
