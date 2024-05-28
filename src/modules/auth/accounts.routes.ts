@@ -3,6 +3,8 @@ import { accessTokenValidator, createNewUserValidator, updateAccValidator } from
 import { checkRoleAdmin } from './auth.middleware'
 import { wrapAsync } from '~/utils/handler'
 import { createAccountController, getUserByIdController, updateAccountController } from './accounts.controller'
+import { filterMiddleware } from '~/errors/common.middlewares'
+import { updateAccountReqBody } from './account.request'
 
 const adminsRouter = Router()
 
@@ -25,7 +27,23 @@ adminsRouter.post(
  * Method: PATCH
  * Body: { user_name?: string, role?: UserRole, date_of_birth?: string, phone_number?: string, email?: string }
  */
-adminsRouter.patch('/:id', accessTokenValidator, checkRoleAdmin, updateAccValidator, wrapAsync(updateAccountController))
+adminsRouter.patch(
+  '/:id',
+  accessTokenValidator,
+  checkRoleAdmin,
+  updateAccValidator,
+  filterMiddleware<updateAccountReqBody>([
+    'user_name',
+    'role',
+    'date_of_birth',
+    'phone_number',
+    'email',
+    'avatar',
+    'point',
+    'verify_status'
+  ]),
+  wrapAsync(updateAccountController)
+)
 
 /**
  ** Description: Get user by id
