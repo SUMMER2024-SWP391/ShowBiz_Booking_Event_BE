@@ -2,7 +2,13 @@ import { Router } from 'express'
 import { accessTokenValidator, createNewUserValidator, updateAccValidator } from '../user/user.middlewares'
 import { checkRoleAdmin } from './auth.middleware'
 import { wrapAsync } from '~/utils/handler'
-import { createAccountController, getAccountController, getUserByIdController, updateAccountController } from './accounts.controller'
+import {
+  createAccountController,
+  deleteAccountController,
+  getAccountController,
+  getUserByIdController,
+  updateAccountController
+} from './accounts.controller'
 import { filterMiddleware } from '~/errors/common.middlewares'
 import { updateAccountReqBody } from './account.request'
 
@@ -59,5 +65,13 @@ adminsRouter.get('/:id', accessTokenValidator, checkRoleAdmin, wrapAsync(getUser
  * Headers: { Authorization: 'Bearer <access_token>' }
  */
 adminsRouter.get('/', accessTokenValidator, checkRoleAdmin, wrapAsync(getAccountController))
+
+/**
+ * Description: Delete account by id
+ * Method: DELETE
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Params: :id
+ */
+adminsRouter.delete('/:id', accessTokenValidator, checkRoleAdmin, wrapAsync(deleteAccountController))
 
 export default adminsRouter

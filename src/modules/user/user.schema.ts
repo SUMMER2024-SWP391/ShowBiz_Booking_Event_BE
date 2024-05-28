@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { UserRole, UserVerifyStatus } from '~/constants/enums'
+import { UserIsDestroy, UserRole, UserVerifyStatus } from '~/constants/enums'
 
 interface UserType {
   _id?: ObjectId
@@ -16,6 +16,7 @@ interface UserType {
   avatar?: string
   point?: number
   role?: UserRole
+  _destroy?: UserIsDestroy
 }
 
 export default class User {
@@ -33,6 +34,7 @@ export default class User {
   avatar?: string
   point?: number
   role?: UserRole
+  _destroy?: UserIsDestroy
 
   constructor(user: UserType) {
     const date = new Date()
@@ -50,5 +52,6 @@ export default class User {
     this.avatar = user.avatar || ''
     this.point = user.point || 0
     this.role = user.role || UserRole.Visitor
+    this._destroy = user._destroy || UserIsDestroy.ACTIVE
   }
 }

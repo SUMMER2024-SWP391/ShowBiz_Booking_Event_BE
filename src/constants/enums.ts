@@ -40,3 +40,8 @@ export enum EventStatus {
   APPROVED, //1
   REJECTED //2
 }
+
+export enum UserIsDestroy {
+  ACTIVE,
+  DESTROYED
+}

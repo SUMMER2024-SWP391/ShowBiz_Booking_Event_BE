@@ -3,7 +3,7 @@ import databaseService from '../../database/database.services'
 import { RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { TokenType, UserIsDestroy, UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -106,13 +106,8 @@ class UserService {
   }
 
   async findUserById(user_id: string) {
-    const user = databaseService.users.findOne({ _id: new ObjectId(user_id) })
-    if (!user) {
-      throw new ErrorWithStatus({
-        message: USER_MESSAGES.USER_NOT_FOUND,
-        status: StatusCodes.NOT_FOUND
-      })
-    }
+    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    if (!user) throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_FOUND, status: StatusCodes.NOT_FOUND })
 
     return user
   }
@@ -235,8 +230,24 @@ class UserService {
     return newUser.value
   }
 
+  // get account dành cho admin
   async getAccount() {
     return await databaseService.users.find({}).toArray()
+  }
+
+  // delete account dành cho admin
+  async deleteAccountById(id: string) {
+    const user = await this.findUserById(id)
+    if (user._destroy === UserIsDestroy.DESTROYED)
+      throw new ErrorWithStatus({ message: USER_MESSAGES.ACC_ALREADY_REMOVE, status: StatusCodes.BAD_REQUEST })
+
+    const result = await databaseService.users.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      [{ $set: { _destroy: UserIsDestroy.DESTROYED, updated_at: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+
+    return result.value
   }
 }
 
