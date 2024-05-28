@@ -3,9 +3,10 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { EventOperatorLoginReqBody, EventOperatorRegisterReqBody } from './event_operator.requests'
 import eventOperatorService from './event_operator.services'
 import { ObjectId } from 'mongodb'
-import { UserVerifyStatus } from '~/constants/enums'
+
 import { USER_MESSAGES } from '../user/user.messages'
 import { EVENT_OPERATOR_MESSAGES } from './event_operator.messages'
+import { UserVerifyStatus } from '~/constants/enums'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,

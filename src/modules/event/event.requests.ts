@@ -14,7 +14,6 @@ export interface EventRequestBody {
   image: string
   qr_code: string
   event_operator_id: ObjectId
-  status: EventCategory
 }
 
 export interface Pagination {

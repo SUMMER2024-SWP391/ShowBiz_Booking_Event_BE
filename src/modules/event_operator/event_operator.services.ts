@@ -3,9 +3,9 @@ import { EventOperatorRegisterReqBody } from './event_operator.requests'
 import EventOperator from './event_operator.schema'
 import { ObjectId } from 'mongodb'
 import userService from '../user/user.services'
-import { UserVerifyStatus } from '~/constants/enums'
 import { hashPassword } from '~/utils/crypto'
 import RefreshToken from '../refreshToken/refreshToken.schema'
+import { UserVerifyStatus } from '~/constants/enums'
 
 class EventOperatorService {
   async checkEmailExist(email: string) {

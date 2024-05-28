@@ -1,9 +1,8 @@
 import { Request, Response } from 'express'
 import userService from '../user/user.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { createAccountReqBody, updateAccountReqBody } from './account.request'
+import { confirmEventReqBody, createAccountReqBody, updateAccountReqBody } from './account.request'
 import { USER_MESSAGES } from '../user/user.messages'
-import { TokenPayload } from '../user/user.requests'
 import { StatusCodes } from 'http-status-codes'
 import { ErrorWithStatus } from '~/models/Errors'
 import { UserRole } from '~/constants/enums'
@@ -58,4 +57,15 @@ export const deleteAccountController = async (req: Request, res: Response) => {
     message: 'DELETE_ACCOUNT_SUCCESS',
     result
   })
+}
+
+export const approveEventController = async (
+  req: Request<ParamsDictionary, any, confirmEventReqBody>,
+  res: Response
+) => {
+  const { id } = req.params
+  const { status } = req.body
+  const result = await userService.approveEvent(id, status as any)
+
+  return res.json({ message: 'APPROVE_EVENT_SUCCESS', result })
 }

@@ -16,7 +16,7 @@ interface EventType {
   image?: string
   qr_code?: string
   category?: EventCategory
-  status: EventCategory
+  status?: EventStatus
 }
 
 export default class Event {
@@ -49,7 +49,8 @@ export default class Event {
     location,
     image,
     qr_code,
-    event_operator_id
+    event_operator_id,
+    status
   }: EventType) {
     this._id = _id
     this.name = name
