@@ -3,8 +3,6 @@ import { EventRequestBody } from './event.requests'
 import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
-import e from 'express'
-import { cloneDeep } from 'lodash'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {

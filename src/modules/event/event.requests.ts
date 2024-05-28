@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { EventCategory, EventTypeEnum, LocationType } from '~/constants/enums'
+import { EventTypeEnum, LocationType } from '~/constants/enums'
 
 export interface EventRequestBody {
   name: string
