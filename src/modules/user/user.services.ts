@@ -3,7 +3,7 @@ import databaseService from '../../database/database.services'
 import { RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { TokenType, UserIsDestroy, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { EventStatus, TokenType, UserIsDestroy, UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -247,6 +247,21 @@ class UserService {
       { returnDocument: 'after' }
     )
 
+    return result.value
+  }
+
+  async approveEvent(id: string, status: EventStatus) {
+    console.log(typeof status)
+    const event = await databaseService.events.findOne({ _id: new ObjectId(id) })
+    if (!event) throw new ErrorWithStatus({ message: 'EVENT_NOT_FOUND', status: StatusCodes.NOT_FOUND })
+
+    const result = await databaseService.events.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      [{ $set: { status, updated_at: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+
+    console.log('🚀 ~ result.value:', result.value)
     return result.value
   }
 }

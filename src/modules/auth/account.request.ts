@@ -18,3 +18,7 @@ export interface updateAccountReqBody {
   point?: string
   verify_status?: string
 }
+
+export interface confirmEventReqBody {
+  status: string
+}

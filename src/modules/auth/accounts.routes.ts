@@ -3,6 +3,7 @@ import { accessTokenValidator, createNewUserValidator, updateAccValidator } from
 import { checkRoleAdmin } from './auth.middleware'
 import { wrapAsync } from '~/utils/handler'
 import {
+  approveEventController,
   createAccountController,
   deleteAccountController,
   getAccountController,
@@ -11,6 +12,7 @@ import {
 } from './accounts.controller'
 import { filterMiddleware } from '~/errors/common.middlewares'
 import { updateAccountReqBody } from './account.request'
+import { confirmEventValidator } from './account.middleware'
 
 const adminsRouter = Router()
 
@@ -36,7 +38,7 @@ adminsRouter.post(
 adminsRouter.patch(
   '/:id',
   accessTokenValidator,
-  checkRoleAdmin,
+  wrapAsync(checkRoleAdmin),
   updateAccValidator,
   filterMiddleware<updateAccountReqBody>([
     'user_name',
@@ -57,21 +59,35 @@ adminsRouter.patch(
  * Headers: { Authorization: 'Bearer <access_token>' }
  * Params: :id
  */
-adminsRouter.get('/:id', accessTokenValidator, checkRoleAdmin, wrapAsync(getUserByIdController))
+adminsRouter.get('/:id', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getUserByIdController))
 
 /**
- * Description: Get all account
+ ** Description: Get all account
  * Method: GET
  * Headers: { Authorization: 'Bearer <access_token>' }
  */
-adminsRouter.get('/', accessTokenValidator, checkRoleAdmin, wrapAsync(getAccountController))
+adminsRouter.get('/', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getAccountController))
 
 /**
- * Description: Delete account by id
+ ** Description: Delete account by id
  * Method: DELETE
  * Headers: { Authorization: 'Bearer <access_token>' }
  * Params: :id
  */
-adminsRouter.delete('/:id', accessTokenValidator, checkRoleAdmin, wrapAsync(deleteAccountController))
+adminsRouter.delete('/:id', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(deleteAccountController))
+
+/**
+ ** Description: Admin confirm event
+ * Method: PATCH
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Params: :id
+ */
+adminsRouter.patch(
+  '/confirm-event/:id',
+  accessTokenValidator,
+  wrapAsync(checkRoleAdmin),
+  confirmEventValidator,
+  wrapAsync(approveEventController)
+)
 
 export default adminsRouter
