@@ -11,7 +11,7 @@ import { USER_MESSAGES } from './user.messages'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
-import { createAccountReqBody } from '../auth/account.request'
+import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
 
 class UserService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
@@ -220,9 +220,19 @@ class UserService {
         verify_status: UserVerifyStatus.VERIFIED
       })
     )
-    const user = await this.findUserById(result.insertedId.toString())
-    console.log('🚀 ~ user:', user)
-    return user
+    return await this.findUserById(result.insertedId.toString())
+  }
+
+  //update account dành cho admin
+  async updateAccountById(id: string, payload: updateAccountReqBody) {
+    const user = await this.findUserById(id)
+    const newUser = await databaseService.users.findOneAndUpdate(
+      { _id: user?._id },
+      [{ $set: { ...payload, updated_at: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+
+    return newUser.value
   }
 }
 
