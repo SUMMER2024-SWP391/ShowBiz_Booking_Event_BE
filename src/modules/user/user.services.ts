@@ -163,7 +163,6 @@ class UserService {
   }
 
   async oauth(code: string) {
-    console.log('123')
     const { id_token, access_token } = await this.getOauthGoogleToken(code)
     const userInfo = await this.getGoogleUserInfo(access_token, id_token)
 
@@ -187,7 +186,15 @@ class UserService {
         })
       )
 
-      return { access_token, refresh_token, newUser: 0, verify_status: user.verify_status }
+      return {
+        access_token,
+        refresh_token,
+        newUser: 0,
+        verify_status: user.verify_status,
+        user_id: user._id.toString(),
+        user_role: user.role,
+        user_name: user.user_name
+      }
     } else {
       //! If user not existed, create new user
       // random string password
@@ -200,7 +207,16 @@ class UserService {
         date_of_birth: new Date().toISOString()
       })
 
-      return { ...data, newUser: 1, verify_status: UserVerifyStatus.UNVERIFIED }
+      const user = await databaseService.users.findOne({ email: userInfo.email })
+
+      return {
+        ...data,
+        newUser: 1,
+        verify_status: UserVerifyStatus.UNVERIFIED,
+        user_id: user?._id.toString(),
+        user_role: user?.role,
+        user_name: user?.user_name
+      }
     }
   }
 
