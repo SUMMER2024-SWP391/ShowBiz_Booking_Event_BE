@@ -55,6 +55,7 @@ export const USER_MESSAGES = {
   CREATE_ACCOUNT_SUCCESS: 'Create account success!',
   UPDATE_ACCOUNT_SUCCESS: 'Update account success!',
   GET_ACCOUNT_SUCCESS: 'Get account success!',
+  ACC_ALREADY_REMOVE: 'Account already removed!',
 
   NOT_AN_ADMIN: 'You are not an Admin!'
 } as const
