@@ -6,7 +6,7 @@ import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 import { Request, Response, NextFunction } from 'express'
 import { TokenPayload } from './user.requests'
-import { UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from '~/utils/capitalize'
@@ -85,13 +85,11 @@ const phoneNumberSchema: ParamSchema = {
   trim: true,
   custom: {
     options: async (value, { req }) => {
-      if (!REGEX_PHONE_NUMBER_VIETNAM.test(value)) {
-        throw new Error(USER_MESSAGES.PHONE_NUMBER_IS_INVALID)
-      }
+      if (!REGEX_PHONE_NUMBER_VIETNAM.test(value)) throw new Error(USER_MESSAGES.PHONE_NUMBER_IS_INVALID)
+
       const isExist = await userService.checkPhoneNumberExist(value)
-      if (isExist) {
-        throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXIST)
-      }
+      if (isExist) throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXIST)
+
       return true
     }
   }
@@ -164,6 +162,38 @@ export const registerValidator = validate(
       password: passwordSchema,
       confirm_password: confirmPasswordSchema,
       date_of_birth: dateOfBirthSchema
+    },
+    ['body']
+  )
+)
+
+export const createNewUserValidator = validate(
+  checkSchema(
+    {
+      user_name: { notEmpty: { errorMessage: USER_MESSAGES.NAME_IS_REQUIRED } },
+      email: {
+        notEmpty: { errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED },
+        isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
+        trim: true,
+        custom: {
+          options: async (value) => {
+            const isExistEmail = await userService.checkEmailExist(value)
+            if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
+
+            return true
+          }
+        }
+      },
+      phone_number: phoneNumberSchema,
+      date_of_birth: dateOfBirthSchema,
+      role: {
+        notEmpty: { errorMessage: 'Role is required' },
+        isNumeric: { errorMessage: 'Role must be a number' },
+        isIn: {
+          options: [UserRole],
+          errorMessage: 'Role must be either visitor, staff or admin'
+        }
+      }
     },
     ['body']
   )

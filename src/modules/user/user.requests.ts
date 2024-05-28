@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { TokenType, UserVerifyStatus } from '~/constants/enums'
 
 export interface LoginReqBody {
   email: string

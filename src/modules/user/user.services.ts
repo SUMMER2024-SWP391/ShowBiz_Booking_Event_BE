@@ -3,7 +3,7 @@ import databaseService from '../../database/database.services'
 import { RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { TokenType, UserVerifyStatus } from '~/constants/enums'
+import { TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -11,6 +11,7 @@ import { USER_MESSAGES } from './user.messages'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
+import { createAccountReqBody } from '../auth/account.request'
 
 class UserService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
@@ -105,7 +106,20 @@ class UserService {
   }
 
   async findUserById(user_id: string) {
-    return databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    const user = databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    if (!user) {
+      throw new ErrorWithStatus({
+        message: USER_MESSAGES.USER_NOT_FOUND,
+        status: StatusCodes.NOT_FOUND
+      })
+    }
+
+    return user
+  }
+
+  async getRole(user_id: string) {
+    const user = await this.findUserById(user_id)
+    return user?.role
   }
 
   private async getOauthGoogleToken(code: string) {
@@ -193,6 +207,22 @@ class UserService {
 
       return { ...data, newUser: 1, verify_status: UserVerifyStatus.UNVERIFIED }
     }
+  }
+
+  //create account dành cho admin
+  async createAccount(payload: createAccountReqBody) {
+    const result = await databaseService.users.insertOne(
+      new User({
+        _id: new ObjectId(),
+        ...payload,
+        password: hashPassword('mat_khau_bi_mat!'),
+        role: UserRole.CheckingStaff,
+        verify_status: UserVerifyStatus.VERIFIED
+      })
+    )
+    const user = await this.findUserById(result.insertedId.toString())
+    console.log('🚀 ~ user:', user)
+    return user
   }
 }
 
