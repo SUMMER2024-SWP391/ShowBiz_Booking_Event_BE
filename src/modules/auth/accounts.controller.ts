@@ -25,3 +25,12 @@ export const updateAccountController = async (
     result
   })
 }
+
+export const getUserByIdController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const user = await userService.findUserById(id)
+  return res.json({
+    message: USER_MESSAGES.GET_USER_BY_ID_SUCCESS,
+    user
+  })
+}
