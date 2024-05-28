@@ -20,17 +20,19 @@ export const updateAccountController = async (
 ) => {
   const { id } = req.params
   const result = await userService.updateAccountById(id, req.body)
-  return res.json({
-    message: USER_MESSAGES.UPDATE_ACCOUNT_SUCCESS,
-    result
-  })
+
+  return res.json({ message: USER_MESSAGES.UPDATE_ACCOUNT_SUCCESS, result })
 }
 
 export const getUserByIdController = async (req: Request, res: Response) => {
   const { id } = req.params
   const user = await userService.findUserById(id)
-  return res.json({
-    message: USER_MESSAGES.GET_USER_BY_ID_SUCCESS,
-    user
-  })
+
+  return res.json({ message: USER_MESSAGES.GET_USER_BY_ID_SUCCESS, user })
+}
+
+export const getAccountController = async (req: Request, res: Response) => {
+  const result = await userService.getAccount()
+
+  return res.json({ message: USER_MESSAGES.GET_ACCOUNT_SUCCESS, result })
 }
