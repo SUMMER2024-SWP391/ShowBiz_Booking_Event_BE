@@ -8,13 +8,12 @@ const eventStatus = numberEnumToArray(EventStatus)
 export const confirmEventValidator = validate(
   checkSchema(
     {
+      // check status phải là 1 trong các giá trị của EventStatus
       status: {
         in: ['body'],
         isInt: true,
         toInt: true,
-        isIn: {
-          options: [eventStatus]
-        }
+        isIn: { options: [eventStatus] }
       }
     },
     ['body']
