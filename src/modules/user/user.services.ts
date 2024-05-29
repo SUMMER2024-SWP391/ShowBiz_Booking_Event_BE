@@ -12,6 +12,7 @@ import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
+import { REGEX_FPT_EMAIL } from '~/constants/regex'
 
 class UserService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: UserVerifyStatus }) {
@@ -165,6 +166,9 @@ class UserService {
   async oauth(code: string) {
     const { id_token, access_token } = await this.getOauthGoogleToken(code)
     const userInfo = await this.getGoogleUserInfo(access_token, id_token)
+    // nếu email không match với regex thì throw lỗi
+    if (!REGEX_FPT_EMAIL.test(userInfo.email))
+      throw new ErrorWithStatus({ message: USER_MESSAGES.EMAIL_NOT_MATCH_REGEX, status: StatusCodes.BAD_REQUEST })
 
     //! Check user have already verified or not ?
     if (!userInfo.verified_email)
@@ -267,7 +271,6 @@ class UserService {
   }
 
   async approveEvent(id: string, status: EventStatus) {
-    console.log(typeof status)
     const event = await databaseService.events.findOne({ _id: new ObjectId(id) })
     if (!event) throw new ErrorWithStatus({ message: 'EVENT_NOT_FOUND', status: StatusCodes.NOT_FOUND })
 
@@ -277,7 +280,6 @@ class UserService {
       { returnDocument: 'after' }
     )
 
-    console.log('🚀 ~ result.value:', result.value)
     return result.value
   }
 }

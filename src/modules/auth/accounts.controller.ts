@@ -43,6 +43,7 @@ export const getAccountController = async (req: Request, res: Response) => {
 export const deleteAccountController = async (req: Request, res: Response) => {
   const { id } = req.params
   const role = await userService.getRole(id)
+  const result = await userService.deleteAccountById(id)
 
   // KHÔNG CHO XOÁ ADMIN ACCOUNT
   if (role === UserRole.Admin) {
@@ -51,12 +52,8 @@ export const deleteAccountController = async (req: Request, res: Response) => {
       status: StatusCodes.UNAUTHORIZED
     })
   }
-  const result = await userService.deleteAccountById(id)
 
-  return res.json({
-    message: 'DELETE_ACCOUNT_SUCCESS',
-    result
-  })
+  return res.json({ message: 'DELETE_ACCOUNT_SUCCESS', result })
 }
 
 export const approveEventController = async (

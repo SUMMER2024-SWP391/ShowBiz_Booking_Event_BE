@@ -58,13 +58,7 @@ export const loginValidator = validate(
           errorMessage: USER_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
         },
         isStrongPassword: {
-          options: {
-            minLength: 6,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1
-          },
+          options: { minLength: 6, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 },
           errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
         }
       }

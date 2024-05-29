@@ -13,7 +13,7 @@ import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
-import { REGEX_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
+import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
 
 export const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -22,13 +22,7 @@ export const passwordSchema: ParamSchema = {
     errorMessage: USER_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
   },
   isStrongPassword: {
-    options: {
-      minLength: 6,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1
-    },
+    options: { minLength: 6, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 },
     errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
   }
 }
@@ -69,12 +63,7 @@ export const nameSchema: ParamSchema = {
 }
 
 const dateOfBirthSchema: ParamSchema = {
-  isISO8601: {
-    options: {
-      strict: true,
-      strictSeparator: true
-    }
-  },
+  isISO8601: { options: { strict: true, strictSeparator: true } },
   errorMessage: USER_MESSAGES.DATE_OF_BIRTH_BE_ISO8601
 }
 
@@ -147,7 +136,7 @@ export const registerValidator = validate(
         trim: true,
         custom: {
           options: async (value) => {
-            if (!REGEX_EMAIL.test(value)) {
+            if (!REGEX_FPT_EMAIL.test(value)) {
               throw new Error(USER_MESSAGES.EMAIL_IS_INVALID)
             }
 
@@ -187,11 +176,11 @@ export const createNewUserValidator = validate(
       phone_number: phoneNumberSchema,
       date_of_birth: dateOfBirthSchema,
       role: {
-        notEmpty: { errorMessage: 'Role is required' },
-        isNumeric: { errorMessage: 'Role must be a number' },
+        notEmpty: { errorMessage: USER_MESSAGES.ROLE_IS_REQUIRED },
+        isNumeric: { errorMessage: USER_MESSAGES.ROLE_MUST_BE_A_NUMBER },
         isIn: {
           options: [UserRole],
-          errorMessage: 'Role must be either visitor, staff or admin'
+          errorMessage: USER_MESSAGES.ROLE_MUST_BE_EITHER_VISITOR_STAFF_OR_ADMIN
         }
       }
     },
@@ -301,7 +290,7 @@ export const updateAccValidator = validate(
       isNumeric: true,
       isIn: {
         options: [UserRole],
-        errorMessage: 'Role must be either visitor, staff or admin'
+        errorMessage: USER_MESSAGES.ROLE_MUST_BE_EITHER_VISITOR_STAFF_OR_ADMIN
       }
     },
     date_of_birth: {
@@ -335,7 +324,7 @@ export const updateAccValidator = validate(
       isNumeric: true,
       isIn: {
         options: [UserVerifyStatus],
-        errorMessage: 'Verify status must be either unverified or verified'
+        errorMessage: USER_MESSAGES.VERIFY_STATUS_MUST_BE_EITHER_VERIFIED_OR_UNVERIFIED
       }
     }
   })
