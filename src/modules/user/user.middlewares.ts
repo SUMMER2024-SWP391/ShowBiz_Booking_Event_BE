@@ -1,7 +1,6 @@
 import { ParamSchema, checkSchema } from 'express-validator'
 import { USER_MESSAGES } from '~/modules/user/user.messages'
 import databaseService from '~/database/database.services'
-import userService from '~/modules/user/user.services'
 import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 import { Request, Response, NextFunction } from 'express'
@@ -14,6 +13,7 @@ import { JsonWebTokenError } from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
 import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
+import userService from './user.services'
 
 export const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -316,12 +316,11 @@ export const verifyEmailTokenValidator = validate(
     },
     ['body']
   )
+)
 
 export const updateAccValidator = validate(
   checkSchema({
-    user_name: {
-      optional: true
-    },
+    user_name: { optional: true },
     role: {
       optional: true,
       isNumeric: true,
@@ -330,14 +329,8 @@ export const updateAccValidator = validate(
         errorMessage: USER_MESSAGES.ROLE_MUST_BE_EITHER_VISITOR_STAFF_OR_ADMIN
       }
     },
-    date_of_birth: {
-      ...dateOfBirthSchema,
-      optional: true
-    },
-    phone_number: {
-      ...phoneNumberSchema,
-      optional: true
-    },
+    date_of_birth: { ...dateOfBirthSchema, optional: true },
+    phone_number: { ...phoneNumberSchema, optional: true },
     email: {
       optional: true,
       isEmail: true,
@@ -350,12 +343,8 @@ export const updateAccValidator = validate(
         }
       }
     },
-    avatar: {
-      optional: true
-    },
-    point: {
-      optional: true
-    },
+    avatar: { optional: true },
+    point: { optional: true },
     verify_status: {
       optional: true,
       isNumeric: true,

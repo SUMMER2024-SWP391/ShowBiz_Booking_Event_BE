@@ -65,7 +65,7 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
 
 export const verifyEmailController = async (req: Request<ParamsDictionary, any, VerifyEmailReqBody>, res: Response) => {
   const { user_id } = req.decoded_email_verify_token as TokenPayload
-
   const result = await userService.verifyEmail(user_id)
+
   return res.json({ message: USER_MESSAGES.EMAIL_VERIFIED, result })
 }
