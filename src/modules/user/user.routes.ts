@@ -3,9 +3,16 @@ import {
   accessTokenValidator,
   loginValidator,
   refreshTokenValidator,
-  registerValidator
+  registerValidator,
+  verifyEmailTokenValidator
 } from '~/modules/user/user.middlewares'
-import { loginController, logoutController, oauthController, registerController } from '~/modules/user/user.controllers'
+import {
+  loginController,
+  logoutController,
+  oauthController,
+  registerController,
+  verifyEmailController
+} from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 
 const usersRouter = Router()
@@ -45,5 +52,13 @@ usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsy
  * Query: { code: string }
  */
 usersRouter.get('/oauth/google', wrapAsync(oauthController))
+
+/**
+ * * Description: verify email
+ * Path: /verify-email
+ * Method: GET
+ * body: {email_verify_token: string}
+ */
+usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmailController))
 
 export default usersRouter

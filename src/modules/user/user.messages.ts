@@ -33,6 +33,10 @@ export const USER_MESSAGES = {
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect!',
   EMAIL_ALREADY_EXISTED: 'Email already existed!',
 
+  // email verify token
+  EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required!',
+  EMAIL_VERIFIED: 'Email verified!',
+
   // Gmail
   GMAIL_NOT_VERIFIED: 'Gmail not verified yet!',
 
