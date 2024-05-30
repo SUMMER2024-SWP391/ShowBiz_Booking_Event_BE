@@ -6,7 +6,6 @@ import userService from '../user/user.services'
 import { UserRole, UserVerifyStatus } from '~/constants/enums'
 import { hashPassword } from '~/utils/crypto'
 import RefreshToken from '../refreshToken/refreshToken.schema'
-import { UserVerifyStatus } from '~/constants/enums'
 
 class EventOperatorService {
   async checkEmailExist(email: string) {

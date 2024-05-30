@@ -1,4 +1,3 @@
-import { UserRole } from './../../constants/enums'
 import User from '~/modules/user/user.schema'
 import databaseService from '../../database/database.services'
 import { RegisterReqBody } from '~/modules/user/user.requests'
@@ -279,7 +278,7 @@ class UserService {
     })
 
     return { access_token, refresh_token }
-
+  }
 
   //create account dành cho admin
   async createAccount(payload: createAccountReqBody) {
