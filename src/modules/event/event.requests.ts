@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { EventCategory, EventTypeEnum, LocationType } from '~/constants/enums'
+import { EventTypeEnum, LocationType } from '~/constants/enums'
 
 export interface EventRequestBody {
   name: string
@@ -14,7 +14,6 @@ export interface EventRequestBody {
   image: string
   qr_code: string
   event_operator_id: ObjectId
-  status: EventCategory
 }
 
 export interface Pagination {

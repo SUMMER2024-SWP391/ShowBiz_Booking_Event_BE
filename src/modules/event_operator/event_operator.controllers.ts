@@ -4,8 +4,7 @@ import { EventOperatorLoginReqBody, EventOperatorRegisterReqBody } from './event
 import eventOperatorService from './event_operator.services'
 import { ObjectId } from 'mongodb'
 import { UserRole, UserVerifyStatus } from '~/constants/enums'
-import { USER_MESSAGES } from '../user/user.messages'
-import { EVENT_OPERATOR_MESSAGES } from './event_operator.messages'
+import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,

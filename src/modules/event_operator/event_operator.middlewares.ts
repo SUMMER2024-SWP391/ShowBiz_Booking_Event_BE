@@ -2,7 +2,6 @@ import { checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { confirmPasswordSchema, nameSchema, passwordSchema } from '../user/user.middlewares'
 import { USER_MESSAGES } from '../user/user.messages'
-import userService from '../user/user.services'
 import databaseService from '~/database/database.services'
 import { hashPassword } from '~/utils/crypto'
 import eventOperatorService from './event_operator.services'
@@ -59,13 +58,7 @@ export const loginValidator = validate(
           errorMessage: USER_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
         },
         isStrongPassword: {
-          options: {
-            minLength: 6,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1
-          },
+          options: { minLength: 6, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 },
           errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
         }
       }

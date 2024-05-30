@@ -4,7 +4,7 @@ import databaseService from '../../database/database.services'
 import { RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { TokenType, UserVerifyStatus } from '~/constants/enums'
+import { EventStatus, TokenType, UserIsDestroy, UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -12,6 +12,8 @@ import { USER_MESSAGES } from './user.messages'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
+import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
+import { REGEX_FPT_EMAIL } from '~/constants/regex'
 
 class UserService {
   private signAccessToken({
@@ -140,7 +142,15 @@ class UserService {
   }
 
   async findUserById(user_id: string) {
-    return databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    if (!user) throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_FOUND, status: StatusCodes.NOT_FOUND })
+
+    return user
+  }
+
+  async getRole(user_id: string) {
+    const user = await this.findUserById(user_id)
+    return user?.role
   }
 
   private async getOauthGoogleToken(code: string) {
@@ -189,9 +199,11 @@ class UserService {
   }
 
   async oauth(code: string) {
-    console.log('123')
     const { id_token, access_token } = await this.getOauthGoogleToken(code)
     const userInfo = await this.getGoogleUserInfo(access_token, id_token)
+    // nếu email không match với regex thì throw lỗi
+    if (!REGEX_FPT_EMAIL.test(userInfo.email))
+      throw new ErrorWithStatus({ message: USER_MESSAGES.EMAIL_NOT_MATCH_REGEX, status: StatusCodes.BAD_REQUEST })
 
     //! Check user have already verified or not ?
     if (!userInfo.verified_email)
@@ -214,7 +226,15 @@ class UserService {
         })
       )
 
-      return { access_token, refresh_token, newUser: 0, verify_status: user.verify_status }
+      return {
+        access_token,
+        refresh_token,
+        newUser: 0,
+        verify_status: user.verify_status,
+        user_id: user._id.toString(),
+        user_role: user.role,
+        user_name: user.user_name
+      }
     } else {
       //! If user not existed, create new user
       // random string password
@@ -227,9 +247,19 @@ class UserService {
         date_of_birth: new Date().toISOString()
       })
 
-      return { ...data, newUser: 1, verify_status: UserVerifyStatus.UNVERIFIED }
+      const user = await databaseService.users.findOne({ email: userInfo.email })
+
+      return {
+        ...data,
+        newUser: 1,
+        verify_status: UserVerifyStatus.UNVERIFIED,
+        user_id: user?._id.toString(),
+        user_role: user?.role,
+        user_name: user?.user_name
+      }
     }
   }
+
   async verifyEmail(user_id: string) {
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
@@ -249,6 +279,65 @@ class UserService {
     })
 
     return { access_token, refresh_token }
+
+
+  //create account dành cho admin
+  async createAccount(payload: createAccountReqBody) {
+    const result = await databaseService.users.insertOne(
+      new User({
+        _id: new ObjectId(),
+        ...payload,
+        password: hashPassword('mat_khau_bi_mat!'),
+        role: UserRole.CheckingStaff,
+        verify_status: UserVerifyStatus.VERIFIED
+      })
+    )
+    return await this.findUserById(result.insertedId.toString())
+  }
+
+  //update account dành cho admin
+  async updateAccountById(id: string, payload: updateAccountReqBody) {
+    const user = await this.findUserById(id)
+    const newUser = await databaseService.users.findOneAndUpdate(
+      { _id: user?._id },
+      [{ $set: { ...payload, updated_at: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+
+    return newUser.value
+  }
+
+  // get account dành cho admin
+  async getAccount() {
+    return await databaseService.users.find({}).toArray()
+  }
+
+  // delete account dành cho admin
+  async deleteAccountById(id: string) {
+    const user = await this.findUserById(id)
+    if (user._destroy === UserIsDestroy.DESTROYED)
+      throw new ErrorWithStatus({ message: USER_MESSAGES.ACC_ALREADY_REMOVE, status: StatusCodes.BAD_REQUEST })
+
+    const result = await databaseService.users.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      [{ $set: { _destroy: UserIsDestroy.DESTROYED, updated_at: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+
+    return result.value
+  }
+
+  async approveEvent(id: string, status: EventStatus) {
+    const event = await databaseService.events.findOne({ _id: new ObjectId(id) })
+    if (!event) throw new ErrorWithStatus({ message: 'EVENT_NOT_FOUND', status: StatusCodes.NOT_FOUND })
+
+    const result = await databaseService.events.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      [{ $set: { status, updated_at: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+
+    return result.value
   }
 }
 

@@ -3,7 +3,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { TokenPayload } from '../user/user.requests'
 import eventService from './event.services'
 import { EventRequestBody, Pagination } from './event.requests'
-import { EVENT_MESSAGES } from './event.messages'
+import { EVENT_MESSAGES } from '../user/user.messages'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -13,8 +13,8 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
 }
 
 export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
-  const limit = Number(req.query.limit)
-  const page = Number(req.query.page)
+  const limit = Number(req.query.limit) ? Number(req.query.limit) : 5
+  const page = Number(req.query.page) ? Number(req.query.page) : 1
   const { events, total, sum_page } = await eventService.getEventList({ limit, page })
 
   return res.json({

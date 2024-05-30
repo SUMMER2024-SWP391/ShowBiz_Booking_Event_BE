@@ -1,24 +1,24 @@
 import { checkSchema } from 'express-validator'
 import { EventTypeEnum, LocationType } from '~/constants/enums'
 import { validate } from '~/utils/validation'
-import { EVENT_MESSAGES } from './event.messages'
 import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
 import eventService from './event.services'
+import { EVENT_MESSAGES } from '../user/user.messages'
 
 export const createEventValidator = validate(
   checkSchema(
     {
       name: {
-        isString: { errorMessage: 'Name must be a string' },
-        notEmpty: { errorMessage: 'Name is required' }
+        isString: { errorMessage: EVENT_MESSAGES.NAME_MUST_BE_A_STRING },
+        notEmpty: { errorMessage: EVENT_MESSAGES.NAME_IS_REQUIRED }
       },
       capacity: {
-        isNumeric: { errorMessage: 'Capacity must be a number' },
-        notEmpty: { errorMessage: 'Capacity is required' }
+        isNumeric: { errorMessage: EVENT_MESSAGES.CAPACITY_MUST_BE_A_NUMBER },
+        notEmpty: { errorMessage: EVENT_MESSAGES.CAPACITY_IS_REQUIRED }
       },
       ticket_price: {
-        isNumeric: { errorMessage: 'Ticket price must be a number' },
-        notEmpty: { errorMessage: 'Ticket is required' }
+        isNumeric: { errorMessage: EVENT_MESSAGES.TICKET_PRICE_MUST_BE_A_NUMBER },
+        notEmpty: { errorMessage: EVENT_MESSAGES.TICKET_PRICE_IS_REQUIRED }
       },
       type_event: {
         isIn: {
@@ -27,35 +27,37 @@ export const createEventValidator = validate(
         }
       },
       date_event: {
-        isString: { errorMessage: 'Date event must be a string' },
-        notEmpty: { errorMessage: 'Date event is required' },
+        isString: { errorMessage: EVENT_MESSAGES.DATE_EVENT_MUST_BE_A_STRING },
+        notEmpty: { errorMessage: EVENT_MESSAGES.DATE_EVENT_IS_REQUIRED },
         custom: {
           options: (value) => {
-            if (!REGEX_DATE.test(value)) throw new Error('Date event must be in the format DD-MM-YYYY')
-            if (new Date(value) < new Date()) throw new Error('Date event must be in the future')
+            if (!REGEX_DATE.test(value)) throw new Error(EVENT_MESSAGES.INVALID_DATE)
+            if (new Date(value) < new Date()) throw new Error(EVENT_MESSAGES.DATE_EVENT_MUST_BE_IN_THE_FUTURE)
+
             return true
           }
         }
       },
       time_start: {
-        isString: { errorMessage: 'Time start must be a string' },
-        notEmpty: { errorMessage: 'Time start is required' },
+        isString: { errorMessage: EVENT_MESSAGES.TIME_START_MUST_BE_A_STRING },
+        notEmpty: { errorMessage: EVENT_MESSAGES.TIME_START_IS_REQUIRED },
         custom: {
           options: (value) => {
-            if (!REGEX_TIME.test(value)) throw new Error('Time start must be in the format hh:mm:ss')
-            if (new Date(value) < new Date()) throw new Error('Time start must be in the future')
+            if (!REGEX_TIME.test(value)) throw new Error(EVENT_MESSAGES.TIME_START_MUST_MATCH_FORMAT)
+            if (new Date(value) < new Date()) throw new Error(EVENT_MESSAGES.TIME_START_MUST_BE_IN_THE_FUTURE)
 
             return true
           }
         }
       },
       time_end: {
-        isString: { errorMessage: 'Time end must be a string' },
-        notEmpty: { errorMessage: 'Time end is required' },
+        isString: { errorMessage: EVENT_MESSAGES.TIME_END_MUST_BE_A_STRING },
+        notEmpty: { errorMessage: EVENT_MESSAGES.TIME_END_IS_REQUIRED },
         custom: {
           options: (value, { req }) => {
-            if (!REGEX_TIME.test(value)) throw new Error('Time start must be in the format hh:mm:ss')
-            if (new Date(value) < new Date(req.body.time_start)) throw new Error('Time end must be after time start')
+            if (!REGEX_TIME.test(value)) throw new Error(EVENT_MESSAGES.TIME_END_MUST_MATCH_FORMAT)
+            if (new Date(value) < new Date(req.body.time_start))
+              throw new Error(EVENT_MESSAGES.TIME_END_MUST_BE_IN_THE_FUTURE)
 
             return true
           }
@@ -64,7 +66,7 @@ export const createEventValidator = validate(
       location: {
         isIn: {
           options: [LocationType],
-          errorMessage: 'Invalid location'
+          errorMessage: EVENT_MESSAGES.INVALID_LOCATION
         }
       }
     },
@@ -76,18 +78,19 @@ export const paginationValidator = validate(
   checkSchema(
     {
       limit: {
+        optional: true,
         isNumeric: true,
         custom: {
-          options: async (value, { req }) => {
+          options: async (value) => {
             const num = Number(value)
-            if (num > 100 || num < 1) {
-              throw new Error('1 <= limit <= 100')
-            }
+            if (num > 100 || num < 1) throw new Error(EVENT_MESSAGES.LIMIT_MUST_BE_BETWEEN_1_AND_100)
+
             return true
           }
         }
       },
       page: {
+        optional: true,
         isNumeric: true,
         custom: {
           options: async (value, { req }) => {
@@ -95,7 +98,6 @@ export const paginationValidator = validate(
             const result = await eventService.getAllEventList()
 
             if (num < 1) throw new Error(EVENT_MESSAGES.PAGE_MUST_BE_POSITIVE)
-
             if (num > Math.ceil(result / Number(req.query?.limit))) throw new Error(EVENT_MESSAGES.INVALID_PAGE)
 
             return true
