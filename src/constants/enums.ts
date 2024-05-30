@@ -32,7 +32,8 @@ export enum EventCategory {
 export enum UserRole {
   Visitor, //0
   CheckingStaff, //1
-  Admin //2
+  EventOperator, //2
+  Admin //3
 }
 
 export enum EventStatus {

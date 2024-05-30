@@ -36,6 +36,10 @@ export const USER_MESSAGES = {
   EMAIL_ALREADY_EXISTED: 'Email already existed!',
   EMAIL_NOT_MATCH_REGEX: 'Email must match format [6]@fpt.edu.vn',
 
+  // email verify token
+  EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required!',
+  EMAIL_VERIFIED: 'Email verified!',
+
   // Gmail
   GMAIL_NOT_VERIFIED: 'Gmail not verified yet!',
 
