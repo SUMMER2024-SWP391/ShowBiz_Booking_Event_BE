@@ -2,7 +2,12 @@ import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, verifiedUserValidator } from '../user/user.middlewares'
 import { createEventValidator, paginationValidator } from './event.middlewares'
-import { createEventController, getEventListController, handleStatusEventController } from './event.controllers'
+import {
+  createEventController,
+  getEventByIdController,
+  getEventListController,
+  handleStatusEventController
+} from './event.controllers'
 
 const eventsRouter = Router()
 
@@ -34,9 +39,11 @@ eventsRouter.get('/', paginationValidator, wrapAsync(getEventListController))
 /**
  * * Description: Accept or reject event
  * Path: /
- * Method: get
- * Query: { status }
+ * Method: post
+ * body: { status }
  */
-eventsRouter.get('/:idEvent', wrapAsync(handleStatusEventController))
+eventsRouter.post('/:idEvent', wrapAsync(handleStatusEventController))
+
+eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 
 export default eventsRouter
