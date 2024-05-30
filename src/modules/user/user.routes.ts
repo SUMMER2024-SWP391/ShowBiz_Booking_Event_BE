@@ -1,8 +1,10 @@
 import { Router } from 'express'
 import {
   accessTokenValidator,
+  isUserRole,
   loginValidator,
   refreshTokenValidator,
+  registerEventOperatorMiddleware,
   registerValidator,
   verifyEmailTokenValidator
 } from '~/modules/user/user.middlewares'
@@ -11,9 +13,11 @@ import {
   logoutController,
   oauthController,
   registerController,
+  registerEventOperatorController,
   verifyEmailController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
+import { UserRole } from '~/constants/enums'
 
 const usersRouter = Router()
 
@@ -33,7 +37,7 @@ usersRouter.post('/login', loginValidator, wrapAsync(loginController))
  * * Description: Register a new user
  * Path: /register
  * Method: POST
- * Request: { name: string, email: string, password: string, confirm_password: string, date_of_birth: string }
+ * Request: { name: string, email: string, password: string, confirm_password: string, date_of_birth: string, phone_number : string }
  */
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
 /*
@@ -60,5 +64,25 @@ usersRouter.get('/oauth/google', wrapAsync(oauthController))
  * body: {email_verify_token: string}
  */
 usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmailController))
+
+/**
+ * * Description: register event operator
+ * Path: /register-event-operator
+ * Method: POST
+ * body: {
+ * user_name: string
+  email: string
+  password: string
+  confirm_password: string
+  phone_number: string}
+ */
+
+usersRouter.post(
+  '/register-event-operator',
+  accessTokenValidator,
+  isUserRole([UserRole.Admin]),
+  registerEventOperatorMiddleware,
+  wrapAsync(registerEventOperatorController)
+)
 
 export default usersRouter
