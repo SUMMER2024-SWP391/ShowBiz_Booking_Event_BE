@@ -106,6 +106,13 @@ class EventService {
           }
         },
         {
+          $addFields: {
+            event_operator: {
+              $arrayElemAt: ['$event_operator', 0]
+            }
+          }
+        },
+        {
           $project: {
             event_operator_id: 0,
             event_operator: {
@@ -125,7 +132,40 @@ class EventService {
     return result[0]
   }
 
-  async getEventListAdmin(id: string) {}
+  async getEventListAdmin(id: string) {
+    const result = await databaseService.events
+      .aggregate([
+        {
+          $match: {
+            event_operator_id: new ObjectId(id)
+          }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'event_operator_id',
+            foreignField: '_id',
+            as: 'event_operator'
+          }
+        },
+        {
+          $project: {
+            event_operator_id: 0,
+            event_operator: {
+              password: 0,
+              created_at: 0,
+              role: 0,
+              status: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0,
+              date_of_birth: 0,
+              point: 0
+            }
+          }
+        }
+      ])
+      .toArray()
+  }
 }
 
 const eventService = new EventService()

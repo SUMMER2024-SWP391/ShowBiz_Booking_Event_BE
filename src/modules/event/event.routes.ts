@@ -46,4 +46,8 @@ eventsRouter.post('/:idEvent', wrapAsync(handleStatusEventController))
 
 eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 
+eventsRouter.get('/admin', (req, res) => {
+  res.send('Hello world')
+})
+
 export default eventsRouter
