@@ -287,7 +287,8 @@ export const verifyEmailTokenValidator = validate(
         trim: true,
         custom: {
           options: async (value, { req }) => {
-            if (!value) {
+            const token = req.query?.token
+            if (!token) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
                 status: StatusCodes.UNAUTHORIZED
@@ -296,7 +297,7 @@ export const verifyEmailTokenValidator = validate(
 
             try {
               const decoded_email_verify_token = await verifyToken({
-                token: value,
+                token,
                 secretOrPublicKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
               })
               ;(req as Request).decoded_email_verify_token = decoded_email_verify_token

@@ -11,6 +11,7 @@ import {
   logoutController,
   oauthController,
   registerController,
+  resendVerifyEmailController,
   verifyEmailController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
@@ -60,5 +61,13 @@ usersRouter.get('/oauth/google', wrapAsync(oauthController))
  * body: {email_verify_token: string}
  */
 usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmailController))
+
+/**
+ * * Description: Resend email verification
+ * Path: /resend-verify-email
+ * Method: POST
+ * body: {email: string}
+ */
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendVerifyEmailController))
 
 export default usersRouter

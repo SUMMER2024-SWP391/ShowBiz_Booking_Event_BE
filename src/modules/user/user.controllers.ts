@@ -13,6 +13,8 @@ import { ObjectId } from 'mongodb'
 import User from '~/modules/user/user.schema'
 import { UserRole, UserVerifyStatus } from '~/constants/enums'
 import { env } from '~/config/environment'
+import { ErrorWithStatus } from '~/models/Errors'
+import { StatusCodes } from 'http-status-codes'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -65,7 +67,45 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
 
 export const verifyEmailController = async (req: Request<ParamsDictionary, any, VerifyEmailReqBody>, res: Response) => {
   const { user_id } = req.decoded_email_verify_token as TokenPayload
-  const result = await userService.verifyEmail(user_id)
+  const user = await userService.findUserById(user_id)
+  if (!user) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.USER_NOT_FOUND,
+      status: StatusCodes.NOT_FOUND // 404
+    })
+  }
 
+  if (user.verify_status === UserVerifyStatus.VERIFIED && user.email_verify_token === '') {
+    return res.json({ message: USER_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE })
+  }
+
+  if (user.email_verify_token !== req.query?.token) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.EMAIL_VERIFY_TOKEN_IS_INCORRECT,
+      status: StatusCodes.BAD_REQUEST // 400
+    })
+  }
+
+  const result = await userService.verifyEmail(user_id)
   return res.json({ message: USER_MESSAGES.EMAIL_VERIFIED, result })
+}
+
+export const resendVerifyEmailController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await userService.findUserById(user_id)
+  if (!user) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.USER_NOT_FOUND,
+      status: StatusCodes.NOT_FOUND // 404
+    })
+  }
+  if (user.verify_status === UserVerifyStatus.BANNED) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.USER_BANNED,
+      status: StatusCodes.UNAUTHORIZED // 401
+    })
+  }
+
+  const result = await userService.resendVerifyEmail(user_id, user.email)
+  return res.json(result)
 }

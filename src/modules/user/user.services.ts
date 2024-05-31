@@ -13,6 +13,8 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
 import { REGEX_FPT_EMAIL } from '~/constants/regex'
+import { sendEmail } from '../sendMail/sendMailService'
+import { log } from 'console'
 
 class UserService {
   private signAccessToken({
@@ -124,6 +126,8 @@ class UserService {
     )
 
     console.log('🚀 ~ email_verify_token:', email_verify_token)
+    await sendEmail(email, email_verify_token)
+
     return { access_token, refresh_token }
   }
 
@@ -276,7 +280,7 @@ class UserService {
       verify_status: UserVerifyStatus.VERIFIED,
       role: UserRole.Visitor
     })
-
+    log('\nVerify email success!!!')
     return { access_token, refresh_token }
   }
 
@@ -337,6 +341,27 @@ class UserService {
     )
 
     return result.value
+  }
+
+  async resendVerifyEmail(user_id: string, email: string) {
+    const email_verify_token = await this.signEmailVerifyToken({
+      user_id,
+      verify_status: UserVerifyStatus.VERIFIED,
+      role: UserRole.Visitor
+    })
+
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      {
+        $set: {
+          email_verify_token,
+          updated_at: new Date()
+        }
+      }
+    )
+
+    await sendEmail(email, email_verify_token)
+    return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
   }
 }
 

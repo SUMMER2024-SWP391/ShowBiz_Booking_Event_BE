@@ -39,6 +39,9 @@ export const USER_MESSAGES = {
   // email verify token
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required!',
   EMAIL_VERIFIED: 'Email verified!',
+  EMAIL_VERIFY_TOKEN_IS_INCORRECT: 'Email verify token is incorrect!',
+  EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before!',
+  RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success!',
 
   // Gmail
   GMAIL_NOT_VERIFIED: 'Gmail not verified yet!',
@@ -55,6 +58,7 @@ export const USER_MESSAGES = {
   USER_NOT_VERIFIED: 'User not verified yet!',
   USER_NOT_FOUND: 'User not found!',
   GET_USER_BY_ID_SUCCESS: 'Get user by id success!',
+  USER_BANNED: 'User banned!',
 
   // admin
   CREATE_ACCOUNT_SUCCESS: 'Create account success!',
