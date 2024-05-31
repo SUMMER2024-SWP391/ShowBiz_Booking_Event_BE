@@ -90,9 +90,42 @@ class EventService {
   }
 
   async getEventById(id: string) {
-    const result = await databaseService.events.findOne({ _id: new ObjectId(id) })
-    return result
+    const result = await databaseService.events
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(id)
+          }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'event_operator_id',
+            foreignField: '_id',
+            as: 'event_operator'
+          }
+        },
+        {
+          $project: {
+            event_operator_id: 0,
+            event_operator: {
+              password: 0,
+              created_at: 0,
+              role: 0,
+              status: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0,
+              date_of_birth: 0,
+              point: 0
+            }
+          }
+        }
+      ])
+      .toArray()
+    return result[0]
   }
+
+  async getEventListAdmin(id: string) {}
 }
 
 const eventService = new EventService()
