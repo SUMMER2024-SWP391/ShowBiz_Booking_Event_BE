@@ -3,7 +3,7 @@ import databaseService from '../../database/database.services'
 import { EventOperatorRegisterReqBody, RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { EventStatus, TokenType, UserIsDestroy, UserRole, UserStatus } from '~/constants/enums'
+import { EventStatus, TokenType, UserRole, UserStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -200,7 +200,7 @@ class UserService {
         access_token,
         refresh_token,
         newUser: 0,
-        verify_status: user.status,
+        status: user.status,
         user_id: user._id.toString(),
         user_role: user.role,
         user_name: user.user_name
@@ -290,7 +290,7 @@ class UserService {
 
     const result = await databaseService.users.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      [{ $set: { destroy: UserIsDestroy.DESTROYED, updated_at: '$$NOW' } }],
+      [{ $set: { status: UserStatus.DELETE, updated_at: '$$NOW' } }],
       { returnDocument: 'after' }
     )
 
@@ -317,15 +317,9 @@ class UserService {
       role: UserRole.Visitor
     })
 
-    await databaseService.users.updateOne(
-      { _id: new ObjectId(user_id) },
-      {
-        $set: {
-          email_verify_token,
-          updated_at: new Date()
-        }
-      }
-    )
+    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+      { $set: { email_verify_token, updated_at: '$$NOW' } }
+    ])
 
     await sendEmail(email, email_verify_token)
     return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
@@ -349,9 +343,7 @@ class UserService {
   }
 
   async getUserById(id: string) {
-    const user = await databaseService.users.findOne({ _id: new ObjectId(id) })
-
-    return user
+    return await databaseService.users.findOne({ _id: new ObjectId(id) })
   }
 }
 

@@ -11,11 +11,6 @@ import { corsOption } from './config/cors'
 import eventsRouter from './modules/event/event.routes'
 import eOperatorRouter from './modules/event_operator/event_operator.routes'
 import adminsRouter from './modules/auth/accounts.routes'
-import User from './modules/user/user.schema'
-import { ObjectId } from 'mongodb'
-import { hashPassword } from './utils/crypto'
-import { EventCategory, EventStatus, EventTypeEnum, LocationType, UserRole, UserStatus } from './constants/enums'
-import Event from './modules/event/event.schema'
 
 const file = fs.readFileSync('./swagger-ui.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)

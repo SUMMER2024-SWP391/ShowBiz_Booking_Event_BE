@@ -1,9 +1,7 @@
-import { log } from 'console'
 import nodemailer from 'nodemailer'
 import { env } from '~/config/environment'
 
 export async function sendEmail(email: string, verify_token: string) {
-  log('\nSending email to', email + '...\n')
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -16,7 +14,7 @@ export async function sendEmail(email: string, verify_token: string) {
     {
       from: `${process.env.EMAIL_USER}`,
       to: `${email}`,
-      subject: '[Booking-event] Please Verify Your Email 🔑 🎉',
+      subject: '[Booking-Event] Please Verify Your Email 🔑 🎉',
       html: `<body style="font-family: Arial, sans-serif;
             margin: 30px 0;
             padding: 0;

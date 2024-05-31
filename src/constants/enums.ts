@@ -42,8 +42,3 @@ export enum EventStatus {
   APPROVED = 'Approved', //1
   REJECTED = 'Rejected' //2
 }
-
-export enum UserIsDestroy {
-  ACTIVE = 'Active',
-  DESTROYED = 'Destroyed'
-}
