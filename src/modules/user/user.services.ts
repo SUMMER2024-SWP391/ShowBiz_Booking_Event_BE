@@ -14,7 +14,6 @@ import { StatusCodes } from 'http-status-codes'
 import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
 import { REGEX_FPT_EMAIL } from '~/constants/regex'
 import { sendEmail } from '../sendMail/sendMailService'
-import { log } from 'console'
 
 class UserService {
   private signAccessToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
@@ -248,7 +247,7 @@ class UserService {
       status: UserStatus.VERIFIED,
       role: UserRole.Visitor
     })
-    log('\nVerify email success!!!')
+
     return { access_token, refresh_token }
   }
 
@@ -314,7 +313,7 @@ class UserService {
   async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({
       user_id,
-      verify_status: UserVerifyStatus.VERIFIED,
+      status: UserStatus.UNVERIFIED,
       role: UserRole.Visitor
     })
 
@@ -331,7 +330,7 @@ class UserService {
     await sendEmail(email, email_verify_token)
     return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
   }
-  
+
   async registerEventOperator(body: EventOperatorRegisterReqBody) {
     const { password, email, name, phone_number } = body
     const id = new ObjectId()
