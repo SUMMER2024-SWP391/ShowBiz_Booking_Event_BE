@@ -16,7 +16,6 @@ import { UserRole, UserStatus } from '~/constants/enums'
 import { env } from '~/config/environment'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
-import databaseService from '~/database/database.services'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -76,7 +75,7 @@ export const verifyEmailController = async (req: Request<ParamsDictionary, any, 
     })
   }
 
-  if (user.verify_status === UserVerifyStatus.VERIFIED && user.email_verify_token === '') {
+  if (user.status === UserStatus.VERIFIED && user.email_verify_token === '') {
     return res.json({ message: USER_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE })
   }
 
@@ -100,7 +99,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
       status: StatusCodes.NOT_FOUND // 404
     })
   }
-  if (user.verify_status === UserVerifyStatus.BANNED) {
+  if (user.status === UserStatus.BANNED) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.USER_BANNED,
       status: StatusCodes.UNAUTHORIZED // 401
@@ -115,8 +114,7 @@ export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
   res: Response
 ) => {
-  const result = await userService.registerEventOperator(req.body)
-  return res.json({
-    message: USER_MESSAGES.CREATE_EVENT_OPERATOR_SUCCESS
-  })
+  await userService.registerEventOperator(req.body)
+
+  return res.json({ message: USER_MESSAGES.CREATE_EVENT_OPERATOR_SUCCESS })
 }
