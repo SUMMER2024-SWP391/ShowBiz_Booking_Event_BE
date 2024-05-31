@@ -13,6 +13,7 @@ import {
   logoutController,
   oauthController,
   registerController,
+  resendVerifyEmailController,
   registerEventOperatorController,
   verifyEmailController
 } from '~/modules/user/user.controllers'
@@ -61,22 +62,28 @@ usersRouter.get('/oauth/google', wrapAsync(oauthController))
  * * Description: verify email
  * Path: /verify-email
  * Method: GET
- * body: {email_verify_token: string}
+ * body: { email_verify_token: string }
  */
 usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmailController))
 
 /**
- * * Description: register event operator
+ * * Description: Resend email verification
+ * Path: /resend-verify-email
+ * Method: POST
+ * body: {email: string}
+ */
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendVerifyEmailController))
+
+ /* * Description: register event operator
  * Path: /register-event-operator
  * Method: POST
- * body: {
- * user_name: string
-  email: string
-  password: string
-  confirm_password: string
-  phone_number: string}
+ * Body: {
+      user_name: string,
+      email: string,
+      password: string,
+      confirm_password: string,
+      phone_number: string }
  */
-
 usersRouter.post(
   '/register-event-operator',
   accessTokenValidator,
