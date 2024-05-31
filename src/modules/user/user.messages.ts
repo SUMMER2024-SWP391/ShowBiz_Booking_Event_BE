@@ -1,4 +1,6 @@
 export const USER_MESSAGES = {
+  CREATE_EVENT_OPERATOR_SUCCESS: 'Create event operator success',
+
   VALIDATION_ERROR: 'VALIDATION ERROR!',
 
   UNAUTHORIZED: 'UNAUTHORIZED! Not have enough permission!',
@@ -106,5 +108,8 @@ export const EVENT_MESSAGES = {
   TIME_END_MUST_MATCH_FORMAT: 'Time end must be in the format hh:mm:ss',
   TIME_END_MUST_BE_IN_THE_FUTURE: 'Time end must be in the future!',
   INVALID_LOCATION: 'Invalid location!',
-  LIMIT_MUST_BE_BETWEEN_1_AND_100: 'Limit must be between 1 and 100!'
+  LIMIT_MUST_BE_BETWEEN_1_AND_100: 'Limit must be between 1 and 100!',
+  REJECT_EVENT_SUCCESS: 'Reject event success',
+  APPROVED_EVENT_SUCCESS: 'Approved event success',
+  GET_EVENT_BY_ID_SUCCESS: 'Get event by id success'
 } as const

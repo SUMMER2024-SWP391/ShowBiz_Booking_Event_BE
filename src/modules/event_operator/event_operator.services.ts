@@ -3,7 +3,7 @@ import { EventOperatorRegisterReqBody } from './event_operator.requests'
 import EventOperator from './event_operator.schema'
 import { ObjectId } from 'mongodb'
 import userService from '../user/user.services'
-import { UserRole, UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserStatus } from '~/constants/enums'
 import { hashPassword } from '~/utils/crypto'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 
@@ -16,7 +16,7 @@ class EventOperatorService {
     const user_id = new ObjectId()
     const email_verify_token = await userService.signEmailVerifyToken({
       user_id: user_id.toString(),
-      verify_status: UserVerifyStatus.UNVERIFIED,
+      status: UserStatus.UNVERIFIED,
       role: UserRole.EventOperator
     })
     await databaseService.event_operators.insertOne(
@@ -25,7 +25,7 @@ class EventOperatorService {
 
     const [access_token, refresh_token] = await userService.signAccessAndRefreshToken({
       user_id: user_id.toString(),
-      verify_status: UserVerifyStatus.UNVERIFIED,
+      status: UserStatus.UNVERIFIED,
       role: UserRole.EventOperator
     })
 
@@ -40,8 +40,8 @@ class EventOperatorService {
     return { access_token, refresh_token }
   }
 
-  async login({ user_id, verify_status, role }: { user_id: string; verify_status: UserVerifyStatus; role: UserRole }) {
-    const [access_token, refresh_token] = await userService.signAccessAndRefreshToken({ user_id, verify_status, role })
+  async login({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
+    const [access_token, refresh_token] = await userService.signAccessAndRefreshToken({ user_id, status, role })
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),

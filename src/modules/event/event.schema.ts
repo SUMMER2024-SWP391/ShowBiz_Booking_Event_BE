@@ -14,8 +14,8 @@ interface EventType {
   location: LocationType
   event_operator_id: ObjectId
   image?: string
-  qr_code?: string
   category?: EventCategory
+  address: string
   status?: EventStatus
 }
 
@@ -32,7 +32,7 @@ export default class Event {
   location: LocationType
   event_operator_id: ObjectId
   image: string
-  qr_code: string
+  address: string
   category: EventCategory
   status: EventStatus
 
@@ -48,9 +48,9 @@ export default class Event {
     time_end,
     location,
     image,
-    qr_code,
     event_operator_id,
-    status
+    status,
+    address
   }: EventType) {
     this._id = _id
     this.name = name
@@ -64,8 +64,9 @@ export default class Event {
     this.location = location
     this.event_operator_id = event_operator_id
     this.image = image || ''
-    this.qr_code = qr_code || ''
     this.category = ticket_price === 0 ? EventCategory.FREE : EventCategory.PAID
     this.status = EventStatus.PENDING
+    this.address =
+      address || 'Lô E2a-7, Đường D1, Khu Công nghệ cao, P.Long Thạnh Mỹ, Tp. Thủ Đức, Ho Chi Minh City, Vietnam'
   }
 }

@@ -3,7 +3,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { EventOperatorLoginReqBody, EventOperatorRegisterReqBody } from './event_operator.requests'
 import eventOperatorService from './event_operator.services'
 import { ObjectId } from 'mongodb'
-import { UserRole, UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserStatus } from '~/constants/enums'
 import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 
 export const registerEventOperatorController = async (
@@ -24,7 +24,7 @@ export const loginController = async (
   const user_id = user?._id as ObjectId
   const result = await eventOperatorService.login({
     user_id: user_id.toString(),
-    verify_status: user?.verify_status as UserVerifyStatus,
+    status: user?.status as UserStatus,
     role: user?.role as UserRole
   })
 

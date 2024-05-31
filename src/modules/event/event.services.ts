@@ -3,6 +3,7 @@ import { EventRequestBody } from './event.requests'
 import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
+import { EventStatus } from '~/constants/enums'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -25,8 +26,13 @@ class EventService {
       databaseService.events
         .aggregate([
           {
+            $match: {
+              status: EventStatus.APPROVED
+            }
+          },
+          {
             $lookup: {
-              from: env.DB_COLLECTION_EVENT_OPERATORS,
+              from: env.DB_COLLECTION_USERS,
               localField: 'event_operator_id',
               foreignField: '_id',
               as: 'event_operator'
@@ -37,7 +43,16 @@ class EventService {
           {
             $project: {
               event_operator_id: 0,
-              event_operator: { password: 0, created_at: 0 }
+              event_operator: {
+                password: 0,
+                created_at: 0,
+                role: 0,
+                status: 0,
+                email_verify_token: 0,
+                forgot_password_token: 0,
+                date_of_birth: 0,
+                point: 0
+              }
             }
           }
         ])
@@ -58,6 +73,25 @@ class EventService {
     const sum_page = Math.ceil(event / limit)
 
     return { events, total: total[0].total, sum_page }
+  }
+
+  async handleStatusEvent(id: string, status: EventStatus) {
+    const result = await databaseService.events.updateOne(
+      {
+        _id: new ObjectId(id)
+      },
+      {
+        $set: {
+          status: status
+        }
+      }
+    )
+    return result
+  }
+
+  async getEventById(id: string) {
+    const result = await databaseService.events.findOne({ _id: new ObjectId(id) })
+    return result
   }
 }
 

@@ -1,9 +1,9 @@
 import User from '~/modules/user/user.schema'
 import databaseService from '../../database/database.services'
-import { RegisterReqBody } from '~/modules/user/user.requests'
+import { EventOperatorRegisterReqBody, RegisterReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { EventStatus, TokenType, UserIsDestroy, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { EventStatus, TokenType, UserIsDestroy, UserRole, UserStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -17,64 +17,32 @@ import { sendEmail } from '../sendMail/sendMailService'
 import { log } from 'console'
 
 class UserService {
-  private signAccessToken({
-    user_id,
-    verify_status,
-    role
-  }: {
-    user_id: string
-    verify_status: UserVerifyStatus
-    role: UserRole
-  }) {
+  private signAccessToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
     return signToken({
-      payload: { user_id, type: TokenType.ACCESS_TOKEN, verify_status, role },
+      payload: { user_id, type: TokenType.ACCESS_TOKEN, status, role },
       privateKey: env.JWT_SECRET_ACCESS_TOKEN as string,
       options: { expiresIn: env.ACCESS_TOKEN_EXPIRES_IN }
     })
   }
 
-  private signRefreshToken({
-    user_id,
-    verify_status,
-    role
-  }: {
-    user_id: string
-    verify_status: UserVerifyStatus
-    role: UserRole
-  }) {
+  private signRefreshToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
     return signToken({
-      payload: { user_id, type: TokenType.REFRESH_TOKEN, verify_status, role },
+      payload: { user_id, type: TokenType.REFRESH_TOKEN, status, role },
       privateKey: env.JWT_SECRET_REFRESH_TOKEN as string,
       options: { expiresIn: env.REFRESH_TOKEN_EXPIRES_IN }
     })
   }
 
-  signAccessAndRefreshToken({
-    user_id,
-    verify_status,
-    role
-  }: {
-    user_id: string
-    verify_status: UserVerifyStatus
-    role: UserRole
-  }) {
+  signAccessAndRefreshToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
     return Promise.all([
-      this.signAccessToken({ user_id, verify_status, role }),
-      this.signRefreshToken({ user_id, verify_status, role })
+      this.signAccessToken({ user_id, status, role }),
+      this.signRefreshToken({ user_id, status, role })
     ])
   }
 
-  signEmailVerifyToken({
-    user_id,
-    verify_status,
-    role
-  }: {
-    user_id: string
-    verify_status: UserVerifyStatus
-    role: UserRole
-  }) {
+  signEmailVerifyToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
     return signToken({
-      payload: { user_id, type: TokenType.EMAIL_VERIFY_TOKEN, verify_status, role },
+      payload: { user_id, type: TokenType.EMAIL_VERIFY_TOKEN, status, role },
       privateKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: { expiresIn: env.EMAIL_VERIFY_TOKEN_EXPIRES_IN }
     })
@@ -97,7 +65,7 @@ class UserService {
     const user_id = new ObjectId()
     const email_verify_token = await this.signEmailVerifyToken({
       user_id: user_id.toString(),
-      verify_status: UserVerifyStatus.UNVERIFIED,
+      status: UserStatus.UNVERIFIED,
       role: UserRole.Visitor
     })
     const { email, user_name, phone_number, password, date_of_birth } = payload
@@ -115,7 +83,7 @@ class UserService {
 
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id: user_id.toString(),
-      verify_status: UserVerifyStatus.UNVERIFIED,
+      status: UserStatus.UNVERIFIED,
       role: UserRole.Visitor
     })
     await databaseService.refresh_tokens.insertOne(
@@ -131,8 +99,8 @@ class UserService {
     return { access_token, refresh_token }
   }
 
-  async login({ user_id, verify_status, role }: { user_id: string; verify_status: UserVerifyStatus; role: UserRole }) {
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify_status, role })
+  async login({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, status, role })
     const expiresInOfAccessToken = env.ACCESS_TOKEN_EXPIRES_IN
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
@@ -218,7 +186,7 @@ class UserService {
     if (user) {
       const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
         user_id: user._id.toString(),
-        verify_status: user.verify_status as UserVerifyStatus,
+        status: user.status as UserStatus,
         role: user.role as UserRole
       })
 
@@ -233,7 +201,7 @@ class UserService {
         access_token,
         refresh_token,
         newUser: 0,
-        verify_status: user.verify_status,
+        verify_status: user.status,
         user_id: user._id.toString(),
         user_role: user.role,
         user_name: user.user_name
@@ -255,7 +223,7 @@ class UserService {
       return {
         ...data,
         newUser: 1,
-        verify_status: UserVerifyStatus.UNVERIFIED,
+        status: UserStatus.UNVERIFIED,
         user_id: user?._id.toString(),
         user_role: user?.role,
         user_name: user?.user_name
@@ -269,7 +237,7 @@ class UserService {
       {
         $set: {
           email_verify_token: '',
-          verify_status: UserVerifyStatus.VERIFIED,
+          status: UserStatus.VERIFIED,
           updated_at: new Date()
         }
       }
@@ -277,7 +245,7 @@ class UserService {
 
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id,
-      verify_status: UserVerifyStatus.VERIFIED,
+      status: UserStatus.VERIFIED,
       role: UserRole.Visitor
     })
     log('\nVerify email success!!!')
@@ -292,7 +260,7 @@ class UserService {
         ...payload,
         password: hashPassword('mat_khau_bi_mat!'),
         role: UserRole.CheckingStaff,
-        verify_status: UserVerifyStatus.VERIFIED
+        status: UserStatus.VERIFIED
       })
     )
     return await this.findUserById(result.insertedId.toString())
@@ -318,12 +286,12 @@ class UserService {
   // delete account dành cho admin
   async deleteAccountById(id: string) {
     const user = await this.findUserById(id)
-    if (user._destroy === UserIsDestroy.DESTROYED)
+    if (user.status === UserStatus.DELETE)
       throw new ErrorWithStatus({ message: USER_MESSAGES.ACC_ALREADY_REMOVE, status: StatusCodes.BAD_REQUEST })
 
     const result = await databaseService.users.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      [{ $set: { _destroy: UserIsDestroy.DESTROYED, updated_at: '$$NOW' } }],
+      [{ $set: { destroy: UserIsDestroy.DESTROYED, updated_at: '$$NOW' } }],
       { returnDocument: 'after' }
     )
 
@@ -362,6 +330,29 @@ class UserService {
 
     await sendEmail(email, email_verify_token)
     return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
+  }
+  
+  async registerEventOperator(body: EventOperatorRegisterReqBody) {
+    const { password, email, name, phone_number } = body
+    const id = new ObjectId()
+    const result = await databaseService.users.insertOne(
+      new User({
+        _id: id,
+        user_name: name,
+        email: email,
+        phone_number: phone_number,
+        password: hashPassword(password),
+        role: UserRole.EventOperator
+      })
+    )
+
+    return result
+  }
+
+  async getUserById(id: string) {
+    const user = await databaseService.users.findOne({ _id: new ObjectId(id) })
+
+    return user
   }
 }
 

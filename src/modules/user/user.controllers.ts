@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import {
+  EventOperatorRegisterReqBody,
   LoginReqBody,
   LogoutReqBody,
   RegisterReqBody,
@@ -11,18 +12,18 @@ import userService from '~/modules/user/user.services'
 import { USER_MESSAGES } from '~/modules/user/user.messages'
 import { ObjectId } from 'mongodb'
 import User from '~/modules/user/user.schema'
-import { UserRole, UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserStatus } from '~/constants/enums'
 import { env } from '~/config/environment'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
+import databaseService from '~/database/database.services'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
-  const userInfo = await userService.findUserById(user_id.toString())
   const result = await userService.login({
     user_id: user_id.toString(),
-    verify_status: user.verify_status as UserVerifyStatus,
+    status: user.status as UserStatus,
     role: user.role as UserRole
   })
 
@@ -32,9 +33,9 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
       result,
       user: {
         user_id: user_id.toString(),
-        user_name: userInfo?.user_name ? userInfo.user_name : '',
-        role: UserRole[userInfo?.role as number],
-        verify: userInfo?.verify_status
+        user_name: user?.user_name,
+        role: user.role as UserRole,
+        verify: user?.status
       }
     }
   })
@@ -107,5 +108,15 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
   }
 
   const result = await userService.resendVerifyEmail(user_id, user.email)
-  return res.json(result)
+  return res.json({ result })
+}
+
+export const registerEventOperatorController = async (
+  req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
+  res: Response
+) => {
+  const result = await userService.registerEventOperator(req.body)
+  return res.json({
+    message: USER_MESSAGES.CREATE_EVENT_OPERATOR_SUCCESS
+  })
 }

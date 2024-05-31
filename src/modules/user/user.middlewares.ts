@@ -5,15 +5,16 @@ import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 import { Request, Response, NextFunction } from 'express'
 import { TokenPayload } from './user.requests'
-import { UserRole, UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserStatus } from '~/constants/enums'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
-import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
+import { REGEX_FPT_EMAIL, REGEX_FPT_EVENT_OPERATOR_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
 import userService from './user.services'
+import HTTP_STATUS from '~/constants/httpStatus'
 
 export const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -98,6 +99,9 @@ export const loginValidator = validate(
               password: hashPassword(req.body.password)
             })
             if (!user) throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
+
+            if ([UserStatus.BANNED, UserStatus.DELETE].includes(user?.status as UserStatus))
+              throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: HTTP_STATUS.UNAUTHORIZED })
 
             req.user = user
             return true
@@ -226,8 +230,8 @@ export const accessTokenValidator = validate(
 )
 
 export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
-  const { verify_status } = req.decoded_authorization as TokenPayload
-  if (verify_status !== UserVerifyStatus.VERIFIED) {
+  const { status } = req.decoded_authorization as TokenPayload
+  if (status !== UserStatus.VERIFIED) {
     return next(
       new ErrorWithStatus({
         message: USER_MESSAGES.USER_NOT_VERIFIED,
@@ -350,9 +354,49 @@ export const updateAccValidator = validate(
       optional: true,
       isNumeric: true,
       isIn: {
-        options: [UserVerifyStatus],
+        options: [UserStatus],
         errorMessage: USER_MESSAGES.VERIFY_STATUS_MUST_BE_EITHER_VERIFIED_OR_UNVERIFIED
       }
     }
   })
 )
+
+export const registerEventOperatorMiddleware = validate(
+  checkSchema(
+    {
+      user_name: nameSchema,
+      phone_number: phoneNumberSchema,
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema,
+      email: {
+        isEmail: true,
+        custom: {
+          options: async (value) => {
+            if (!value.match(REGEX_FPT_EVENT_OPERATOR_EMAIL)) {
+              throw new Error(USER_MESSAGES.EMAIL_NOT_MATCH_REGEX)
+            }
+
+            const isExistEmail = await userService.checkEmailExist(value)
+            if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const isUserRole = (arrayRole: UserRole[]) => async (req: Request, res: Response, next: NextFunction) => {
+  const user_id = req.decoded_authorization?.user_id
+  const user = await userService.getUserById(user_id as string)
+
+  if (!arrayRole.includes(user?.role as UserRole)) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.UNAUTHORIZED,
+      status: HTTP_STATUS.UNAUTHORIZED
+    })
+  }
+  next()
+}
