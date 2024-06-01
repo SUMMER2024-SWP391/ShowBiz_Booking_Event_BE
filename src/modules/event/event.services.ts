@@ -75,15 +75,59 @@ class EventService {
     return { events, total: total[0].total, sum_page }
   }
 
+  async getPendingEventList({ limit, page }: { limit: number; page: number }) {
+    const [events, total, event] = await Promise.all([
+      databaseService.events
+        .aggregate([
+          { $match: { status: EventStatus.PENDING } },
+          {
+            $lookup: {
+              from: env.DB_COLLECTION_USERS,
+              localField: 'event_operator_id',
+              foreignField: '_id',
+              as: 'event_operator'
+            }
+          },
+          {
+            $project: {
+              event_operator_id: 0,
+              event_operator: {
+                password: 0,
+                created_at: 0,
+                role: 0,
+                status: 0,
+                email_verify_token: 0,
+                forgot_password_token: 0,
+                date_of_birth: 0,
+                point: 0
+              }
+            }
+          }
+        ])
+        .toArray()
+        .then((events) => {
+          return events.map((event) => {
+            return {
+              ...event,
+              event_operator: event.event_operator[0]
+            }
+          })
+        }),
+      await databaseService.events
+        .aggregate([{ $skip: (page - 1) * limit }, { $limit: limit }, { $count: 'total' }])
+        .toArray(),
+      this.getAllEventList()
+    ])
+    const sum_page = Math.ceil(event / limit)
+
+    return { events, total: total[0].total, sum_page }
+  }
+
   async handleStatusEvent(id: string, status: EventStatus) {
     const result = await databaseService.events.updateOne(
+      { _id: new ObjectId(id) },
       {
-        _id: new ObjectId(id)
-      },
-      {
-        $set: {
-          status: status
-        }
+        $set: { status: status }
       }
     )
     return result
@@ -130,41 +174,6 @@ class EventService {
       ])
       .toArray()
     return result[0]
-  }
-
-  async getEventListAdmin(id: string) {
-    const result = await databaseService.events
-      .aggregate([
-        {
-          $match: {
-            event_operator_id: new ObjectId(id)
-          }
-        },
-        {
-          $lookup: {
-            from: env.DB_COLLECTION_USERS,
-            localField: 'event_operator_id',
-            foreignField: '_id',
-            as: 'event_operator'
-          }
-        },
-        {
-          $project: {
-            event_operator_id: 0,
-            event_operator: {
-              password: 0,
-              created_at: 0,
-              role: 0,
-              status: 0,
-              email_verify_token: 0,
-              forgot_password_token: 0,
-              date_of_birth: 0,
-              point: 0
-            }
-          }
-        }
-      ])
-      .toArray()
   }
 }
 

@@ -7,12 +7,14 @@ import {
   createAccountController,
   deleteAccountController,
   getAccountController,
+  getPendingEventListController,
   getUserByIdController,
   updateAccountController
 } from './accounts.controller'
 import { filterMiddleware } from '~/errors/common.middlewares'
 import { updateAccountReqBody } from './account.request'
 import { confirmEventValidator } from './account.middleware'
+import { paginationValidator } from '../event/event.middlewares'
 
 const adminsRouter = Router()
 
@@ -88,6 +90,20 @@ adminsRouter.patch(
   wrapAsync(checkRoleAdmin),
   confirmEventValidator,
   wrapAsync(approveEventController)
+)
+
+/**
+ * * Description: Get event list with status pending
+ * Path: /
+ * Method: GET
+ * Query: { page: number, limit: number }
+ */
+adminsRouter.get(
+  '/get-all/pending-list',
+  accessTokenValidator,
+  wrapAsync(checkRoleAdmin),
+  paginationValidator,
+  wrapAsync(getPendingEventListController)
 )
 
 export default adminsRouter
