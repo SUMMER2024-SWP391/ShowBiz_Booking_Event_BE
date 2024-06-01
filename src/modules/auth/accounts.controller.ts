@@ -5,7 +5,7 @@ import { confirmEventReqBody, createAccountReqBody, updateAccountReqBody } from 
 import { EVENT_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 import { StatusCodes } from 'http-status-codes'
 import { ErrorWithStatus } from '~/models/Errors'
-import { EventStatus, UserRole, UserStatus } from '~/constants/enums'
+import { UserRole } from '~/constants/enums'
 import eventService from '../event/event.services'
 
 export const createAccountController = async (
