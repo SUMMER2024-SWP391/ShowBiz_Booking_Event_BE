@@ -26,11 +26,6 @@ class EventService {
       databaseService.events
         .aggregate([
           {
-            $match: {
-              status: EventStatus.APPROVED
-            }
-          },
-          {
             $lookup: {
               from: env.DB_COLLECTION_USERS,
               localField: 'event_operator_id',
