@@ -38,7 +38,12 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 export const getAccountController = async (req: Request, res: Response) => {
   const result = await userService.getAccount()
 
-  return res.json({ message: USER_MESSAGES.GET_ACCOUNT_SUCCESS, result })
+  return res.json({
+    message: USER_MESSAGES.GET_ACCOUNT_SUCCESS,
+    data: {
+      users: result
+    }
+  })
 }
 
 export const deleteAccountController = async (req: Request, res: Response) => {
