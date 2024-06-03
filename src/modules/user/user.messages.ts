@@ -81,6 +81,7 @@ export const EVENT_OPERATOR_MESSAGES = {
 } as const
 
 export const EVENT_MESSAGES = {
+  INVALID_EVENT_STATUS: 'Invalid event status!',
   INVALID_TYPE: 'Invalid type!',
   CREATE_EVENT_SUCCESS: 'Create event successfully!',
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
