@@ -4,6 +4,8 @@ import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
 import { EventStatus } from '~/constants/enums'
+import { time } from 'console'
+import { add } from 'lodash'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -85,6 +87,15 @@ class EventService {
           },
           {
             $project: {
+              status: 0,
+              description: 0,
+              image: 0,
+              date_event: 0,
+              type_event: 0,
+              category: 0,
+              time_start: 0,
+              time_end: 0,
+              address: 0,
               event_operator_id: 0,
               event_operator: {
                 password: 0,
@@ -94,7 +105,12 @@ class EventService {
                 email_verify_token: 0,
                 forgot_password_token: 0,
                 date_of_birth: 0,
-                point: 0
+                point: 0,
+                verify_status: 0,
+                avatar: 0,
+                phone_number: 0,
+                updated_at: 0,
+                email: 0
               }
             }
           }
