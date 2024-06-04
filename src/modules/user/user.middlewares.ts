@@ -112,17 +112,17 @@ export const loginValidator = validate(
         isLength: {
           options: { min: 6, max: 50 },
           errorMessage: USER_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
-        },
-        isStrongPassword: {
-          options: {
-            minLength: 6,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1
-          },
-          errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
         }
+        // isStrongPassword: {
+        //   options: {
+        //     minLength: 6,
+        //     minLowercase: 1,
+        //     minUppercase: 1,
+        //     minNumbers: 1,
+        //     minSymbols: 1
+        //   },
+        //   errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
+        // }
       }
     },
     ['body']
@@ -402,3 +402,29 @@ export const isUserRole = (arrayRole: UserRole[]) => async (req: Request, res: R
   }
   next()
 }
+
+export const forgotPasswordValidator = validate(
+  checkSchema(
+    {
+      email: {
+        notEmpty: { errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED },
+        isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            const user = await userService.getUserByEmail(value)
+            if (!user) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.USER_NOT_FOUND,
+                status: StatusCodes.NOT_FOUND
+              })
+            }
+            req.user = user
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
