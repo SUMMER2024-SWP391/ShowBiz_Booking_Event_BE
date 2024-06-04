@@ -7,12 +7,15 @@ import {
   createAccountController,
   deleteAccountController,
   getAccountController,
+  getPendingEventListController,
   getUserByIdController,
   updateAccountController
 } from './accounts.controller'
 import { filterMiddleware } from '~/errors/common.middlewares'
 import { updateAccountReqBody } from './account.request'
 import { confirmEventValidator } from './account.middleware'
+import { paginationValidator } from '../event/event.middlewares'
+import { getEventListController } from '../event/event.controllers'
 
 const adminsRouter = Router()
 
@@ -88,6 +91,36 @@ adminsRouter.patch(
   wrapAsync(checkRoleAdmin),
   confirmEventValidator,
   wrapAsync(approveEventController)
+)
+
+/**
+ * * Description: Get event list with status pending
+ * Path: /
+ * Method: GET
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Query: { page: number, limit: number }
+ */
+adminsRouter.get(
+  '/get-all/pending-list',
+  accessTokenValidator,
+  wrapAsync(checkRoleAdmin),
+  paginationValidator,
+  wrapAsync(getPendingEventListController)
+)
+
+/**
+ * * Description: Get event list with status pending
+ * Path: /
+ * Method: GET
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Query: { page: number, limit: number }
+ */
+adminsRouter.get(
+  '/get-all/event-list',
+  accessTokenValidator,
+  wrapAsync(checkRoleAdmin),
+  paginationValidator,
+  wrapAsync(getEventListController)
 )
 
 export default adminsRouter

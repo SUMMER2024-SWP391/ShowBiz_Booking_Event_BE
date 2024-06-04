@@ -287,7 +287,22 @@ class UserService {
 
   // get account dành cho admin
   async getAccount() {
-    return await databaseService.users.find({}).toArray()
+    const userList = await databaseService.users
+      .find(
+        {},
+        {
+          projection: {
+            _id: 1,
+            user_name: 1,
+            email: 1,
+            role: 1,
+            status: 1
+          }
+        }
+      )
+      .toArray()
+
+    return userList
   }
 
   // delete account dành cho admin

@@ -44,7 +44,7 @@ usersRouter.post('/login', loginValidator, wrapAsync(loginController))
  */
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
 /*
- * * Description: logout
+ * * Description: Logout
  * Path: /logout
  * Method: POST
  * Headers: { Authorization: 'Bearer <access_token>' }
@@ -61,7 +61,7 @@ usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsy
 usersRouter.get('/oauth/google', wrapAsync(oauthController))
 
 /**
- * * Description: verify email
+ * * Description: Verify email
  * Path: /verify-email
  * Method: GET
  * body: { email_verify_token: string }
@@ -76,7 +76,8 @@ usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmai
  */
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendVerifyEmailController))
 
-/* * Description: register event operator
+/** 
+ * * Description: Register event operator
  * Path: /register-event-operator
  * Method: POST
  * Body: {

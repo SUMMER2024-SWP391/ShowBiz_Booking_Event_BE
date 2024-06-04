@@ -14,7 +14,6 @@ import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
 import { REGEX_FPT_EMAIL, REGEX_FPT_EVENT_OPERATOR_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
 import userService from './user.services'
-import HTTP_STATUS from '~/constants/httpStatus'
 
 export const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -101,7 +100,7 @@ export const loginValidator = validate(
             if (!user) throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
 
             if ([UserStatus.BANNED, UserStatus.DELETE].includes(user?.status as UserStatus))
-              throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: HTTP_STATUS.UNAUTHORIZED })
+              throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: StatusCodes.UNAUTHORIZED })
 
             req.user = user
             return true
@@ -136,7 +135,7 @@ export const registerValidator = validate(
       user_name: nameSchema,
       email: {
         notEmpty: { errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED },
-        isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
+        // isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
         trim: true,
         custom: {
           options: async (value) => {
@@ -220,6 +219,7 @@ export const accessTokenValidator = validate(
                 status: StatusCodes.UNAUTHORIZED
               })
             }
+
             return true
           }
         }
@@ -275,6 +275,7 @@ export const refreshTokenValidator = validate(
               }
               throw error
             }
+
             return true
           }
         }
@@ -290,7 +291,7 @@ export const verifyEmailTokenValidator = validate(
       email_verify_token: {
         trim: true,
         custom: {
-          options: async (value, { req }) => {
+          options: async ({ req }) => {
             const token = req.query?.token
             if (!token) {
               throw new ErrorWithStatus({
@@ -314,6 +315,7 @@ export const verifyEmailTokenValidator = validate(
               }
               throw error
             }
+
             return true
           }
         }
@@ -395,7 +397,7 @@ export const isUserRole = (arrayRole: UserRole[]) => async (req: Request, res: R
   if (!arrayRole.includes(user?.role as UserRole)) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.UNAUTHORIZED,
-      status: HTTP_STATUS.UNAUTHORIZED
+      status: StatusCodes.UNAUTHORIZED
     })
   }
   next()

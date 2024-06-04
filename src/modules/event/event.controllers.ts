@@ -20,9 +20,11 @@ export const getEventListController = async (req: Request<ParamsDictionary, any,
 
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
-    events,
-    total_events: total,
-    sum_page
+    data: {
+      events,
+      total_events: total,
+      sum_page
+    }
   })
 }
 
@@ -45,6 +47,8 @@ export const getEventByIdController = async (req: Request, res: Response) => {
   const result = await eventService.getEventById(idEvent.toString())
   res.json({
     message: EVENT_MESSAGES.GET_EVENT_BY_ID_SUCCESS,
-    event: result
+    data: {
+      event: result
+    }
   })
 }

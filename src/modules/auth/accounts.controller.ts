@@ -2,10 +2,11 @@ import { Request, Response } from 'express'
 import userService from '../user/user.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { confirmEventReqBody, createAccountReqBody, updateAccountReqBody } from './account.request'
-import { USER_MESSAGES } from '../user/user.messages'
+import { EVENT_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 import { StatusCodes } from 'http-status-codes'
 import { ErrorWithStatus } from '~/models/Errors'
 import { UserRole } from '~/constants/enums'
+import eventService from '../event/event.services'
 
 export const createAccountController = async (
   req: Request<ParamsDictionary, any, createAccountReqBody>,
@@ -37,7 +38,12 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 export const getAccountController = async (req: Request, res: Response) => {
   const result = await userService.getAccount()
 
-  return res.json({ message: USER_MESSAGES.GET_ACCOUNT_SUCCESS, result })
+  return res.json({
+    message: USER_MESSAGES.GET_ACCOUNT_SUCCESS,
+    data: {
+      users: result
+    }
+  })
 }
 
 export const deleteAccountController = async (req: Request, res: Response) => {
@@ -65,4 +71,19 @@ export const approveEventController = async (
   const result = await userService.approveEvent(id, status as any)
 
   return res.json({ message: 'APPROVE_EVENT_SUCCESS', result })
+}
+
+export const getPendingEventListController = async (req: Request, res: Response) => {
+  const limit = Number(req.query.limit) ? Number(req.query.limit) : 5
+  const page = Number(req.query.page) ? Number(req.query.page) : 1
+  const { events, total, sum_page } = await eventService.getPendingEventList({ limit, page })
+
+  return res.json({
+    message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
+    data: {
+      events,
+      total_events: total,
+      sum_page
+    }
+  })
 }
