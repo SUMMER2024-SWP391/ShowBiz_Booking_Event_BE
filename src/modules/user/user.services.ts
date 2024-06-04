@@ -47,6 +47,14 @@ class UserService {
     })
   }
 
+  signForgotPasswordToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
+    return signToken({
+      payload: { user_id, type: TokenType.FORGOT_PASSWORD_TOKEN, status, role },
+      privateKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
+      options: { expiresIn: env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN }
+    })
+  }
+
   async checkEmailExist(email: string) {
     return Boolean(await databaseService.users.findOne({ email }))
   }
@@ -344,6 +352,26 @@ class UserService {
 
   async getUserById(id: string) {
     return await databaseService.users.findOne({ _id: new ObjectId(id) })
+  }
+
+  async getUserByEmail(email: string) {
+    return await databaseService.users.findOne({ email })
+  }
+
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken({
+      user_id,
+      status: UserStatus.VERIFIED,
+      role: UserRole.Visitor
+    })
+
+    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+      { $set: { forgot_password_token, updated_at: '$$NOW' } }
+    ])
+
+    console.log('\nForgot password token:', forgot_password_token)
+
+    return { message: USER_MESSAGES.SEND_EMAIL_FORGOT_PASSWORD_SUCCESS }
   }
 }
 

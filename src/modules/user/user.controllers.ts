@@ -118,3 +118,10 @@ export const registerEventOperatorController = async (
 
   return res.json({ message: USER_MESSAGES.CREATE_EVENT_OPERATOR_SUCCESS })
 }
+
+export const forgotPasswordController = async (req: Request, res: Response) => {
+  const { _id } = req.user as User
+  const result = await userService.forgotPassword((_id as ObjectId).toString())
+
+  return res.json({ result })
+}

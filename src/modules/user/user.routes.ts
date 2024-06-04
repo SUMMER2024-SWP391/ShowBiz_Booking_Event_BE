@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   accessTokenValidator,
+  forgotPasswordValidator,
   isUserRole,
   loginValidator,
   refreshTokenValidator,
@@ -15,7 +16,8 @@ import {
   registerController,
   resendVerifyEmailController,
   registerEventOperatorController,
-  verifyEmailController
+  verifyEmailController,
+  forgotPasswordController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -74,7 +76,7 @@ usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmai
  */
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendVerifyEmailController))
 
- /* * Description: register event operator
+/* * Description: register event operator
  * Path: /register-event-operator
  * Method: POST
  * Body: {
@@ -91,5 +93,13 @@ usersRouter.post(
   registerEventOperatorMiddleware,
   wrapAsync(registerEventOperatorController)
 )
+
+/**
+ * * Description: forgot password
+ * Path: /forgot-password
+ * Method: POST
+ * Body: { email: string }
+ */
+usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
 
 export default usersRouter

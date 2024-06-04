@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { UserIsDestroy, UserRole, UserStatus } from '~/constants/enums'
+import { UserRole, UserStatus } from '~/constants/enums'
 
 interface UserType {
   _id?: ObjectId

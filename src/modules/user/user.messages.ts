@@ -72,7 +72,10 @@ export const USER_MESSAGES = {
   ROLE_MUST_BE_EITHER_VISITOR_STAFF_OR_ADMIN: 'Role must be either Visitor, Staff or Admin!',
   VERIFY_STATUS_MUST_BE_EITHER_VERIFIED_OR_UNVERIFIED: 'Verify status must be either Verified or Unverified!',
   ROLE_IS_REQUIRED: 'Role is required!',
-  ROLE_MUST_BE_A_NUMBER: 'Role must be a number!'
+  ROLE_MUST_BE_A_NUMBER: 'Role must be a number!',
+
+  //forgot password
+  SEND_EMAIL_FORGOT_PASSWORD_SUCCESS: 'Send email forgot password success'
 } as const
 
 export const EVENT_OPERATOR_MESSAGES = {
