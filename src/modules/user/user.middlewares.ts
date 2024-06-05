@@ -139,9 +139,9 @@ export const registerValidator = validate(
         trim: true,
         custom: {
           options: async (value) => {
-            if (!REGEX_FPT_EMAIL.test(value)) {
-              throw new Error(USER_MESSAGES.EMAIL_IS_INVALID)
-            }
+            // if (!REGEX_FPT_EMAIL.test(value)) {
+            //   throw new Error(USER_MESSAGES.EMAIL_IS_INVALID)
+            // }
 
             const isExistEmail = await userService.checkEmailExist(value)
             if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)

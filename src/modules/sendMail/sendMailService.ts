@@ -55,12 +55,12 @@ export async function sendEmail(email: string, verify_token: string) {
           </div>
       </body>
       `
+    },
+    (error) => {
+      if (error) {
+        console.log(error)
+        throw new Error('Error sending email')
+      }
     }
-    // (error) => {
-    //   if (error) {
-    //     console.log(error)
-    //     throw new Error('Error sending email')
-    //   }
-    // }
   )
 }
