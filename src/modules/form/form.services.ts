@@ -19,7 +19,7 @@ class FormService {
 
   async getFormEventById(id: ObjectId) {
     return await databaseService.forms.findOne({
-      _id: id
+      event_id: id
     })
   }
 }

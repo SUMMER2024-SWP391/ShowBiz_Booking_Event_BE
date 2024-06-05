@@ -15,6 +15,22 @@ class QuestionService {
 
     return result
   }
+
+  async getListQuestion(id: ObjectId) {
+    const listQuestion = await databaseService.questions
+      .find(
+        {
+          form_id: id
+        },
+        {
+          projection: {
+            form_id: 0
+          }
+        }
+      )
+      .toArray()
+    return listQuestion
+  }
 }
 
 const questionService = new QuestionService()
