@@ -12,6 +12,7 @@ import eventsRouter from './modules/event/event.routes'
 import eOperatorRouter from './modules/event_operator/event_operator.routes'
 import adminsRouter from './modules/auth/accounts.routes'
 import { UserStatus } from './constants/enums'
+import formRouter from './modules/form/form.routes'
 
 const file = fs.readFileSync('./swagger-ui.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
@@ -30,6 +31,7 @@ app.use('/users', usersRouter)
 app.use('/events', eventsRouter)
 app.use('/e-operators', eOperatorRouter)
 app.use('/admins', adminsRouter)
+app.use('/forms/', formRouter)
 
 app.use(defaultErrorHandler)
 // Swagger

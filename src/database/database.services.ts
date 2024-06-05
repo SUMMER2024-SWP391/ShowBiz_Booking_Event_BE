@@ -4,6 +4,8 @@ import { env } from '~/config/environment'
 import RefreshToken from '~/modules/refreshToken/refreshToken.schema'
 import Event from '~/modules/event/event.schema'
 import EventOperator from '~/modules/event_operator/event_operator.schema'
+import { FormEvent } from '~/modules/form/form.schema'
+import Question from '~/modules/question/question.schema'
 
 const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 
@@ -40,6 +42,14 @@ class DatabaseService {
 
   get event_operators(): Collection<EventOperator> {
     return this.db.collection(env.DB_COLLECTION_EVENT_OPERATORS as string)
+  }
+
+  get forms(): Collection<FormEvent> {
+    return this.db.collection(env.DB_COLLECTION_FORMS as string)
+  }
+
+  get questions(): Collection<Question> {
+    return this.db.collection(env.DB_COLLECTION_QUESTIONS as string)
   }
 }
 
