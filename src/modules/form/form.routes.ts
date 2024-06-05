@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
-import { createFormQuestionController } from './form.controller'
+import { createFormQuestionController, getFormRegisterController } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
 import { createFormQuestionMiddleware } from './form.middlewares'
@@ -9,10 +9,10 @@ const formRouter = Router()
 
 /**
  * description : create form resiger or feedback
- * path : /new-form/:id
+ * path : /new-form/:id id ở đây là event id
  * body : {
  *  question[]
- * type
+ *  type : register || feedback
  * }
  *
  */
@@ -24,5 +24,12 @@ formRouter.post(
   //   createFormQuestionMiddleware,
   wrapAsync(createFormQuestionController)
 )
+
+/**
+ * description : get form event list register
+ * path : /register/:id
+ *
+ */
+formRouter.get('/register/:id', wrapAsync(getFormRegisterController))
 
 export default formRouter
