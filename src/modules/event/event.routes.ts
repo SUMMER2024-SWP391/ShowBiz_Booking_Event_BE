@@ -6,7 +6,8 @@ import {
   createEventController,
   getEventByIdController,
   getEventListController,
-  handleStatusEventController
+  handleStatusEventController,
+  registerEventController
 } from './event.controllers'
 
 const eventsRouter = Router()
@@ -40,8 +41,12 @@ eventsRouter.post('/:idEvent', wrapAsync(handleStatusEventController))
 
 eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 
-eventsRouter.get('/admin', (req, res) => {
-  res.send('Hello world')
-})
+/**
+ * description : get form event list register
+ * path : /register-event/:id  id là event Id
+ * header : Authoriation Beartoken
+ * body :RegisterEventReqBody
+ */
+eventsRouter.post('/register-event/:id', accessTokenValidator, wrapAsync(registerEventController))
 
 export default eventsRouter

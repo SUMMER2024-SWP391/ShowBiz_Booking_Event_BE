@@ -89,7 +89,8 @@ export const verifyEmailController = async (req: Request<ParamsDictionary, any, 
     })
   }
 
-  return res.json({ message: USER_MESSAGES.EMAIL_VERIFIED, result })
+  await userService.verifyEmail(user_id)
+  return res.redirect(env.CLIENT_REDIRECT_VERIFY_SUCCESS as string)
 }
 
 export const resendVerifyEmailController = async (req: Request, res: Response) => {

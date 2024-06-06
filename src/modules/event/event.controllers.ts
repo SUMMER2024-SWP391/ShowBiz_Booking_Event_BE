@@ -2,9 +2,13 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { TokenPayload } from '../user/user.requests'
 import eventService from './event.services'
-import { EventRequestBody, HandleStatusEventReqBody, Pagination } from './event.requests'
+import { EventRequestBody, HandleStatusEventReqBody, Pagination, RegisterEventReqBody } from './event.requests'
 import { EVENT_MESSAGES } from '../user/user.messages'
 import { EventStatus } from '~/constants/enums'
+import answerService from '../answer/answer.services'
+import registerService from '../register/register.services'
+import { convertDataToQrCode } from '~/utils/qrCode'
+import Register from '../register/register.schema'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -50,6 +54,25 @@ export const getEventByIdController = async (req: Request, res: Response) => {
     message: EVENT_MESSAGES.GET_EVENT_BY_ID_SUCCESS,
     data: {
       event: result
+    }
+  })
+}
+
+export const registerEventController = async (
+  req: Request<ParamsDictionary, any, RegisterEventReqBody>,
+  res: Response
+) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
+  const result = await registerService.registerEvent(id, user_id)
+
+  await convertDataToQrCode(result as Register)
+
+  res.json({
+    message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
+    data: {
+      result
     }
   })
 }

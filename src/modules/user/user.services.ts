@@ -249,14 +249,6 @@ class UserService {
         }
       }
     )
-
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
-      user_id,
-      status: UserStatus.VERIFIED,
-      role: UserRole.Visitor
-    })
-
-    return { access_token, refresh_token }
   }
 
   //create account dành cho admin

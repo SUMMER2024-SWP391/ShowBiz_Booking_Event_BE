@@ -6,6 +6,8 @@ import Event from '~/modules/event/event.schema'
 import EventOperator from '~/modules/event_operator/event_operator.schema'
 import { FormEvent } from '~/modules/form/form.schema'
 import Question from '~/modules/question/question.schema'
+import Answer from '~/modules/answer/answer.schema'
+import Register from '~/modules/register/register.schema'
 
 const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 
@@ -50,6 +52,14 @@ class DatabaseService {
 
   get questions(): Collection<Question> {
     return this.db.collection(env.DB_COLLECTION_QUESTIONS as string)
+  }
+
+  get answers(): Collection<Answer> {
+    return this.db.collection(env.DB_COLLECTION_ANSWERS as string)
+  }
+
+  get registers(): Collection<Register> {
+    return this.db.collection(env.DB_COLLECTION_REGISTERS as string)
   }
 }
 

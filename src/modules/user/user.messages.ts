@@ -123,5 +123,6 @@ export const EVENT_MESSAGES = {
   LIMIT_MUST_BE_BETWEEN_1_AND_100: 'Limit must be between 1 and 100!',
   REJECT_EVENT_SUCCESS: 'Reject event success',
   APPROVED_EVENT_SUCCESS: 'Approved event success',
-  GET_EVENT_BY_ID_SUCCESS: 'Get event by id success'
+  GET_EVENT_BY_ID_SUCCESS: 'Get event by id success',
+  REGISTER_EVENT_SUCCESS: 'Register event success'
 } as const

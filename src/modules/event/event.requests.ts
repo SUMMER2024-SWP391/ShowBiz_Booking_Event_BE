@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { EventStatus, EventTypeEnum, LocationType } from '~/constants/enums'
+import Answer from '../answer/answer.schema'
 
 export interface EventRequestBody {
   name: string
@@ -24,4 +25,8 @@ export interface Pagination {
 
 export interface HandleStatusEventReqBody {
   status: EventStatus.APPROVED | EventStatus.REJECTED
+}
+
+export interface RegisterEventReqBody {
+  answers: Pick<Answer, 'question_id' | 'description'>[]
 }
