@@ -5,6 +5,7 @@ import {
   LogoutReqBody,
   RegisterReqBody,
   TokenPayload,
+  UpdateMeReqBody,
   VerifyEmailReqBody
 } from '~/modules/user/user.requests'
 import { ParamsDictionary } from 'express-serve-static-core'
@@ -135,4 +136,19 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
   const result = await userService.getMe(user_id)
 
   return res.json(result)
+}
+
+export const updateMeController = async (
+  req: Request<ParamsDictionary, any, UpdateMeReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { body } = req
+  const result = await userService.updateMe(user_id, body)
+
+  return res.json({
+    message: USER_MESSAGES.UPDATE_ME_SUCCESS,
+    result
+  })
 }

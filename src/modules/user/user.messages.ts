@@ -24,9 +24,9 @@ export const USER_MESSAGES = {
   CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD: 'Confirm password must be the same as password!',
 
   // name
-  NAME_IS_REQUIRED: 'Name is required!',
-  NAME_MUST_BE_A_STRING: 'Name must be a string!',
-  NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Name length must be from 1 to 100!',
+  NAME_IS_REQUIRED: 'User name is required!',
+  NAME_MUST_BE_A_STRING: 'User name must be a string!',
+  NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'User name length must be from 1 to 100!',
 
   // date of birth
   DATE_OF_BIRTH_BE_ISO8601: 'Date of birth must be ISO8601!',
@@ -53,6 +53,10 @@ export const USER_MESSAGES = {
   PHONE_NUMBER_IS_REQUIRED: 'Phone number is required!',
   PHONE_NUMBER_ALREADY_EXIST: 'Phone number already exist!',
 
+  // image
+  IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string!',
+  IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400: 'Image url length must be from 1 to 400!',
+
   // access token
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required!',
 
@@ -67,6 +71,7 @@ export const USER_MESSAGES = {
   UPDATE_ACCOUNT_SUCCESS: 'Update account success!',
   GET_ACCOUNT_SUCCESS: 'Get account success!',
   ACC_ALREADY_REMOVE: 'Account already removed!',
+  UPDATE_ME_SUCCESS: 'Update me success!',
 
   NOT_AN_ADMIN: 'You are not an Admin!',
   ROLE_MUST_BE_EITHER_VISITOR_STAFF_OR_ADMIN: 'Role must be either Visitor, Staff or Admin!',
