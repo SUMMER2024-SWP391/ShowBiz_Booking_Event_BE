@@ -18,7 +18,29 @@ class RegisterService {
   }
 
   async getRegisterEventByIdRegister(id: ObjectId) {
-    return await databaseService.registers.findOne({ _id: id })
+    return await databaseService.registers.findOne(
+      { _id: id },
+      {
+        projection: {
+          qr_code: 0
+        }
+      }
+    )
+  }
+
+  async updateQrCode(id: ObjectId, qrCodeURL: string) {
+    const result = await databaseService.registers.updateOne(
+      {
+        _id: id
+      },
+      {
+        $set: {
+          qr_code: qrCodeURL
+        }
+      }
+    )
+    const data = await this.getRegisterEventByIdRegister(id)
+    return data
   }
 }
 

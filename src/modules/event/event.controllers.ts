@@ -9,6 +9,7 @@ import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
 import { convertDataToQrCode } from '~/utils/qrCode'
 import Register from '../register/register.schema'
+import { ObjectId } from 'mongodb'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -66,13 +67,12 @@ export const registerEventController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
   const result = await registerService.registerEvent(id, user_id)
-
-  await convertDataToQrCode(result as Register)
-
+  const qrCodeURL = await convertDataToQrCode(result as Register)
+  const updateQrCode = await registerService.updateQrCode(result?._id as ObjectId, qrCodeURL)
   res.json({
     message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
     data: {
-      result
+      register: updateQrCode
     }
   })
 }
