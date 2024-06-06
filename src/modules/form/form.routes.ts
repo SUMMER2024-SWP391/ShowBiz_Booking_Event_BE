@@ -3,14 +3,13 @@ import { wrapAsync } from '~/utils/handler'
 import { createFormQuestionController, getFormRegisterController } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
-import { createFormQuestionMiddleware } from './form.middlewares'
 
 const formRouter = Router()
 
 /**
- * description : create form resiger or feedback
- * path : /new-form/:id id ở đây là event id
- * body : {
+ * Description: Create form register or feedback
+ * Path : /new-form/:id id ở đây là event id
+ * Body : {
  *  question[]
  *  type : register || feedback
  * }
@@ -26,8 +25,8 @@ formRouter.post(
 )
 
 /**
- * description : get form event list register
- * path : /register/:id
+ * Description: Get form event list register
+ * Path : /register/:id
  *
  */
 formRouter.get('/register/:id', wrapAsync(getFormRegisterController))

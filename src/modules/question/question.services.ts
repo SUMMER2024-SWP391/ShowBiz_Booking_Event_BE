@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb'
-import Question from './question.schema'
 import databaseService from '~/database/database.services'
 
 class QuestionService {

@@ -17,7 +17,8 @@ import {
   resendVerifyEmailController,
   registerEventOperatorController,
   verifyEmailController,
-  forgotPasswordController
+  forgotPasswordController,
+  getMeController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -102,5 +103,13 @@ usersRouter.post(
  * Body: { email: string }
  */
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
+
+/**
+ * * Description: User get themselves information
+ * Path: /me
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+usersRouter.get('/me', accessTokenValidator, wrapAsync(getMeController))
 
 export default usersRouter

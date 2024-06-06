@@ -87,26 +87,30 @@ export const verifyEmailController = async (req: Request<ParamsDictionary, any, 
   }
 
   const result = await userService.verifyEmail(user_id)
+
   return res.json({ message: USER_MESSAGES.EMAIL_VERIFIED, result })
 }
 
 export const resendVerifyEmailController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.findUserById(user_id)
+
   if (!user) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.USER_NOT_FOUND,
-      status: StatusCodes.NOT_FOUND // 404
+      status: StatusCodes.NOT_FOUND
     })
   }
+
   if (user.status === UserStatus.BANNED) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.USER_BANNED,
-      status: StatusCodes.UNAUTHORIZED // 401
+      status: StatusCodes.UNAUTHORIZED
     })
   }
 
   const result = await userService.resendVerifyEmail(user_id, user.email)
+
   return res.json({ result })
 }
 
@@ -124,4 +128,11 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
   const result = await userService.forgotPassword((_id as ObjectId).toString())
 
   return res.json({ result })
+}
+
+export const getMeController = async (req: Request, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const result = await userService.getMe(user_id)
+
+  return res.json(result)
 }

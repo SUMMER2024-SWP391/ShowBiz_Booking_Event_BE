@@ -15,7 +15,8 @@ export const createFormQuestionController = async (
   const { type, questions } = req.body
   const formEvent = await formService.createFormEvent(id, type)
   const listQuestion = await questionService.createNewListQuestion(formEvent?._id as ObjectId, questions)
-  res.json({
+
+  return res.json({
     message: FORM_MESSAGE.CREATE_FORM_REGISTER_SUCCESS,
     data: {
       question: listQuestion
@@ -27,7 +28,8 @@ export const getFormRegisterController = async (req: Request, res: Response) => 
   const { id } = req.params
   const formDocument = await formService.getFormEventById(new ObjectId(id))
   const formQuestionRegister = await questionService.getListQuestion(formDocument?._id as ObjectId)
-  res.json({
+
+  return res.json({
     message: FORM_MESSAGE.GET_FORM_REGISTER_SUCCESS,
     data: {
       formRegister: formQuestionRegister
