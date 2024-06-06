@@ -229,9 +229,12 @@ export const accessTokenValidator = validate(
   )
 )
 
-export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
+export const verifiedUserValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { status } = req.decoded_authorization as TokenPayload
-  if (status !== UserStatus.VERIFIED) {
+  const user = req.decoded_authorization as TokenPayload
+  const dataUser = await userService.getUserById(user.user_id)
+
+  if (status !== UserStatus.VERIFIED && dataUser?.email_verify_token !== '') {
     return next(
       new ErrorWithStatus({
         message: USER_MESSAGES.USER_NOT_VERIFIED,
@@ -422,6 +425,31 @@ export const forgotPasswordValidator = validate(
             req.user = user
             return true
           }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const updateMeValidator = validate(
+  checkSchema(
+    {
+      user_name: {
+        ...nameSchema,
+        optional: true
+      },
+      date_of_birth: {
+        ...dateOfBirthSchema,
+        optional: true
+      },
+      avatar: {
+        optional: true,
+        isString: { errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING },
+        trim: true,
+        isLength: {
+          options: { min: 1, max: 400 },
+          errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400
         }
       }
     },

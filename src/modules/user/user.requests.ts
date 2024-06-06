@@ -35,3 +35,9 @@ export interface EventOperatorRegisterReqBody {
   confirm_password: string
   phone_number: string
 }
+
+export interface UpdateMeReqBody {
+  user_name?: string
+  date_of_birth?: string
+  avatar?: string
+}

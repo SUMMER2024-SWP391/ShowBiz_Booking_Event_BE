@@ -7,6 +7,8 @@ import {
   refreshTokenValidator,
   registerEventOperatorMiddleware,
   registerValidator,
+  updateMeValidator,
+  verifiedUserValidator,
   verifyEmailTokenValidator
 } from '~/modules/user/user.middlewares'
 import {
@@ -18,10 +20,13 @@ import {
   registerEventOperatorController,
   verifyEmailController,
   forgotPasswordController,
-  getMeController
+  getMeController,
+  updateMeController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
+import { filterMiddleware } from './common.middlewares'
+import { UpdateMeReqBody } from './user.requests'
 
 const usersRouter = Router()
 
@@ -111,5 +116,21 @@ usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPa
  * Header: { Authorization: Bearer <access_token> }
  */
 usersRouter.get('/me', accessTokenValidator, wrapAsync(getMeController))
+
+/**
+ * * Description: Update my profile
+ * Path: /me
+ * Method: PATCH
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: UserSchema
+ */
+usersRouter.patch(
+  '/me',
+  accessTokenValidator,
+  verifiedUserValidator,
+  updateMeValidator,
+  filterMiddleware<UpdateMeReqBody>(['user_name', 'date_of_birth', 'avatar']),
+  wrapAsync(updateMeController)
+)
 
 export default usersRouter
