@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
-import { accessTokenValidator, verifiedUserValidator } from '../user/user.middlewares'
+import { accessTokenValidator, isUserRole, verifiedUserValidator } from '../user/user.middlewares'
 import { createEventValidator, paginationValidator } from './event.middlewares'
 import {
   createEventController,
@@ -9,6 +9,7 @@ import {
   handleStatusEventController,
   registerEventController
 } from './event.controllers'
+import { UserRole } from '~/constants/enums'
 
 const eventsRouter = Router()
 
@@ -47,6 +48,11 @@ eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
  * header : Authoriation Beartoken
  * body :RegisterEventReqBody
  */
-eventsRouter.post('/register-event/:id', accessTokenValidator, wrapAsync(registerEventController))
+eventsRouter.post(
+  '/register-event/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(registerEventController)
+)
 
 export default eventsRouter

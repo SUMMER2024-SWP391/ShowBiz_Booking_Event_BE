@@ -9,7 +9,8 @@ class RegisterService {
         _id: new ObjectId(),
         event_id: new ObjectId(id),
         visitor_id: new ObjectId(user_id),
-        status_check_in: false
+        status_check_in: false,
+        qr_code: ''
       })
     )
 
@@ -18,14 +19,7 @@ class RegisterService {
   }
 
   async getRegisterEventByIdRegister(id: ObjectId) {
-    return await databaseService.registers.findOne(
-      { _id: id },
-      {
-        projection: {
-          qr_code: 0
-        }
-      }
-    )
+    return await databaseService.registers.findOne({ _id: id })
   }
 
   async updateQrCode(id: ObjectId, qrCodeURL: string) {
