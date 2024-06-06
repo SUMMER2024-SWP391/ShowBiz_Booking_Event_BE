@@ -13,7 +13,6 @@ const formRouter = Router()
  *  question[]
  *  type : register || feedback
  * }
- *
  */
 
 formRouter.post(
@@ -27,7 +26,6 @@ formRouter.post(
 /**
  * Description: Get form event list register
  * Path : /register/:id
- *
  */
 formRouter.get('/register/:id', wrapAsync(getFormRegisterController))
 

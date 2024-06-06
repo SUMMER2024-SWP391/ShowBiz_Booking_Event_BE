@@ -47,7 +47,7 @@ class UserService {
     })
   }
 
-  signForgotPasswordToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
+  private signForgotPasswordToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
     return signToken({
       payload: { user_id, type: TokenType.FORGOT_PASSWORD_TOKEN, status, role },
       privateKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
@@ -101,7 +101,7 @@ class UserService {
     )
 
     console.log('🚀 ~ email_verify_token:', email_verify_token)
-    await sendEmail(email, email_verify_token)
+    // await sendEmail(email, email_verify_token)
 
     return { access_token, refresh_token }
   }

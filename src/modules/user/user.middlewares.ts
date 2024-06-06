@@ -135,12 +135,11 @@ export const registerValidator = validate(
       user_name: nameSchema,
       email: {
         notEmpty: { errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED },
-        // isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
         trim: true,
         custom: {
           options: async (value) => {
             if (!REGEX_FPT_EMAIL.test(value)) {
-              throw new Error(USER_MESSAGES.EMAIL_IS_INVALID)
+              throw new Error(USER_MESSAGES.EMAIL_NOT_MATCH_REGEX)
             }
 
             const isExistEmail = await userService.checkEmailExist(value)

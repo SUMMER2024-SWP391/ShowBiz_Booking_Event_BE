@@ -40,9 +40,7 @@ export const getAccountController = async (req: Request, res: Response) => {
 
   return res.json({
     message: USER_MESSAGES.GET_ACCOUNT_SUCCESS,
-    data: {
-      users: result
-    }
+    data: { users: result }
   })
 }
 
