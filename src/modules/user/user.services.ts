@@ -14,6 +14,7 @@ import { StatusCodes } from 'http-status-codes'
 import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
 import { REGEX_FPT_EMAIL } from '~/constants/regex'
 import { sendEmail } from '../sendMail/sendMailService'
+import { templateVerifyAccount } from '~/constants/template-mail'
 
 class UserService {
   private signAccessToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
@@ -99,9 +100,8 @@ class UserService {
         token: refresh_token
       })
     )
-
-    console.log('🚀 ~ email_verify_token:', email_verify_token)
-    // await sendEmail(email, email_verify_token)
+    const template = templateVerifyAccount(email, email_verify_token)
+    await sendEmail(template)
 
     return { access_token, refresh_token }
   }
@@ -336,7 +336,8 @@ class UserService {
       { $set: { email_verify_token, updated_at: '$$NOW' } }
     ])
 
-    await sendEmail(email, email_verify_token)
+    const template = templateVerifyAccount(email, email_verify_token)
+    await sendEmail(template)
     return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
   }
 
