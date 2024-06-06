@@ -16,6 +16,7 @@ export const createFormQuestionMiddleware = validate(
             if (!ObjectId.isValid(value)) {
               throw new Error(FORM_MESSAGE.EVENT_ID_IS_INVALID)
             }
+
             return true
           }
         }
