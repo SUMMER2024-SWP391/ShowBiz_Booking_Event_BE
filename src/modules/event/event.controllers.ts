@@ -10,7 +10,7 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await eventService.createEvent(user_id, req.body)
 
-  return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_SUCCESS, result })
+  return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
 
 export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
@@ -34,9 +34,9 @@ export const handleStatusEventController = async (
 ) => {
   const { status } = req.body
   const { idEvent } = req.params
-
   const result = eventService.handleStatusEvent(idEvent, status as EventStatus)
-  res.json({
+
+  return res.json({
     message: status == EventStatus.APPROVED ? EVENT_MESSAGES.CREATE_EVENT_SUCCESS : EVENT_MESSAGES.REJECT_EVENT_SUCCESS,
     result
   })
@@ -45,7 +45,8 @@ export const handleStatusEventController = async (
 export const getEventByIdController = async (req: Request, res: Response) => {
   const { idEvent } = req.params
   const result = await eventService.getEventById(idEvent.toString())
-  res.json({
+
+  return res.json({
     message: EVENT_MESSAGES.GET_EVENT_BY_ID_SUCCESS,
     data: {
       event: result

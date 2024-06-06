@@ -184,6 +184,19 @@ class EventService {
       .toArray()
     return result[0]
   }
+
+  async getEventByDateAndLocation(date_event: string, location: string) {
+    return await databaseService.events
+      .aggregate([
+        {
+          $match: {
+            date_event: date_event,
+            location: location
+          }
+        }
+      ])
+      .toArray()
+  }
 }
 
 const eventService = new EventService()

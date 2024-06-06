@@ -4,6 +4,7 @@ import { validate } from '~/utils/validation'
 import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
 import eventService from './event.services'
 import { EVENT_MESSAGES } from '../user/user.messages'
+import { Event, compareTimes, compareWithCurrentDate, convertTimeToMinutes, isTimeConflict } from '~/utils/common'
 
 export const createEventValidator = validate(
   checkSchema(
@@ -22,7 +23,7 @@ export const createEventValidator = validate(
       },
       type_event: {
         isIn: {
-          options: [EventTypeEnum],
+          options: [Object.values(EventTypeEnum)],
           errorMessage: EVENT_MESSAGES.INVALID_TYPE
         }
       },
@@ -30,9 +31,10 @@ export const createEventValidator = validate(
         isString: { errorMessage: EVENT_MESSAGES.DATE_EVENT_MUST_BE_A_STRING },
         notEmpty: { errorMessage: EVENT_MESSAGES.DATE_EVENT_IS_REQUIRED },
         custom: {
-          options: (value) => {
+          options: async (value) => {
             if (!REGEX_DATE.test(value)) throw new Error(EVENT_MESSAGES.INVALID_DATE)
-            if (new Date(value) < new Date()) throw new Error(EVENT_MESSAGES.DATE_EVENT_MUST_BE_IN_THE_FUTURE)
+
+            if (compareWithCurrentDate(value)) throw new Error(EVENT_MESSAGES.DATE_EVENT_MUST_BE_IN_THE_FUTURE)
 
             return true
           }
@@ -42,9 +44,17 @@ export const createEventValidator = validate(
         isString: { errorMessage: EVENT_MESSAGES.TIME_START_MUST_BE_A_STRING },
         notEmpty: { errorMessage: EVENT_MESSAGES.TIME_START_IS_REQUIRED },
         custom: {
-          options: (value) => {
+          options: async (value, { req }) => {
+            const { date_event, location, time_start } = req.body
+
             if (!REGEX_TIME.test(value)) throw new Error(EVENT_MESSAGES.TIME_START_MUST_MATCH_FORMAT)
-            if (new Date(value) < new Date()) throw new Error(EVENT_MESSAGES.TIME_START_MUST_BE_IN_THE_FUTURE)
+
+            // lấy ra 1 array Event có date_event và location trùng với user nhập
+            const result = (await eventService.getEventByDateAndLocation(date_event, location)) as Event[]
+
+            if (isTimeConflict({ time_start, time_end: value }, result)) {
+              throw new Error(EVENT_MESSAGES.TIME_CONFLICT)
+            }
 
             return true
           }
@@ -54,10 +64,24 @@ export const createEventValidator = validate(
         isString: { errorMessage: EVENT_MESSAGES.TIME_END_MUST_BE_A_STRING },
         notEmpty: { errorMessage: EVENT_MESSAGES.TIME_END_IS_REQUIRED },
         custom: {
-          options: (value, { req }) => {
+          options: async (value, { req }) => {
             if (!REGEX_TIME.test(value)) throw new Error(EVENT_MESSAGES.TIME_END_MUST_MATCH_FORMAT)
-            if (new Date(value) < new Date(req.body.time_start))
-              throw new Error(EVENT_MESSAGES.TIME_END_MUST_BE_IN_THE_FUTURE)
+
+            //! lấy ra date_event, location, time_start để check xem có trùng thời gian với event khác không
+            const { date_event, location, time_start } = req.body
+            //! Convert to number to compare
+            const newTimeStart = convertTimeToMinutes(time_start)
+            const newTimeEnd = convertTimeToMinutes(value)
+
+            if (compareTimes(newTimeStart, newTimeEnd)) {
+              throw new Error(EVENT_MESSAGES.TIME_END_MUST_GREATER_THAN_TIME_START)
+            }
+
+            // check xem trong ngày đó và location đó có event nào khác không
+            const result = (await eventService.getEventByDateAndLocation(date_event, location)) as Event[]
+            if (isTimeConflict({ time_start, time_end: value }, result)) {
+              throw new Error(EVENT_MESSAGES.TIME_CONFLICT)
+            }
 
             return true
           }
@@ -65,7 +89,7 @@ export const createEventValidator = validate(
       },
       location: {
         isIn: {
-          options: [LocationType],
+          options: [Object.values(LocationType)],
           errorMessage: EVENT_MESSAGES.INVALID_LOCATION
         }
       }

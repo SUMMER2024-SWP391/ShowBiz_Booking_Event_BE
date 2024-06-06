@@ -90,8 +90,9 @@ export const EVENT_OPERATOR_MESSAGES = {
 
 export const EVENT_MESSAGES = {
   INVALID_EVENT_STATUS: 'Invalid event status!',
-  INVALID_TYPE: 'Invalid type!',
+  INVALID_TYPE: 'Invalid type! Just Private or Public',
   CREATE_EVENT_SUCCESS: 'Create event successfully!',
+  CREATE_EVENT_REQUEST_SUCCESS: 'Create event request successfully! Wait for admin confirm!',
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
 
   //PAGE
@@ -110,13 +111,15 @@ export const EVENT_MESSAGES = {
   DATE_EVENT_MUST_BE_IN_THE_FUTURE: 'Date event must be in the future!',
   TIME_START_MUST_BE_A_STRING: 'Time start must be a string!',
   TIME_START_IS_REQUIRED: 'Time start is required!',
-  TIME_START_MUST_MATCH_FORMAT: 'Time start must be in the format hh:mm:ss',
+  TIME_START_MUST_MATCH_FORMAT: 'Time start must be in the format xx:xx AM|PM',
   TIME_START_MUST_BE_IN_THE_FUTURE: 'Time start must be in the future!',
   TIME_END_MUST_BE_A_STRING: 'Time end must be a string!',
   TIME_END_IS_REQUIRED: 'Time end is required!',
-  TIME_END_MUST_MATCH_FORMAT: 'Time end must be in the format hh:mm:ss',
+  TIME_END_MUST_MATCH_FORMAT: 'Time end must be in the format xx:xx AM|PM',
   TIME_END_MUST_BE_IN_THE_FUTURE: 'Time end must be in the future!',
-  INVALID_LOCATION: 'Invalid location!',
+  TIME_END_MUST_GREATER_THAN_TIME_START: 'Time end must be greater than time start!',
+  TIME_CONFLICT: 'Conflict with other event!',
+  INVALID_LOCATION: 'Invalid location! Just have Hall A | B | C | D | E',
   LIMIT_MUST_BE_BETWEEN_1_AND_100: 'Limit must be between 1 and 100!',
   REJECT_EVENT_SUCCESS: 'Reject event success',
   APPROVED_EVENT_SUCCESS: 'Approved event success',
