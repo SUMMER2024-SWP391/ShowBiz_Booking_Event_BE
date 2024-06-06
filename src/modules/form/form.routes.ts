@@ -20,16 +20,16 @@ const formRouter = Router()
 formRouter.post(
   '/new/:id',
   accessTokenValidator,
-  isUserRole([UserRole.EventOperator]),
+  wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Admin])),
   //   createFormQuestionMiddleware,
   wrapAsync(createFormQuestionController)
 )
 
 /**
  * description : get form event list register
- * path : /register/:id
+ * path : /question-register/:id
  *
  */
-formRouter.get('/register/:id', wrapAsync(getFormRegisterController))
+formRouter.get('/question-register/:id', wrapAsync(getFormRegisterController))
 
 export default formRouter
