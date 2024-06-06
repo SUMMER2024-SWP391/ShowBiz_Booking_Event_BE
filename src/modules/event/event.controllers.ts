@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { TokenPayload } from '../user/user.requests'
 import eventService from './event.services'

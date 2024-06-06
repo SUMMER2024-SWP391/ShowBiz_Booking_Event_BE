@@ -7,6 +7,7 @@ export const env = {
 
   DB_HOST: process.env.DB_HOST,
   PORT: process.env.PORT,
+  PORT_FE: process.env.PORT_FE,
 
   DB_COLLECTION_USERS: process.env.DB_COLLECTION_USERS,
   DB_COLLECTION_REFRESH_TOKENS: process.env.DB_COLLECTION_REFRESH_TOKENS,

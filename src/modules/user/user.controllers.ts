@@ -63,16 +63,18 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
   const { refresh_token } = req.body
   const result = await userService.logout(refresh_token)
 
-  return res.json({ result })
+  return res.json(result)
 }
 
 export const verifyEmailController = async (req: Request<ParamsDictionary, any, VerifyEmailReqBody>, res: Response) => {
   const { user_id } = req.decoded_email_verify_token as TokenPayload
   const user = await userService.findUserById(user_id)
+  const result = await userService.verifyEmail(user_id)
+
   if (!user) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.USER_NOT_FOUND,
-      status: StatusCodes.NOT_FOUND // 404
+      status: StatusCodes.NOT_FOUND
     })
   }
 
@@ -83,11 +85,9 @@ export const verifyEmailController = async (req: Request<ParamsDictionary, any, 
   if (user.email_verify_token !== req.query?.token) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.EMAIL_VERIFY_TOKEN_IS_INCORRECT,
-      status: StatusCodes.BAD_REQUEST // 400
+      status: StatusCodes.BAD_REQUEST
     })
   }
-
-  const result = await userService.verifyEmail(user_id)
 
   return res.json({ message: USER_MESSAGES.EMAIL_VERIFIED, result })
 }
@@ -95,6 +95,7 @@ export const verifyEmailController = async (req: Request<ParamsDictionary, any, 
 export const resendVerifyEmailController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.findUserById(user_id)
+  const result = await userService.resendVerifyEmail(user_id, user.email)
 
   if (!user) {
     throw new ErrorWithStatus({
@@ -110,9 +111,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
     })
   }
 
-  const result = await userService.resendVerifyEmail(user_id, user.email)
-
-  return res.json({ result })
+  return res.json(result)
 }
 
 export const registerEventOperatorController = async (
@@ -128,7 +127,7 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
   const { _id } = req.user as User
   const result = await userService.forgotPassword((_id as ObjectId).toString())
 
-  return res.json({ result })
+  return res.json(result)
 }
 
 export const getMeController = async (req: Request, res: Response, next: NextFunction) => {
@@ -147,8 +146,5 @@ export const updateMeController = async (
   const { body } = req
   const result = await userService.updateMe(user_id, body)
 
-  return res.json({
-    message: USER_MESSAGES.UPDATE_ME_SUCCESS,
-    result
-  })
+  return res.json({ message: USER_MESSAGES.UPDATE_ME_SUCCESS, result })
 }
