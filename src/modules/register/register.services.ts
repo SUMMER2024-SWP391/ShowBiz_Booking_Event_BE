@@ -14,8 +14,7 @@ class RegisterService {
       })
     )
 
-    const data = await this.getRegisterEventByIdRegister(result.insertedId)
-    return data
+    return await this.getRegisterEventByIdRegister(result.insertedId)
   }
 
   async getRegisterEventByIdRegister(id: ObjectId) {

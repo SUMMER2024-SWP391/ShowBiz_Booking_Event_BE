@@ -13,14 +13,11 @@ class FormService {
       })
     )
 
-    const formEvent = await this.getFormEventById(result.insertedId)
-    return formEvent
+    return await this.getFormEventById(result.insertedId)
   }
 
   async getFormEventById(id: ObjectId) {
-    return await databaseService.forms.findOne({
-      _id: id
-    })
+    return await databaseService.forms.findOne({ _id: id })
   }
 }
 

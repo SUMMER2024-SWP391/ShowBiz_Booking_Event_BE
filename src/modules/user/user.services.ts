@@ -239,16 +239,15 @@ class UserService {
   }
 
   async verifyEmail(user_id: string) {
-    await databaseService.users.updateOne(
-      { _id: new ObjectId(user_id) },
+    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
         $set: {
           email_verify_token: '',
           status: UserStatus.VERIFIED,
-          updated_at: new Date()
+          updated_at: '$$NOW'
         }
       }
-    )
+    ])
   }
 
   //create account dành cho admin
@@ -262,6 +261,7 @@ class UserService {
         status: UserStatus.VERIFIED
       })
     )
+
     return await this.findUserById(result.insertedId.toString())
   }
 
@@ -338,13 +338,15 @@ class UserService {
 
     const template = templateVerifyAccount(email, email_verify_token)
     await sendEmail(template)
+
     return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
   }
 
   async registerEventOperator(body: EventOperatorRegisterReqBody) {
     const { password, email, name, phone_number } = body
     const id = new ObjectId()
-    const result = await databaseService.users.insertOne(
+
+    return await databaseService.users.insertOne(
       new User({
         _id: id,
         user_name: name,
@@ -354,8 +356,6 @@ class UserService {
         role: UserRole.EventOperator
       })
     )
-
-    return result
   }
 
   async getUserById(id: string) {

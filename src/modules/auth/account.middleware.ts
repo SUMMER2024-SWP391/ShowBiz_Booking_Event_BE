@@ -1,6 +1,5 @@
 import { checkSchema } from 'express-validator'
 import { EventStatus } from '~/constants/enums'
-import { numberEnumToArray } from '~/utils/common'
 import { validate } from '~/utils/validation'
 import { EVENT_MESSAGES } from '../user/user.messages'
 

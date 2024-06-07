@@ -1,5 +1,4 @@
 import databaseService from '~/database/database.services'
-import { RegisterEventReqBody } from '../event/event.requests'
 import Answer from './answer.schema'
 import { ObjectId } from 'mongodb'
 

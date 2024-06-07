@@ -11,7 +11,6 @@ import {
   registerEventController
 } from './event.controllers'
 import { UserRole } from '~/constants/enums'
-import { get } from 'axios'
 
 const eventsRouter = Router()
 
