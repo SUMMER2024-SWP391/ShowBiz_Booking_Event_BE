@@ -197,6 +197,10 @@ class EventService {
       ])
       .toArray()
   }
+
+  async getEventListOperator(id: string) {
+    return await databaseService.events.find({ event_operator_id: new ObjectId(id) }).toArray()
+  }
 }
 
 const eventService = new EventService()
