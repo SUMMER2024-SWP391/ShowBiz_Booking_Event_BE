@@ -13,6 +13,18 @@ export interface VerifyEmailReqBody {
   email_verify_token: string
 }
 
+export interface ResetPasswordReqBody {
+  forgot_password_token: string
+  password: string
+  confirm_password: string
+}
+
+export interface ChangePasswordReqBody {
+  old_password: string
+  password: string
+  confirm_password: string
+}
+
 export interface RegisterReqBody {
   user_name: string
   email: string

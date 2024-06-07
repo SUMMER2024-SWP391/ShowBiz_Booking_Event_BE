@@ -1,15 +1,18 @@
 import { Router } from 'express'
 import {
   accessTokenValidator,
+  changePasswordValidator,
   forgotPasswordValidator,
   isUserRole,
   loginValidator,
   refreshTokenValidator,
   registerEventOperatorMiddleware,
   registerValidator,
+  resetPasswordValidator,
   updateMeValidator,
   verifiedUserValidator,
-  verifyEmailTokenValidator
+  verifyEmailTokenValidator,
+  verifyForgotPasswordTokenValidator
 } from '~/modules/user/user.middlewares'
 import {
   loginController,
@@ -21,7 +24,10 @@ import {
   verifyEmailController,
   forgotPasswordController,
   getMeController,
-  updateMeController
+  updateMeController,
+  verifyForgotPasswordTokenController,
+  resetPasswordController,
+  changePasswordController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -108,6 +114,40 @@ usersRouter.post(
  * Body: { email: string }
  */
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
+
+/**
+ * * Description: verify forgot password token
+ * Path: /verify-forgot-password-token
+ * Method: get
+ * Query: { forgot_password_token: string }
+ */
+usersRouter.get(
+  '/verify-forgot-password-token',
+  verifyForgotPasswordTokenValidator,
+  wrapAsync(verifyForgotPasswordTokenController)
+)
+
+/**
+ * Description: Reset password
+ * Path: /reset-password
+ * Method: POST
+ * Body: { forgot_password_token: string, new_password: string, confirm_new_password: string }
+ */
+usersRouter.post('/reset-password', resetPasswordValidator, wrapAsync(resetPasswordController))
+
+/**
+ * * Description: change password
+ * Path: /change-password
+ * Method: POST
+ * Body: { old_password: string, new_password: string, confirm_new_password: string }
+ */
+usersRouter.post(
+  '/change-password',
+  accessTokenValidator,
+  verifiedUserValidator,
+  changePasswordValidator,
+  wrapAsync(changePasswordController)
+)
 
 /**
  * * Description: User get themselves information

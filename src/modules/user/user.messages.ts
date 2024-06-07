@@ -80,7 +80,14 @@ export const USER_MESSAGES = {
   ROLE_MUST_BE_A_NUMBER: 'Role must be a number!',
 
   //forgot password
-  SEND_EMAIL_FORGOT_PASSWORD_SUCCESS: 'Send email forgot password success'
+  SEND_EMAIL_FORGOT_PASSWORD_SUCCESS: 'Send email forgot password success',
+  FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
+  VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS: 'Verify forgot password token success',
+  FORGOT_PASSWORD_TOKEN_IS_INCORRECT: 'Forgot password token is incorrect',
+  RESET_PASSWORD_SUCCESS: 'Reset password success',
+  PASSWORD_ALREADY_EXISTED: 'Password already existed',
+  OLD_PASSWORD_IS_INCORRECT: 'Old password is incorrect',
+  PASSWORD_MATCHED_OLD_PASSWORD: 'Password matched old password'
 } as const
 
 export const EVENT_OPERATOR_MESSAGES = {

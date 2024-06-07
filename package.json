@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "NODE_ENV=development npx nodemon",
+    "dev": "set NODE_ENV=development && npx nodemon",
     "build": "rimraf ./dist && tsc && tsc-alias",
     "start": "NODE_ENV=production node dist/index.js",
     "lint": "eslint .",
