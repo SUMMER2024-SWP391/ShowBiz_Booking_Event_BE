@@ -94,6 +94,7 @@ export const EVENT_MESSAGES = {
   CREATE_EVENT_SUCCESS: 'Create event successfully!',
   CREATE_EVENT_REQUEST_SUCCESS: 'Create event request successfully! Wait for admin confirm!',
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
+  GET_EVENT_LIST_OPERATOR_SUCCESS: 'Get event list operator successfully!',
 
   //PAGE
   INVALID_PAGE: 'Page out of range!',

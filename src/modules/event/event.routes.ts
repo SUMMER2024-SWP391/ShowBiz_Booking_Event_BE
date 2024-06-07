@@ -6,10 +6,12 @@ import {
   createEventController,
   getEventByIdController,
   getEventListController,
+  getEventListOperatorController,
   handleStatusEventController,
   registerEventController
 } from './event.controllers'
 import { UserRole } from '~/constants/enums'
+import { get } from 'axios'
 
 const eventsRouter = Router()
 
@@ -53,6 +55,13 @@ eventsRouter.post(
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
   wrapAsync(registerEventController)
+)
+
+eventsRouter.get(
+  '/list-event/event-operator',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  wrapAsync(getEventListOperatorController)
 )
 
 export default eventsRouter
