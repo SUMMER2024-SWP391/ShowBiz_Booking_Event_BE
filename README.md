@@ -1,4 +1,4 @@
-## Showbiz API - rớt lần nữa chặt mẹ đầu 
+## Showbiz API - rớt lần nữa thì thui
 
 ### Requirements
 

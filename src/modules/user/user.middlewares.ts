@@ -113,16 +113,6 @@ export const loginValidator = validate(
           options: { min: 6, max: 50 },
           errorMessage: USER_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
         }
-        // isStrongPassword: {
-        //   options: {
-        //     minLength: 6,
-        //     minLowercase: 1,
-        //     minUppercase: 1,
-        //     minNumbers: 1,
-        //     minSymbols: 1
-        //   },
-        //   errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
-        // }
       }
     },
     ['body']
@@ -138,9 +128,9 @@ export const registerValidator = validate(
         trim: true,
         custom: {
           options: async (value) => {
-            // if (!REGEX_FPT_EMAIL.test(value)) {
-            //   throw new Error(USER_MESSAGES.EMAIL_IS_INVALID)
-            // }
+            if (!REGEX_FPT_EMAIL.test(value)) {
+              throw new Error(USER_MESSAGES.EMAIL_NOT_MATCH_REGEX)
+            }
 
             const isExistEmail = await userService.checkEmailExist(value)
             if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
