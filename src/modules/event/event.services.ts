@@ -199,7 +199,21 @@ class EventService {
   }
 
   async getEventListOperator(id: string) {
-    return await databaseService.events.find({ event_operator_id: new ObjectId(id) }).toArray()
+    return await databaseService.events
+      .find(
+        { event_operator_id: new ObjectId(id) },
+        {
+          projection: {
+            name: 1,
+            capacity: 1,
+            location: 1,
+            status: 1,
+            _id: 1,
+            ticket_price: 1
+          }
+        }
+      )
+      .toArray()
   }
 }
 
