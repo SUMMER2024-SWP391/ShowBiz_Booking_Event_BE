@@ -14,7 +14,7 @@ import { StatusCodes } from 'http-status-codes'
 import { createAccountReqBody, updateAccountReqBody } from '../auth/account.request'
 import { REGEX_FPT_EMAIL } from '~/constants/regex'
 import { sendEmail } from '../sendMail/sendMailService'
-import { templateVerifyAccount } from '~/constants/template-mail'
+import { templateForgotPassword, templateVerifyAccount } from '~/constants/template-mail'
 
 class UserService {
   private signAccessToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
@@ -51,7 +51,7 @@ class UserService {
   private signForgotPasswordToken({ user_id, status, role }: { user_id: string; status: UserStatus; role: UserRole }) {
     return signToken({
       payload: { user_id, type: TokenType.FORGOT_PASSWORD_TOKEN, status, role },
-      privateKey: env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
+      privateKey: env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
       options: { expiresIn: env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN }
     })
   }
@@ -376,8 +376,10 @@ class UserService {
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       { $set: { forgot_password_token, updated_at: '$$NOW' } }
     ])
+    const user = await userService.getUserById(user_id)
 
-    console.log('\nForgot password token:', forgot_password_token)
+    const template = templateForgotPassword(user?.email as string, forgot_password_token)
+    await sendEmail(template)
 
     return { message: USER_MESSAGES.SEND_EMAIL_FORGOT_PASSWORD_SUCCESS }
   }
@@ -422,6 +424,31 @@ class UserService {
     )
 
     return user.value
+  }
+
+  async resetPassword(user_id: string, password: string) {
+    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          password: hashPassword(password),
+          forgot_password_token: '',
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+    return { password }
+  }
+
+  async changePassword(user_id: string, password: string) {
+    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          password: hashPassword(password),
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+    return { password }
   }
 }
 

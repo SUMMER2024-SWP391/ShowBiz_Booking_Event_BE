@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
 import {
+  ChangePasswordReqBody,
   EventOperatorRegisterReqBody,
   LoginReqBody,
   LogoutReqBody,
   RegisterReqBody,
+  ResetPasswordReqBody,
   TokenPayload,
   UpdateMeReqBody,
   VerifyEmailReqBody
@@ -17,6 +19,7 @@ import { UserRole, UserStatus } from '~/constants/enums'
 import { env } from '~/config/environment'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
+import { hashPassword } from '~/utils/crypto'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -69,7 +72,6 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
 export const verifyEmailController = async (req: Request<ParamsDictionary, any, VerifyEmailReqBody>, res: Response) => {
   const { user_id } = req.decoded_email_verify_token as TokenPayload
   const user = await userService.findUserById(user_id)
-  const result = await userService.verifyEmail(user_id)
 
   if (!user) {
     throw new ErrorWithStatus({
@@ -96,7 +98,6 @@ export const verifyEmailController = async (req: Request<ParamsDictionary, any, 
 export const resendVerifyEmailController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.findUserById(user_id)
-  const result = await userService.resendVerifyEmail(user_id, user.email)
 
   if (!user) {
     throw new ErrorWithStatus({
@@ -111,7 +112,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
       status: StatusCodes.UNAUTHORIZED
     })
   }
-
+  const result = await userService.resendVerifyEmail(user_id, user.email)
   return res.json(result)
 }
 
@@ -126,7 +127,7 @@ export const registerEventOperatorController = async (
 
 export const forgotPasswordController = async (req: Request, res: Response) => {
   const { _id } = req.user as User
-  const result = await userService.forgotPassword((_id as ObjectId).toString())
+  const result = await userService.forgotPassword((_id as ObjectId).toHexString())
 
   return res.json(result)
 }
@@ -148,4 +149,41 @@ export const updateMeController = async (
   const result = await userService.updateMe(user_id, body)
 
   return res.json({ message: USER_MESSAGES.UPDATE_ME_SUCCESS, result })
+}
+
+export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
+  return res.json({ message: USER_MESSAGES.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS })
+}
+
+export const resetPasswordController = async (
+  req: Request<ParamsDictionary, any, ResetPasswordReqBody>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_forgot_password_token as TokenPayload
+  const user = await userService.findUserById(user_id)
+  const { password } = req.body
+  const { email } = user
+  if (hashPassword(password) === user.password) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.PASSWORD_ALREADY_EXISTED,
+      status: StatusCodes.BAD_REQUEST
+    })
+  }
+  await userService.resetPassword(user_id, password)
+
+  return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS, data: { email, password } })
+}
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, ChangePasswordReqBody>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await userService.findUserById(user_id)
+  const { password } = req.body
+  const { email } = user
+
+  await userService.changePassword(user_id, password)
+
+  return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS, data: { email, password } })
 }

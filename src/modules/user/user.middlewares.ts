@@ -52,6 +52,56 @@ export const confirmPasswordSchema: ParamSchema = {
   }
 }
 
+export const forgotPassWordTokenSchema: ParamSchema = {
+  trim: true,
+  custom: {
+    options: async (value, { req }) => {
+      const token = value
+
+      if (!token) {
+        throw new ErrorWithStatus({
+          message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
+          status: StatusCodes.UNAUTHORIZED
+        })
+      }
+
+      try {
+        const decoded_forgot_password_token = await verifyToken({
+          token: value,
+          secretOrPublicKey: env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+        })
+        ;(req as Request).decoded_forgot_password_token = decoded_forgot_password_token
+        const { user_id } = decoded_forgot_password_token as TokenPayload
+        const user = await userService.findUserById(user_id)
+
+        if (user === null) {
+          throw new ErrorWithStatus({
+            message: USER_MESSAGES.USER_NOT_FOUND,
+            status: StatusCodes.NOT_FOUND // 404
+          })
+        }
+
+        if (user.forgot_password_token !== token) {
+          throw new ErrorWithStatus({
+            message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INCORRECT,
+            status: StatusCodes.UNAUTHORIZED // 401
+          })
+        }
+      } catch (error) {
+        if (error instanceof JsonWebTokenError) {
+          throw new ErrorWithStatus({
+            message: capitalize((error as JsonWebTokenError).message),
+            status: StatusCodes.UNAUTHORIZED
+          })
+        }
+        throw error
+      }
+
+      return true
+    }
+  }
+}
+
 export const nameSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.NAME_IS_REQUIRED },
   isString: { errorMessage: USER_MESSAGES.NAME_MUST_BE_A_STRING },
@@ -440,6 +490,75 @@ export const updateMeValidator = validate(
           errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400
         }
       }
+    },
+    ['body']
+  )
+)
+
+export const verifyForgotPasswordTokenValidator = validate(
+  checkSchema(
+    {
+      forgot_password_token: forgotPassWordTokenSchema
+    },
+    ['query']
+  )
+)
+
+export const resetPasswordValidator = validate(
+  checkSchema(
+    {
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema,
+      forgot_password_token: forgotPassWordTokenSchema
+    },
+    ['body']
+  )
+)
+
+export const changePasswordValidator = validate(
+  checkSchema(
+    {
+      old_password: {
+        ...passwordSchema,
+        custom: {
+          options: async (value, { req }) => {
+            const { user_id } = req.decoded_authorization as TokenPayload
+            const user = await userService.getUserById(user_id)
+
+            if (user === null) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.USER_NOT_FOUND,
+                status: StatusCodes.NOT_FOUND
+              })
+            }
+            const { password } = user
+
+            if (password !== hashPassword(value)) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.OLD_PASSWORD_IS_INCORRECT,
+                status: StatusCodes.UNAUTHORIZED
+              })
+            }
+            return true
+          }
+        }
+      },
+      password: {
+        ...passwordSchema,
+        custom: {
+          options: async (value, { req }) => {
+            const { old_password } = req.body
+            if (value === old_password) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.PASSWORD_MATCHED_OLD_PASSWORD,
+                status: StatusCodes.BAD_REQUEST
+              })
+            }
+            return true
+          }
+        }
+      },
+      confirm_password: confirmPasswordSchema
     },
     ['body']
   )
