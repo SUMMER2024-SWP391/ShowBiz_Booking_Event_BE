@@ -52,4 +52,5 @@ export interface UpdateMeReqBody {
   user_name?: string
   date_of_birth?: string
   avatar?: string
+  password?: string
 }
