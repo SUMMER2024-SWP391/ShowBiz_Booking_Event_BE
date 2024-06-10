@@ -55,7 +55,8 @@ usersRouter.post('/login', loginValidator, wrapAsync(loginController))
  * Request: { name: string, email: string, password: string, confirm_password: string, date_of_birth: string, phone_number : string }
  */
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
-/*
+
+/**
  * * Description: Logout
  * Path: /logout
  * Method: POST
@@ -64,7 +65,7 @@ usersRouter.post('/register', registerValidator, wrapAsync(registerController))
  */
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
 
-/*
+/**
  * * Description: OAuth with Google
  * Path: /oauth/login
  * Method: GET
@@ -76,7 +77,7 @@ usersRouter.get('/oauth/google', wrapAsync(oauthController))
  * * Description: Verify email
  * Path: /verify-email
  * Method: GET
- * body: { email_verify_token: string }
+ * Body: { email_verify_token: string }
  */
 usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmailController))
 
@@ -84,7 +85,8 @@ usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmai
  * * Description: Resend email verification
  * Path: /resend-verify-email
  * Method: POST
- * body: {email: string}
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: {email: string}
  */
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendVerifyEmailController))
 
@@ -92,6 +94,7 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendV
  * * Description: Register event operator
  * Path: /register-event-operator
  * Method: POST
+ * Header: { Authorization: Bearer <access_token> }
  * Body: {
       user_name: string,
       email: string,
@@ -108,7 +111,7 @@ usersRouter.post(
 )
 
 /**
- * * Description: forgot password
+ * * Description: Forgot password
  * Path: /forgot-password
  * Method: POST
  * Body: { email: string }
@@ -116,7 +119,7 @@ usersRouter.post(
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
 
 /**
- * * Description: verify forgot password token
+ * * Description: Verify forgot password
  * Path: /verify-forgot-password-token
  * Method: get
  * Query: { forgot_password_token: string }
@@ -136,9 +139,10 @@ usersRouter.get(
 usersRouter.post('/reset-password', resetPasswordValidator, wrapAsync(resetPasswordController))
 
 /**
- * * Description: change password
+ * * Description: Change password
  * Path: /change-password
  * Method: POST
+ * Header: { Authorization: Bearer <access_token> }
  * Body: { old_password: string, new_password: string, confirm_new_password: string }
  */
 usersRouter.post(
@@ -169,7 +173,7 @@ usersRouter.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
-  filterMiddleware<UpdateMeReqBody>(['user_name', 'date_of_birth', 'avatar']),
+  filterMiddleware<UpdateMeReqBody>(['user_name', 'date_of_birth', 'avatar', 'password']),
   wrapAsync(updateMeController)
 )
 
