@@ -152,7 +152,9 @@ export const updateMeController = async (
 }
 
 export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
-  return res.json({ message: USER_MESSAGES.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS })
+  const { forgot_password_token } = req.query
+  const urlRedirect = `${env.CLIENT_REDIRECT_RESET_PASSWORD}?token=${forgot_password_token}`
+  return res.redirect(urlRedirect)
 }
 
 export const resetPasswordController = async (
@@ -171,7 +173,7 @@ export const resetPasswordController = async (
   }
   await userService.resetPassword(user_id, password)
 
-  return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS, data: { email, password } })
+  return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS })
 }
 
 export const changePasswordController = async (
