@@ -4,7 +4,7 @@ import { validate } from '~/utils/validation'
 import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
 import eventService from './event.services'
 import { EVENT_MESSAGES } from '../user/user.messages'
-import { Event, compareTimes, compareWithCurrentDate, convertTimeToMinutes, isTimeConflict } from '~/utils/common'
+import { Event, compareTimes, convertTimeToMinutes, isDateOneWeekLater, isTimeConflict } from '~/utils/common'
 
 export const createEventValidator = validate(
   checkSchema(
@@ -34,7 +34,7 @@ export const createEventValidator = validate(
           options: async (value) => {
             if (!REGEX_DATE.test(value)) throw new Error(EVENT_MESSAGES.INVALID_DATE)
 
-            if (compareWithCurrentDate(value)) throw new Error(EVENT_MESSAGES.DATE_EVENT_MUST_BE_IN_THE_FUTURE)
+            if (isDateOneWeekLater(value)) throw new Error(EVENT_MESSAGES.DATE_EVENT_MUST_BE_ONE_WEEK_LATER)
 
             return true
           }
@@ -49,7 +49,7 @@ export const createEventValidator = validate(
 
             if (!REGEX_TIME.test(value)) throw new Error(EVENT_MESSAGES.TIME_START_MUST_MATCH_FORMAT)
 
-            // lấy ra 1 array Event có date_event và location trùng với user nhập
+            //! Lấy ra 1 array Event có date_event và location trùng với user nhập
             const result = (await eventService.getEventByDateAndLocation(date_event, location)) as Event[]
 
             if (isTimeConflict({ time_start, time_end: value }, result)) {
@@ -67,7 +67,7 @@ export const createEventValidator = validate(
           options: async (value, { req }) => {
             if (!REGEX_TIME.test(value)) throw new Error(EVENT_MESSAGES.TIME_END_MUST_MATCH_FORMAT)
 
-            //! lấy ra date_event, location, time_start để check xem có trùng thời gian với event khác không
+            //! Lấy ra date_event, location, time_start để check xem có trùng thời gian với event khác không
             const { date_event, location, time_start } = req.body
             //! Convert to number to compare
             const newTimeStart = convertTimeToMinutes(time_start)
