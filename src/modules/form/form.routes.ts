@@ -9,6 +9,7 @@ const formRouter = Router()
 /**
  * Description: Create form register or feedback
  * Path : /new-form/:id id ở đây là event id
+ * Headers: { Authorization: 'Bearer <access_token>' }
  * Body : {
  *  question[]
  *  type : register || feedback
@@ -24,9 +25,8 @@ formRouter.post(
 )
 
 /**
- * description : get form event list register
- * path : /question-register/:id
- *
+ * Description : get form event list register
+ * Path : /question-register/:id
  */
 formRouter.get('/question-register/:id', wrapAsync(getFormRegisterController))
 

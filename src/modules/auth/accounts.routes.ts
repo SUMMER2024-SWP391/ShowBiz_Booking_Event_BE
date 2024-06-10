@@ -36,6 +36,7 @@ adminsRouter.post(
 /**
  ** Description: Update account by id
  * Method: PATCH
+ * Headers: { Authorization: 'Bearer <access_token>' }
  * Body: { user_name?: string, role?: UserRole, date_of_birth?: string, phone_number?: string, email?: string }
  */
 adminsRouter.patch(
