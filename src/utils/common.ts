@@ -82,6 +82,7 @@ export function isTimeConflict(newEvent: Event, existingEvents: Event[]): boolea
 }
 
 export function isDateOneWeekLater(dateStr: string): boolean {
+  const WEEK_TO_DAYS = 7
   const currentDate = getCurrentDateFormatted()
 
   // Parse the current date string in "dd-mm-yyyy" format
@@ -94,7 +95,7 @@ export function isDateOneWeekLater(dateStr: string): boolean {
 
   // Calculate the date one week later from the current date
   const oneWeekLater = new Date(currentDated)
-  oneWeekLater.setDate(oneWeekLater.getDate() + 6) // 1 week later
+  oneWeekLater.setDate(oneWeekLater.getDate() + WEEK_TO_DAYS) // 1 week later
 
   return inputDate <= oneWeekLater
 }
