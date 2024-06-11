@@ -53,3 +53,7 @@ export interface UpdateMeReqBody {
   date_of_birth?: string
   avatar?: string
 }
+
+export interface RefreshTokenReqBody {
+  refresh_token: string
+}

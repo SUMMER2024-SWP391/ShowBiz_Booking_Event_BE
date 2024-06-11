@@ -12,6 +12,9 @@ export const USER_MESSAGES = {
   // access token
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist!',
 
+  // refresh token
+  REFRESH_TOKEN_SUCCESS: 'Refresh token success!',
+
   // password
   PASSWORD_IS_REQUIRED: 'Password is required!',
   PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50: 'Password length must be from 6 to 50!',
@@ -37,6 +40,7 @@ export const USER_MESSAGES = {
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect!',
   EMAIL_ALREADY_EXISTED: 'Email already existed!',
   EMAIL_NOT_MATCH_REGEX: 'Email must match format [6]@fpt.edu.vn',
+  EMAIL_NOT_FOUND: 'Email not found!',
 
   // email verify token
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required!',
@@ -87,12 +91,18 @@ export const USER_MESSAGES = {
   RESET_PASSWORD_SUCCESS: 'Reset password success',
   PASSWORD_ALREADY_EXISTED: 'Password already existed',
   OLD_PASSWORD_IS_INCORRECT: 'Old password is incorrect',
-  PASSWORD_MATCHED_OLD_PASSWORD: 'Password matched old password'
+  PASSWORD_MATCHED_OLD_PASSWORD: 'Password matched old password',
+
+  //ROLE
+  ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF: 'Role is not Visitor or Checking Staff'
 } as const
 
 export const EVENT_OPERATOR_MESSAGES = {
   REGISTER_SUCCESS: 'Register event operator account successfully',
-  LOGIN_SUCCESS: 'Login successfully'
+  LOGIN_SUCCESS: 'Login successfully',
+  CREATE_CHECKING_STAFF_SUCCESS: 'Create checking staff successfully',
+  CHECKING_STAFF_ALREADY_ASSIGNED: 'Checking staff already assigned',
+  EVENT_OPERATOR_IS_NOT_OWNER: 'Event operator is not owner'
 } as const
 
 export const EVENT_MESSAGES = {
@@ -102,6 +112,11 @@ export const EVENT_MESSAGES = {
   CREATE_EVENT_REQUEST_SUCCESS: 'Create event request successfully! Wait for admin confirm!',
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
   GET_EVENT_LIST_OPERATOR_SUCCESS: 'Get event list operator successfully!',
+
+  //EVENT
+  EVENT_ID_IS_REQUIRED: 'Event id is required!',
+  EVENT_ID_IS_INVALID: 'Event id is invalid!',
+  EVENT_NOT_FOUND: 'Event not found!',
 
   //PAGE
   INVALID_PAGE: 'Page out of range!',

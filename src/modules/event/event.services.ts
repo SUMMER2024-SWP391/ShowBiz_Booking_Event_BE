@@ -215,6 +215,11 @@ class EventService {
       )
       .toArray()
   }
+
+  async checkEventExist(id: string) {
+    const result = await databaseService.events.findOne({ _id: new ObjectId(id) })
+    return result
+  }
 }
 
 const eventService = new EventService()

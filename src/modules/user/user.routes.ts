@@ -27,7 +27,8 @@ import {
   updateMeController,
   verifyForgotPasswordTokenController,
   resetPasswordController,
-  changePasswordController
+  changePasswordController,
+  refreshTokenController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -172,5 +173,13 @@ usersRouter.patch(
   filterMiddleware<UpdateMeReqBody>(['user_name', 'date_of_birth', 'avatar']),
   wrapAsync(updateMeController)
 )
+
+/**
+ * * Description: refresh token
+ * Path: /refresh-token
+ * Method: POST
+ * Body: { refresh_token: string }
+ */
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController))
 
 export default usersRouter

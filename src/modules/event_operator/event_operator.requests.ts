@@ -9,3 +9,8 @@ export interface EventOperatorLoginReqBody {
   email: string
   password: string
 }
+
+export interface CreateCheckingStaffReqBody {
+  email: string
+  event_id: string
+}

@@ -1,10 +1,18 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { EventOperatorLoginReqBody, EventOperatorRegisterReqBody } from './event_operator.requests'
+import {
+  CreateCheckingStaffReqBody,
+  EventOperatorLoginReqBody,
+  EventOperatorRegisterReqBody
+} from './event_operator.requests'
 import eventOperatorService from './event_operator.services'
 import { ObjectId } from 'mongodb'
 import { UserRole, UserStatus } from '~/constants/enums'
 import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '../user/user.messages'
+import checkingStaffServices from '../checking_staff/checking_staff.services'
+import userService from '../user/user.services'
+import { ErrorWithStatus } from '~/models/Errors'
+import { StatusCodes } from 'http-status-codes'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
@@ -29,4 +37,32 @@ export const loginController = async (
   })
 
   return res.json({ message: USER_MESSAGES.LOGIN_SUCCESS, result })
+}
+
+export const assignCheckingStaffController = async (
+  req: Request<ParamsDictionary, any, CreateCheckingStaffReqBody>,
+  res: Response
+) => {
+  const user = req.user
+  const user_id = user?._id as ObjectId
+  const event_id = new ObjectId(req.body.event_id)
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+
+  const checkingEventOwner = await eventOperatorService.checkEventOwner(event_id, event_operator_id)
+  if (!checkingEventOwner)
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.FORBIDDEN
+    })
+
+  const checkDuplkicate = await checkingStaffServices.checkDuplicateCheckingStaff(event_id, user_id)
+  if (checkDuplkicate)
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.CHECKING_STAFF_ALREADY_ASSIGNED,
+      status: StatusCodes.CONFLICT
+    })
+
+  const result = await eventOperatorService.assignCheckingStaff(event_id, user_id)
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.CREATE_CHECKING_STAFF_SUCCESS, data: result })
 }
