@@ -95,6 +95,9 @@ export const USER_MESSAGES = {
 
   //ROLE
   ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF: 'Role is not Visitor or Checking Staff'
+
+  //profile
+  GET_PROFILE_SUCCESS: 'Get profile success'
 } as const
 
 export const EVENT_OPERATOR_MESSAGES = {
@@ -132,6 +135,7 @@ export const EVENT_MESSAGES = {
   DATE_EVENT_IS_REQUIRED: 'Date event is required!',
   INVALID_DATE: 'Date event must be in the format DD-MM-YYYY',
   DATE_EVENT_MUST_BE_IN_THE_FUTURE: 'Date event must be in the future!',
+  DATE_EVENT_MUST_BE_ONE_WEEK_LATER: 'Please book the event one week in advance!',
   TIME_START_MUST_BE_A_STRING: 'Time start must be a string!',
   TIME_START_IS_REQUIRED: 'Time start is required!',
   TIME_START_MUST_MATCH_FORMAT: 'Time start must be in the format xx:xx AM|PM',

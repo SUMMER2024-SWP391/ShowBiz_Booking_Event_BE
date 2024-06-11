@@ -41,16 +41,6 @@ function convertToDate(dateString: string): Date {
   return new Date(year, month - 1, day)
 }
 
-export function compareWithCurrentDate(dateString: string): boolean {
-  const inputDate: Date = convertToDate(dateString)
-  const currentDate: Date = new Date()
-
-  // nếu mà ngày mình nhập vào nhỏ hơn ngày hiện tại thì return true
-  if (inputDate < currentDate) return true
-
-  return false
-}
-
 export function convertTimeToMinutes(timeString: string): number {
   const [time, modifier] = timeString.split(' ')
   // eslint-disable-next-line prefer-const
@@ -78,6 +68,7 @@ export function isTimeConflict(newEvent: Event, existingEvents: Event[]): boolea
   const newStart = convertTimeToMinutes(newEvent.time_start)
   const newEnd = convertTimeToMinutes(newEvent.time_end)
 
+  //! Check xem trong ngày đó và location đó có event nào khác không
   for (const event of existingEvents) {
     const existingStart = convertTimeToMinutes(event.time_start)
     const existingEnd = convertTimeToMinutes(event.time_end)
@@ -88,4 +79,34 @@ export function isTimeConflict(newEvent: Event, existingEvents: Event[]): boolea
   }
 
   return false
+}
+
+export function isDateOneWeekLater(dateStr: string): boolean {
+  const WEEK_TO_DAYS = 7
+  const currentDate = getCurrentDateFormatted()
+
+  // Parse the current date string in "dd-mm-yyyy" format
+  const [currentDay, currentMonth, currentYear] = currentDate.split('-').map(Number)
+  const currentDated = new Date(currentYear, currentMonth - 1, currentDay)
+
+  // Parse the input date string in "dd-mm-yyyy" format
+  const [day, month, year] = dateStr.split('-').map(Number)
+  const inputDate = new Date(year, month - 1, day)
+
+  // Calculate the date one week later from the current date
+  const oneWeekLater = new Date(currentDated)
+  oneWeekLater.setDate(oneWeekLater.getDate() + WEEK_TO_DAYS) // 1 week later
+
+  return inputDate <= oneWeekLater
+}
+
+function getCurrentDateFormatted(): string {
+  const currentDate = new Date()
+
+  //! Thêm padStart(2, '0') để make sure string có at least 2 chars, nếu ít hơn thì thêm '0' vào đầu
+  const day = String(currentDate.getDate()).padStart(2, '0')
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+  const year = currentDate.getFullYear()
+
+  return `${day}-${month}-${year}`
 }

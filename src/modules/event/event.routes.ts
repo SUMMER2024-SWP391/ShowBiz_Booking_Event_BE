@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
-import { accessTokenValidator, isUserRole, verifiedUserValidator } from '../user/user.middlewares'
+import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { createEventValidator, paginationValidator } from './event.middlewares'
 import {
   createEventController,
@@ -35,19 +35,20 @@ eventsRouter.get('/', paginationValidator, wrapAsync(getEventListController))
 
 /**
  * * Description: Accept or reject event
- * Path: /
- * Method: post
- * body: { status }
+ * Path: /:idEvent
+ * Method: POST
+ * Body: { status }
  */
 eventsRouter.post('/:idEvent', wrapAsync(handleStatusEventController))
 
 eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 
 /**
- * description : get form event list register
- * path : /register-event/:id  id là event Id
- * header : Authoriation Beartoken
- * body :RegisterEventReqBody
+ * * Description: Get form event list register
+ * Path : /register-event/:id  (id là eventId)
+ * Method: POST
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Body: RegisterEventReqBody
  */
 eventsRouter.post(
   '/register-event/:id',

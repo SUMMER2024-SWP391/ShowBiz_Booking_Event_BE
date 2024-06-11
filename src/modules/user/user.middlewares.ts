@@ -271,7 +271,8 @@ export const verifiedUserValidator = async (req: Request, res: Response, next: N
   const user = req.decoded_authorization as TokenPayload
   const dataUser = await userService.getUserById(user.user_id)
 
-  if (status !== UserStatus.VERIFIED && dataUser?.email_verify_token !== '') {
+  //! Chỉ cần một trong hai điều kiện không passed thì nhận định thằng user đó chưa verified account luôn
+  if (status !== UserStatus.VERIFIED || dataUser?.email_verify_token !== '') {
     return next(
       new ErrorWithStatus({
         message: USER_MESSAGES.USER_NOT_VERIFIED,
@@ -470,12 +471,12 @@ export const updateMeValidator = validate(
   checkSchema(
     {
       user_name: {
-        ...nameSchema,
-        optional: true
+        optional: true,
+        ...nameSchema
       },
       date_of_birth: {
-        ...dateOfBirthSchema,
-        optional: true
+        optional: true,
+        ...dateOfBirthSchema
       },
       avatar: {
         optional: true,
@@ -485,6 +486,10 @@ export const updateMeValidator = validate(
           options: { min: 1, max: 400 },
           errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400
         }
+      },
+      password: {
+        optional: true,
+        ...passwordSchema
       }
     },
     ['body']

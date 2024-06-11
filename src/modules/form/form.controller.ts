@@ -5,6 +5,7 @@ import { CreateFormReqBody } from './form.request'
 import questionService from '../question/question.services'
 import { ObjectId } from 'mongodb'
 import { FORM_MESSAGE } from './form.messages'
+import eventService from '../event/event.services'
 
 export const createFormQuestionController = async (
   req: Request<ParamsDictionary, any, CreateFormReqBody>,
@@ -25,7 +26,8 @@ export const createFormQuestionController = async (
 
 export const getFormRegisterController = async (req: Request, res: Response) => {
   const { id } = req.params
-  const formDocument = await formService.getFormEventById(new ObjectId(id))
+  const event = await eventService.getEventById(id)
+  const formDocument = await formService.getFormEventByIdEndType(new ObjectId(event._id))
   const formQuestionRegister = await questionService.getListQuestion(formDocument?._id as ObjectId)
 
   return res.json({

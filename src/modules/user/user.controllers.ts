@@ -137,7 +137,12 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await userService.getMe(user_id)
 
-  return res.json(result)
+  return res.json({
+    message: USER_MESSAGES.GET_PROFILE_SUCCESS,
+    data: {
+      user: result
+    }
+  })
 }
 
 export const updateMeController = async (
@@ -153,7 +158,9 @@ export const updateMeController = async (
 }
 
 export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
-  return res.json({ message: USER_MESSAGES.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS })
+  const { forgot_password_token } = req.query
+  const urlRedirect = `${env.CLIENT_REDIRECT_RESET_PASSWORD}?token=${forgot_password_token}`
+  return res.redirect(urlRedirect)
 }
 
 export const resetPasswordController = async (
@@ -171,7 +178,7 @@ export const resetPasswordController = async (
   }
   const result = await userService.resetPassword(user_id, password)
 
-  return res.json({ result })
+  return res.json(result)
 }
 
 export const changePasswordController = async (
@@ -192,6 +199,7 @@ export const refreshTokenController = async (
   const { refresh_token } = req.body
   const { user_id, status } = req.decoded_refresh_token as TokenPayload
   const result = await userService.refreshToken({ refresh_token, user_id, status })
+  
   return res.json({
     message: USER_MESSAGES.REFRESH_TOKEN_SUCCESS,
     data: result
