@@ -87,7 +87,10 @@ export const USER_MESSAGES = {
   RESET_PASSWORD_SUCCESS: 'Reset password success',
   PASSWORD_ALREADY_EXISTED: 'Password already existed',
   OLD_PASSWORD_IS_INCORRECT: 'Old password is incorrect',
-  PASSWORD_MATCHED_OLD_PASSWORD: 'Password matched old password'
+  PASSWORD_MATCHED_OLD_PASSWORD: 'Password matched old password',
+
+  //profile
+  GET_PROFILE_SUCCESS: 'Get profile success'
 } as const
 
 export const EVENT_OPERATOR_MESSAGES = {

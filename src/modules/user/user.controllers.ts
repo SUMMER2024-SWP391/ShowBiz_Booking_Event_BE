@@ -136,7 +136,12 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await userService.getMe(user_id)
 
-  return res.json(result)
+  return res.json({
+    message: USER_MESSAGES.GET_PROFILE_SUCCESS,
+    data: {
+      user: result
+    }
+  })
 }
 
 export const updateMeController = async (

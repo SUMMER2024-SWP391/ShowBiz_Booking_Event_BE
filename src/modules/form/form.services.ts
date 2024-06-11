@@ -13,11 +13,11 @@ class FormService {
       })
     )
 
-    return await this.getFormEventById(result.insertedId)
+    return await this.getFormEventByIdEndType(result.insertedId)
   }
 
-  async getFormEventById(id: ObjectId) {
-    return await databaseService.forms.findOne({ _id: id })
+  async getFormEventByIdEndType(id: ObjectId) {
+    return await databaseService.forms.findOne({ _id: id, type: EventQuestionType.REGISTER })
   }
 }
 

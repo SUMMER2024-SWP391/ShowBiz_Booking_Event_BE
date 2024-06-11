@@ -384,8 +384,8 @@ class UserService {
     return { message: USER_MESSAGES.SEND_EMAIL_FORGOT_PASSWORD_SUCCESS }
   }
 
-  async getMe(user_id: string) {
-    return await databaseService.users.findOne(
+  async getMe(user_id: string): Promise<User> {
+    return (await databaseService.users.findOne(
       { _id: new ObjectId(user_id) },
       {
         projection: {
@@ -393,10 +393,12 @@ class UserService {
           email_verify_token: 0,
           forgot_password_token: 0,
           created_at: 0,
-          updated_at: 0
+          updated_at: 0,
+          role: 0,
+          status: 0
         }
       }
-    )
+    )) as User
   }
 
   async updateMe(user_id: string, payload: UpdateMeReqBody) {
