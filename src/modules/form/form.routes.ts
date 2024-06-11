@@ -26,7 +26,7 @@ formRouter.post(
 
 /**
  * Description : get form event list register
- * Path : /question-register/:id
+ * Path : /question-register/:id (id là event id)
  */
 formRouter.get('/question-register/:id', wrapAsync(getFormRegisterController))
 
