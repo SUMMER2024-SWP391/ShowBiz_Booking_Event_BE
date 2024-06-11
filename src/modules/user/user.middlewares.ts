@@ -477,20 +477,16 @@ export const updateMeValidator = validate(
       date_of_birth: {
         optional: true,
         ...dateOfBirthSchema
-      },
-      avatar: {
-        optional: true,
-        isString: { errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING },
-        trim: true,
-        isLength: {
-          options: { min: 1, max: 400 },
-          errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400
-        }
-      },
-      password: {
-        optional: true,
-        ...passwordSchema
       }
+      // avatar: {
+      //   optional: true,
+      //   isString: { errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING },
+      //   trim: true,
+      //   isLength: {
+      //     options: { min: 1, max: 400 },
+      //     errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400
+      //   }
+      // }
     },
     ['body']
   )
