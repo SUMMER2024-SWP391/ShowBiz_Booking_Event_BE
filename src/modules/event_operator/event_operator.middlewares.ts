@@ -1,10 +1,20 @@
 import { checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { confirmPasswordSchema, nameSchema, passwordSchema } from '../user/user.middlewares'
-import { USER_MESSAGES } from '../user/user.messages'
+import { EVENT_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 import databaseService from '~/database/database.services'
 import { hashPassword } from '~/utils/crypto'
 import eventOperatorService from './event_operator.services'
+import eventService from '../event/event.services'
+import userService from '../user/user.services'
+import { UserRole } from '~/constants/enums'
+import { verifyToken } from '~/utils/jwt'
+import { env } from '~/config/environment'
+import { TokenPayload } from '../user/user.requests'
+import { ErrorWithStatus } from '~/models/Errors'
+import { capitalize } from '~/utils/capitalize'
+import { StatusCodes } from 'http-status-codes'
+import { JsonWebTokenError } from 'jsonwebtoken'
 
 export const registerEventOperatorValidator = validate(
   checkSchema(
@@ -60,6 +70,41 @@ export const loginValidator = validate(
         isStrongPassword: {
           options: { minLength: 6, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 },
           errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const assignCheckingStaffValidator = validate(
+  checkSchema(
+    {
+      event_id: {
+        notEmpty: { errorMessage: EVENT_MESSAGES.EVENT_ID_IS_REQUIRED },
+        isMongoId: { errorMessage: EVENT_MESSAGES.EVENT_ID_IS_INVALID },
+        custom: {
+          options: async (value) => {
+            const isExistEvent = await eventService.checkEventExist(value)
+            if (!isExistEvent) throw new Error(EVENT_MESSAGES.EVENT_NOT_FOUND)
+
+            return true
+          }
+        }
+      },
+      email: {
+        notEmpty: { errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED },
+        isEmail: { errorMessage: USER_MESSAGES.EMAIL_IS_INVALID },
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            const user = await userService.getUserByEmail(value)
+            if (!user) throw new Error(USER_MESSAGES.EMAIL_NOT_FOUND)
+            if (user.role !== UserRole.Visitor && user.role !== UserRole.CheckingStaff)
+              throw new Error(USER_MESSAGES.ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF)
+            req.user = user
+            return true
+          }
         }
       }
     },

@@ -54,3 +54,7 @@ export interface UpdateMeReqBody {
   avatar?: string
   password?: string
 }
+
+export interface RefreshTokenReqBody {
+  refresh_token: string
+}

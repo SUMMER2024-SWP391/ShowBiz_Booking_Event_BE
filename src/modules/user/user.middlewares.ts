@@ -56,9 +56,7 @@ export const forgotPassWordTokenSchema: ParamSchema = {
   trim: true,
   custom: {
     options: async (value, { req }) => {
-      const token = value
-
-      if (!token) {
+      if (!value) {
         throw new ErrorWithStatus({
           message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
           status: StatusCodes.UNAUTHORIZED
@@ -74,14 +72,14 @@ export const forgotPassWordTokenSchema: ParamSchema = {
         const { user_id } = decoded_forgot_password_token as TokenPayload
         const user = await userService.findUserById(user_id)
 
-        if (user === null) {
+        if (!user) {
           throw new ErrorWithStatus({
             message: USER_MESSAGES.USER_NOT_FOUND,
             status: StatusCodes.NOT_FOUND // 404
           })
         }
 
-        if (user.forgot_password_token !== token) {
+        if (user.forgot_password_token !== value) {
           throw new ErrorWithStatus({
             message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INCORRECT,
             status: StatusCodes.UNAUTHORIZED // 401
@@ -297,12 +295,10 @@ export const refreshTokenValidator = validate(
                 token: value,
                 secretOrPublicKey: env.JWT_SECRET_REFRESH_TOKEN as string
               })
-              const refresh_token = await databaseService.refresh_tokens.findOne({
-                token: value
-              })
 
-              //check xem token này có tồn tại trong db ko ha
-              if (refresh_token === null) {
+              const refresh_token = await userService.getRefreshToken(value)
+
+              if (!refresh_token) {
                 throw new ErrorWithStatus({
                   message: USER_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,
                   status: StatusCodes.UNAUTHORIZED
@@ -530,15 +526,14 @@ export const changePasswordValidator = validate(
             const { user_id } = req.decoded_authorization as TokenPayload
             const user = await userService.getUserById(user_id)
 
-            if (user === null) {
+            if (!user) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.USER_NOT_FOUND,
                 status: StatusCodes.NOT_FOUND
               })
             }
-            const { password } = user
 
-            if (password !== hashPassword(value)) {
+            if (user.password !== hashPassword(value)) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.OLD_PASSWORD_IS_INCORRECT,
                 status: StatusCodes.UNAUTHORIZED
@@ -552,8 +547,7 @@ export const changePasswordValidator = validate(
         ...passwordSchema,
         custom: {
           options: async (value, { req }) => {
-            const { old_password } = req.body
-            if (value === old_password) {
+            if (value === req.body.old_password) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.PASSWORD_MATCHED_OLD_PASSWORD,
                 status: StatusCodes.BAD_REQUEST

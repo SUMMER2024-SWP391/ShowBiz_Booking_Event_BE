@@ -64,6 +64,10 @@ class UserService {
     return Boolean(await databaseService.users.findOne({ phone_number }))
   }
 
+  async getRefreshToken(refresh_token: string) {
+    return await databaseService.refresh_tokens.findOne({ token: refresh_token })
+  }
+
   async logout(refresh_token: string) {
     await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
     return { message: USER_MESSAGES.LOGOUT_SUCCESS }
@@ -443,7 +447,7 @@ class UserService {
         }
       }
     ])
-    return { password }
+    return { message: USER_MESSAGES.RESET_PASSWORD_SUCCESS }
   }
 
   async changePassword(user_id: string, password: string) {
@@ -455,7 +459,35 @@ class UserService {
         }
       }
     ])
-    return { password }
+    return { message: USER_MESSAGES.RESET_PASSWORD_SUCCESS }
+  }
+
+  async refreshToken({
+    user_id,
+    status,
+    refresh_token
+  }: {
+    user_id: string
+    status: UserStatus
+    refresh_token: string
+  }) {
+    const role = await this.getRole(user_id)
+    const [access_token, new_refresh_token] = await this.signAccessAndRefreshToken({
+      user_id,
+      status: UserStatus.VERIFIED,
+      role: role as UserRole
+    })
+    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+    await databaseService.refresh_tokens.insertOne(
+      new RefreshToken({
+        token: new_refresh_token,
+        user_id: new ObjectId(user_id)
+      })
+    )
+    return {
+      access_token,
+      refresh_token: new_refresh_token
+    }
   }
 }
 

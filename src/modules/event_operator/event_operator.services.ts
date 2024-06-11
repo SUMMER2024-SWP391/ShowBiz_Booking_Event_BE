@@ -6,6 +6,7 @@ import userService from '../user/user.services'
 import { UserRole, UserStatus } from '~/constants/enums'
 import { hashPassword } from '~/utils/crypto'
 import RefreshToken from '../refreshToken/refreshToken.schema'
+import { env } from 'process'
 
 class EventOperatorService {
   async checkEmailExist(email: string) {
@@ -50,6 +51,49 @@ class EventOperatorService {
     )
 
     return { access_token, refresh_token }
+  }
+
+  async assignCheckingStaff(event_id: ObjectId, user_id: ObjectId) {
+    await databaseService.checking_staffs.insertOne({ event_id, user_id })
+    const result = await databaseService.checking_staffs
+      .aggregate([
+        {
+          $match: { event_id }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'checking_staff'
+          }
+        },
+        {
+          $project: {
+            user_id: 0,
+            checking_staff: {
+              password: 0,
+              created_at: 0,
+              role: 0,
+              status: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0,
+              date_of_birth: 0,
+              point: 0,
+              updated_at: 0,
+              avatar: 0,
+              phone_number: 0
+            }
+          }
+        }
+      ])
+      .toArray()
+
+    return result.at(-1)
+  }
+
+  async checkEventOwner(event_id: ObjectId, event_operator_id: ObjectId) {
+    return Boolean(await databaseService.events.findOne({ _id: event_id, event_operator_id: event_operator_id }))
   }
 }
 const eventOperatorService = new EventOperatorService()

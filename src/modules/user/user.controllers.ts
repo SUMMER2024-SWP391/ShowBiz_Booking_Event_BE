@@ -4,6 +4,7 @@ import {
   EventOperatorRegisterReqBody,
   LoginReqBody,
   LogoutReqBody,
+  RefreshTokenReqBody,
   RegisterReqBody,
   ResetPasswordReqBody,
   TokenPayload,
@@ -168,17 +169,16 @@ export const resetPasswordController = async (
 ) => {
   const { user_id } = req.decoded_forgot_password_token as TokenPayload
   const user = await userService.findUserById(user_id)
-  const { password } = req.body
-  const { email } = user
+  const password = req.body.password
   if (hashPassword(password) === user.password) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.PASSWORD_ALREADY_EXISTED,
       status: StatusCodes.BAD_REQUEST
     })
   }
-  await userService.resetPassword(user_id, password)
+  const result = await userService.resetPassword(user_id, password)
 
-  return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS })
+  return res.json(result)
 }
 
 export const changePasswordController = async (
@@ -186,11 +186,22 @@ export const changePasswordController = async (
   res: Response
 ) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const user = await userService.findUserById(user_id)
-  const { password } = req.body
-  const { email } = user
+  const result = await userService.changePassword(user_id, req.body.password)
 
-  await userService.changePassword(user_id, password)
+  return res.json({ result })
+}
 
-  return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS, data: { email, password } })
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { refresh_token } = req.body
+  const { user_id, status } = req.decoded_refresh_token as TokenPayload
+  const result = await userService.refreshToken({ refresh_token, user_id, status })
+  
+  return res.json({
+    message: USER_MESSAGES.REFRESH_TOKEN_SUCCESS,
+    data: result
+  })
 }

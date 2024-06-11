@@ -1,7 +1,17 @@
+import { accessTokenValidator, isUserRole } from './../user/user.middlewares'
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
-import { loginValidator, registerEventOperatorValidator } from './event_operator.middlewares'
-import { loginController, registerEventOperatorController } from './event_operator.controllers'
+import {
+  assignCheckingStaffValidator,
+  loginValidator,
+  registerEventOperatorValidator
+} from './event_operator.middlewares'
+import {
+  assignCheckingStaffController,
+  loginController,
+  registerEventOperatorController
+} from './event_operator.controllers'
+import { UserRole } from '~/constants/enums'
 
 const eOperatorRouter = Router()
 
@@ -20,5 +30,19 @@ eOperatorRouter.post('/register', registerEventOperatorValidator, wrapAsync(regi
  * Request: { email: string, password: string }
  */
 eOperatorRouter.post('/login', loginValidator, wrapAsync(loginController))
+
+/**
+ * * Description: Assign cheking staff
+ * Path: /assign-checking-staff
+ * Method: POST
+ * Request: { email: string}
+ */
+eOperatorRouter.post(
+  '/assign-checking-staff',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  assignCheckingStaffValidator,
+  wrapAsync(assignCheckingStaffController)
+)
 
 export default eOperatorRouter
