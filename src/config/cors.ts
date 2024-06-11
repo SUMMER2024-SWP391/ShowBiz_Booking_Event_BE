@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { env } from 'process'
+import { env } from './environment'
 
 export const corsOption = {
   origin: env.PRODUCTION_FRONTEND_URL || 'localhost:3000',
