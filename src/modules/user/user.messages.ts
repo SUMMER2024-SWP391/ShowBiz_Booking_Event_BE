@@ -94,7 +94,7 @@ export const USER_MESSAGES = {
   PASSWORD_MATCHED_OLD_PASSWORD: 'Password matched old password',
 
   //ROLE
-  ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF: 'Role is not Visitor or Checking Staff'
+  ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF: 'Role is not Visitor or Checking Staff',
 
   //profile
   GET_PROFILE_SUCCESS: 'Get profile success'

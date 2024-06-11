@@ -188,7 +188,7 @@ export const changePasswordController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await userService.changePassword(user_id, req.body.password)
 
-  return res.json({ result })
+  return res.json(result)
 }
 
 export const refreshTokenController = async (
@@ -199,7 +199,7 @@ export const refreshTokenController = async (
   const { refresh_token } = req.body
   const { user_id, status } = req.decoded_refresh_token as TokenPayload
   const result = await userService.refreshToken({ refresh_token, user_id, status })
-  
+
   return res.json({
     message: USER_MESSAGES.REFRESH_TOKEN_SUCCESS,
     data: result
