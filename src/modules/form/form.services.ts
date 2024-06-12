@@ -17,7 +17,7 @@ class FormService {
   }
 
   async getFormEventByIdEndType(id: ObjectId) {
-    return await databaseService.forms.findOne({ _id: id, type: EventQuestionType.REGISTER })
+    return await databaseService.forms.findOne({ event_id: id, type: EventQuestionType.REGISTER })
   }
 }
 
