@@ -17,6 +17,7 @@ export interface updateAccountReqBody {
   avatar?: string
   point?: string
   verify_status?: string
+  password?: string
 }
 
 export interface confirmEventReqBody {

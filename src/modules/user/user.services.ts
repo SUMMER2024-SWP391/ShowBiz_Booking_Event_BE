@@ -272,6 +272,9 @@ class UserService {
   //update account dành cho admin
   async updateAccountById(id: string, payload: updateAccountReqBody) {
     const user = await this.findUserById(id)
+
+    if (user.password) payload.password = hashPassword(user.password)
+
     const newUser = await databaseService.users.findOneAndUpdate(
       { _id: user?._id },
       [{ $set: { ...payload, updated_at: '$$NOW' } }],

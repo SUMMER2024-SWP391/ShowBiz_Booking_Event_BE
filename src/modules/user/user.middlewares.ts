@@ -397,6 +397,10 @@ export const updateAccValidator = validate(
         options: [UserStatus],
         errorMessage: USER_MESSAGES.VERIFY_STATUS_MUST_BE_EITHER_VERIFIED_OR_UNVERIFIED
       }
+    },
+    password: {
+      optional: true,
+      ...passwordSchema
     }
   })
 )
