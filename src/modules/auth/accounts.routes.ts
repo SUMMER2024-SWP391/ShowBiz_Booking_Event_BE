@@ -52,7 +52,8 @@ adminsRouter.patch(
     'email',
     'avatar',
     'point',
-    'verify_status'
+    'verify_status',
+    'password'
   ]),
   wrapAsync(updateAccountController)
 )
