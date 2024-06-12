@@ -170,7 +170,7 @@ usersRouter.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
-  filterMiddleware<UpdateMeReqBody>(['user_name', 'date_of_birth', 'avatar']),
+  filterMiddleware<UpdateMeReqBody>(['user_name', 'date_of_birth', 'avatar', 'password']),
   wrapAsync(updateMeController)
 )
 
