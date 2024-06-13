@@ -10,9 +10,9 @@ import { ObjectId } from 'mongodb'
 import { UserRole, UserStatus } from '~/constants/enums'
 import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 import checkingStaffServices from '../checking_staff/checking_staff.services'
-import userService from '../user/user.services'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
+import eventService from '../event/event.services'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
@@ -65,4 +65,11 @@ export const assignCheckingStaffController = async (
   const result = await eventOperatorService.assignCheckingStaff(event_id, user_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.CREATE_CHECKING_STAFF_SUCCESS, data: result })
+}
+
+export const getListRegisterEventController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+  const result = await eventService.getListRegisterEvent(event_operator_id)
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
 }

@@ -105,7 +105,8 @@ export const EVENT_OPERATOR_MESSAGES = {
   LOGIN_SUCCESS: 'Login successfully',
   CREATE_CHECKING_STAFF_SUCCESS: 'Create checking staff successfully',
   CHECKING_STAFF_ALREADY_ASSIGNED: 'Checking staff already assigned',
-  EVENT_OPERATOR_IS_NOT_OWNER: 'Event operator is not owner'
+  EVENT_OPERATOR_IS_NOT_OWNER: 'Event operator is not owner',
+  GET_LIST_REGISTER_EVENT_SUCCESS: 'Get list register event successfully'
 } as const
 
 export const EVENT_MESSAGES = {

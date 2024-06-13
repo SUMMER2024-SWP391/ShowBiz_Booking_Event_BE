@@ -8,6 +8,7 @@ import {
 } from './event_operator.middlewares'
 import {
   assignCheckingStaffController,
+  getListRegisterEventController,
   loginController,
   registerEventOperatorController
 } from './event_operator.controllers'
@@ -45,4 +46,17 @@ eOperatorRouter.post(
   wrapAsync(assignCheckingStaffController)
 )
 
+/**
+ * * Description: get list-event
+ * Path: /list-event
+ * Method: GET
+ * Header: { authorization: Bearer <access_token> }
+ */
+
+eOperatorRouter.get(
+  '/list-event',
+  accessTokenValidator,
+  isUserRole([UserRole.EventOperator]),
+  wrapAsync(getListRegisterEventController)
+)
 export default eOperatorRouter
