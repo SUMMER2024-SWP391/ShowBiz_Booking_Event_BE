@@ -21,6 +21,7 @@ import { env } from '~/config/environment'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import { hashPassword } from '~/utils/crypto'
+import registerService from '../register/register.services'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -204,4 +205,13 @@ export const refreshTokenController = async (
     message: USER_MESSAGES.REFRESH_TOKEN_SUCCESS,
     data: result
   })
+}
+
+export const getListRegisterEventController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  console.log('user_id', user_id)
+
+  const result = await registerService.getListRegisterEventByUserId(user_id)
+
+  return res.json({ message: USER_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
 }

@@ -28,7 +28,8 @@ import {
   verifyForgotPasswordTokenController,
   resetPasswordController,
   changePasswordController,
-  refreshTokenController
+  refreshTokenController,
+  getListRegisterEventController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -181,5 +182,13 @@ usersRouter.patch(
  * Body: { refresh_token: string }
  */
 usersRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController))
+
+/**
+ * * Description: Get all reister event
+ * Path: /list-register-event
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+usersRouter.get('/list-register-event', accessTokenValidator, wrapAsync(getListRegisterEventController))
 
 export default usersRouter
