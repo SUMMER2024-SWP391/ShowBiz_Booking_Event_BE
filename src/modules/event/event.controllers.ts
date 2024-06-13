@@ -70,14 +70,19 @@ export const registerEventController = async (
 ) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
+  //lưu câu trả lời của user vào bảng answers
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
+  //lưu user đăng ký sự kiện vào bảng register
   const result = await registerService.registerEvent(id, user_id)
+  //tạo qr code
   const qrCodeURL = await convertDataToQrCode(result as Register)
+  //lưu qr code vào bảng register
   const updateQrCode = await registerService.updateQrCode(result?._id as ObjectId, qrCodeURL)
+  //lấy thông tin event, user để gửi mail
   const event = await eventService.getEventById(id)
   const user = await userService.getUserById(user_id)
   const template = templateRegisterEvent(event as Event, (updateQrCode as Register).qr_code, user as User)
-  console.log(template)
+  // console.log(template)
   await sendEmail(template)
   res.json({
     message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
