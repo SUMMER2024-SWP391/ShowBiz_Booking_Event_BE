@@ -209,9 +209,13 @@ export const refreshTokenController = async (
 
 export const getListRegisterEventController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  console.log('user_id', user_id)
 
   const result = await registerService.getListRegisterEventByUserId(user_id)
 
-  return res.json({ message: USER_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
+  return res.json({
+    message: USER_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS,
+    data: {
+      events: result
+    }
+  })
 }
