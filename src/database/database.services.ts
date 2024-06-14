@@ -9,6 +9,7 @@ import Question from '~/modules/question/question.schema'
 import Answer from '~/modules/answer/answer.schema'
 import Register from '~/modules/register/register.schema'
 import CheckingStaff from '~/modules/checking_staff/checking_staff.schema'
+import { ImageEvent } from '~/modules/media/media.schema'
 
 const uri = `mongodb+srv://${env.DB_USERNAME}:${env.DB_PASSWORD}@showbizevent.vrxs1vz.mongodb.net/?retryWrites=true&w=majority&appName=ShowBizEvent`
 
@@ -65,6 +66,10 @@ class DatabaseService {
 
   get checking_staffs(): Collection<CheckingStaff> {
     return this.db.collection(env.DB_COLLECTION_CHECKING_STAFFS as string)
+  }
+
+  get imageEvents(): Collection<ImageEvent> {
+    return this.db.collection(env.DB_COLLECTION_IMAGE_EVENTS as string)
   }
 }
 
