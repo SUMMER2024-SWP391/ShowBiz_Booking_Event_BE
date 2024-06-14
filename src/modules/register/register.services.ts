@@ -47,33 +47,45 @@ class RegisterService {
         },
         {
           $lookup: {
-            from: env.DB_COLLECTION_EVENTS,
+            from: 'events',
             localField: 'event_id',
             foreignField: '_id',
-            as: 'event_detail'
+            as: 'event'
           }
         },
         {
-          $unwind: '$event_detail'
-        },
-        {
-          $group: {
-            _id: '$visitor_id',
-            events: {
-              $push: {
-                eventId: '$event_detail._id',
-                eventName: '$event_detail.name',
-                date: '$event_detail.date_event',
-                participantLimit: '$event_detail.capacity'
-              }
-            }
+          $lookup: {
+            from: 'users',
+            localField: 'event.event_operator_id',
+            foreignField: '_id',
+            as: 'event_operator'
           }
         },
         {
           $project: {
-            _id: 0,
-            visitor_id: '$visitor_id',
-            events: 1
+            event_id: 0,
+            visitor_id: 0,
+            'event._id': 0,
+            'event_operator._id': 0,
+            'event.capacity': 0,
+            'event.description': 0,
+            'event.event_operator_id': 0,
+            'event.category': 0,
+            'event.type_event': 0,
+            'event.status': 0,
+            'event.ticket_price': 0,
+            'event.time_start': 0,
+            'event.time_end': 0,
+            'event.updated_at': 0,
+            'event_operator.password': 0,
+            'event_operator.email': 0,
+            'event_operator.role': 0,
+            'event_operator.status': 0,
+            'event_operator.email_verify_token': 0,
+            'event_operator.forgot_password_token': 0,
+            'event_operator.point': 0,
+            'event_operator.created_at': 0,
+            'event_operator.updated_at': 0
           }
         }
       ])

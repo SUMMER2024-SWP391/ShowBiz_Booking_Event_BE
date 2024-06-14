@@ -410,16 +410,10 @@ export const registerEventOperatorMiddleware = validate(
     {
       user_name: nameSchema,
       phone_number: phoneNumberSchema,
-      password: passwordSchema,
-      confirm_password: confirmPasswordSchema,
       email: {
         isEmail: true,
         custom: {
           options: async (value) => {
-            if (!value.match(REGEX_FPT_EVENT_OPERATOR_EMAIL)) {
-              throw new Error(USER_MESSAGES.EMAIL_NOT_MATCH_REGEX)
-            }
-
             const isExistEmail = await userService.checkEmailExist(value)
             if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
 
