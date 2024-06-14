@@ -56,6 +56,7 @@ usersRouter.post('/login', loginValidator, wrapAsync(loginController))
  * Request: { name: string, email: string, password: string, confirm_password: string, date_of_birth: string, phone_number : string }
  */
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
+
 /*
  * * Description: Logout
  * Path: /logout
@@ -77,7 +78,7 @@ usersRouter.get('/oauth/google', wrapAsync(oauthController))
  * * Description: Verify email
  * Path: /verify-email
  * Method: GET
- * body: { email_verify_token: string }
+ * Body: { email_verify_token: string }
  */
 usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmailController))
 
@@ -85,7 +86,8 @@ usersRouter.get('/verify-email', verifyEmailTokenValidator, wrapAsync(verifyEmai
  * * Description: Resend email verification
  * Path: /resend-verify-email
  * Method: POST
- * body: {email: string}
+ * Headers: { Authorization: 'Bearer <access_token>' }
+ * Body: { email: string }
  */
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendVerifyEmailController))
 
@@ -93,6 +95,7 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapAsync(resendV
  * * Description: Register event operator
  * Path: /register-event-operator
  * Method: POST
+ * Headers: { Authorization: 'Bearer <access_token>' }
  * Body: {
       user_name: string,
       email: string,
@@ -117,9 +120,9 @@ usersRouter.post(
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
 
 /**
- * * Description: verify forgot password token
+ * * Description: Verify forgot password
  * Path: /verify-forgot-password-token
- * Method: get
+ * Method: GET
  * Query: { forgot_password_token: string }
  */
 usersRouter.get(
@@ -137,9 +140,10 @@ usersRouter.get(
 usersRouter.post('/reset-password', resetPasswordValidator, wrapAsync(resetPasswordController))
 
 /**
- * * Description: change password
+ * * Description: Change password
  * Path: /change-password
  * Method: POST
+ * Headers: { Authorization: 'Bearer <access_token>' }
  * Body: { old_password: string, new_password: string, confirm_new_password: string }
  */
 usersRouter.post(
