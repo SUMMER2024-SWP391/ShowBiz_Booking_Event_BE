@@ -97,7 +97,10 @@ export const USER_MESSAGES = {
   ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF: 'Role is not Visitor or Checking Staff',
 
   //profile
-  GET_PROFILE_SUCCESS: 'Get profile success'
+  GET_PROFILE_SUCCESS: 'Get profile success',
+
+  //event
+  GET_LIST_REGISTER_EVENT_SUCCESS: 'Get list register event success'
 } as const
 
 export const EVENT_OPERATOR_MESSAGES = {
