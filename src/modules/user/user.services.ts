@@ -230,11 +230,20 @@ class UserService {
       })
 
       const user = await databaseService.users.findOne({ email: userInfo.email })
+      await databaseService.users.updateOne({ _id: user?._id }, [
+        {
+          $set: {
+            email_verify_token: '',
+            status: UserStatus.VERIFIED,
+            updated_at: '$$NOW'
+          }
+        }
+      ])
 
       return {
         ...data,
         newUser: 1,
-        status: UserStatus.UNVERIFIED,
+        status: UserStatus.VERIFIED,
         user_id: user?._id.toString(),
         user_role: user?.role,
         user_name: user?.user_name
