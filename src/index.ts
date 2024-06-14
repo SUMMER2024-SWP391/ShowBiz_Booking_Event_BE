@@ -12,6 +12,7 @@ import eventsRouter from './modules/event/event.routes'
 import eOperatorRouter from './modules/event_operator/event_operator.routes'
 import adminsRouter from './modules/auth/accounts.routes'
 import formRouter from './modules/form/form.routes'
+import payment from './payment/zalo/server'
 import { initFolder } from './utils/file'
 import mediaRouter from './modules/media/media.routes'
 import staticRouter from './modules/static/static.routes'
@@ -36,6 +37,7 @@ app.use('/events', eventsRouter)
 app.use('/e-operators', eOperatorRouter)
 app.use('/admins', adminsRouter)
 app.use('/forms', formRouter)
+app.use('/zalo', payment)
 app.use('/upload-image', mediaRouter)
 app.use('/images', staticRouter)
 
