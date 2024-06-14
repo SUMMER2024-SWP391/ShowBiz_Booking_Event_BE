@@ -6,7 +6,7 @@ import userService from '../user/user.services'
 import { UserRole, UserStatus } from '~/constants/enums'
 import { hashPassword } from '~/utils/crypto'
 import RefreshToken from '../refreshToken/refreshToken.schema'
-import { env } from 'process'
+import { env } from '~/config/environment'
 
 class EventOperatorService {
   async checkEmailExist(email: string) {
@@ -94,6 +94,71 @@ class EventOperatorService {
 
   async checkEventOwner(event_id: ObjectId, event_operator_id: ObjectId) {
     return Boolean(await databaseService.events.findOne({ _id: event_id, event_operator_id: event_operator_id }))
+  }
+
+  async listCheckingStaff(event_id: ObjectId) {
+    return await databaseService.checking_staffs
+      .aggregate([
+        {
+          $match: { event_id: event_id }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'checking_staff'
+          }
+        },
+        {
+          $unwind: '$checking_staff'
+        },
+        {
+          $project: {
+            _id: 0,
+            'checking_staff._id': 1,
+            'checking_staff.user_name': 1,
+            'checking_staff.email': 1
+          }
+        },
+        {
+          $replaceRoot: { newRoot: '$checking_staff' }
+        }
+      ])
+      .toArray()
+  }
+
+  async unassignCheckingStaff(event_id: ObjectId, checking_staff_id: ObjectId) {
+    await databaseService.checking_staffs.deleteOne({ event_id, user_id: checking_staff_id })
+    return await databaseService.checking_staffs
+      .aggregate([
+        {
+          $match: { event_id: event_id }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'checking_staff'
+          }
+        },
+        {
+          $unwind: '$checking_staff'
+        },
+        {
+          $project: {
+            _id: 0,
+            'checking_staff._id': 1,
+            'checking_staff.user_name': 1,
+            'checking_staff.email': 1
+          }
+        },
+        {
+          $replaceRoot: { newRoot: '$checking_staff' }
+        }
+      ])
+      .toArray()
   }
 }
 const eventOperatorService = new EventOperatorService()

@@ -8,8 +8,10 @@ import {
 } from './event_operator.middlewares'
 import {
   assignCheckingStaffController,
+  listCheckingStaffController,
   loginController,
-  registerEventOperatorController
+  registerEventOperatorController,
+  unassignCheckingStaffController
 } from './event_operator.controllers'
 import { UserRole } from '~/constants/enums'
 
@@ -43,6 +45,33 @@ eOperatorRouter.post(
   wrapAsync(isUserRole([UserRole.EventOperator])),
   assignCheckingStaffValidator,
   wrapAsync(assignCheckingStaffController)
+)
+
+/**
+ * * Description: get list checking staff
+ * Path: /list-checking-staff/:eventId
+ * Method: GET
+ * Request: {}
+ */
+eOperatorRouter.get(
+  '/event/:eventId/list-checking-staff',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  wrapAsync(listCheckingStaffController)
+)
+
+/**
+ * * Description: unassign checking staff
+ * Path: /unassign-checking-staff
+ * Method: DELETE
+ * Request: { email: string}
+ */
+
+eOperatorRouter.delete(
+  '/event/:eventId/unassign-checking-staff/:checkingStaffId',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  wrapAsync(unassignCheckingStaffController)
 )
 
 export default eOperatorRouter
