@@ -10,7 +10,6 @@ import { ObjectId } from 'mongodb'
 import { UserRole, UserStatus } from '~/constants/enums'
 import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 import checkingStaffServices from '../checking_staff/checking_staff.services'
-import userService from '../user/user.services'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 
@@ -65,4 +64,39 @@ export const assignCheckingStaffController = async (
   const result = await eventOperatorService.assignCheckingStaff(event_id, user_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.CREATE_CHECKING_STAFF_SUCCESS, data: result })
+}
+
+export const listCheckingStaffController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const event_id = new ObjectId(req.params.eventId)
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+  const checkingEventOwner = await eventOperatorService.checkEventOwner(event_id, event_operator_id)
+  if (!checkingEventOwner)
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.FORBIDDEN
+    })
+
+  const result = await eventOperatorService.listCheckingStaff(event_id)
+
+  if (!result.length) {
+    return res.json({ message: EVENT_OPERATOR_MESSAGES.DOES_NOT_HAVE_CHECKING_STAFF, data: [] })
+  }
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.LIST_CHECKING_STAFF_SUCCESS, data: result })
+}
+
+export const unassignCheckingStaffController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const event_id = new ObjectId(req.params.eventId)
+  const checking_staff_id = new ObjectId(req.params.checkingStaffId)
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+  const checkingEventOwner = await eventOperatorService.checkEventOwner(event_id, event_operator_id)
+  if (!checkingEventOwner)
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.FORBIDDEN
+    })
+
+  const result = await eventOperatorService.unassignCheckingStaff(event_id, checking_staff_id)
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.UNASSIGN_CHECKING_STAFF_SUCCESS, data: result })
 }
