@@ -152,7 +152,7 @@ class EventService {
         },
         {
           $lookup: {
-            from: env.DB_COLLECTION_REGISTERS,
+            from: env.DB_COLLECTION_USERS,
             localField: 'event_operator_id',
             foreignField: '_id',
             as: 'event_operator'
