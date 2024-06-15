@@ -2,7 +2,7 @@
 
 ### Use Case Diagram
 
-![Project Relational Schema]()
+![Project Relational Schema](https://github.com/SUMMER2024-SWP391/ShowBiz_Booking_Event_BE/blob/main/imgs/relational_schema.png)
 
 ### Requirements
 
