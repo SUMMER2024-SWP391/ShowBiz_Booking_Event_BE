@@ -2,7 +2,7 @@
 
 ### Use Case Diagram
 
-![Project Relational Schema](https://drive.google.com/file/d/1-Yo-9jZNUSrCLMVcTowzDAd54FBq9q12/view?usp=sharing)
+![Project Relational Schema]()
 
 ### Requirements
 
