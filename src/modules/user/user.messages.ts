@@ -95,6 +95,7 @@ export const USER_MESSAGES = {
 
   //ROLE
   ROLE_IS_NOT_VISITOR_OR_CHECKING_STAFF: 'Role is not Visitor or Checking Staff',
+  ROLE_IS_NOT_CHECKING_STAFF: 'Role is not Checking Staff',
 
   //profile
   GET_PROFILE_SUCCESS: 'Get profile success',
@@ -109,7 +110,11 @@ export const EVENT_OPERATOR_MESSAGES = {
   CREATE_CHECKING_STAFF_SUCCESS: 'Create checking staff successfully',
   CHECKING_STAFF_ALREADY_ASSIGNED: 'Checking staff already assigned',
   EVENT_OPERATOR_IS_NOT_OWNER: 'Event operator is not owner',
+  LIST_CHECKING_STAFF_SUCCESS: 'List checking staff successfully',
+  DOES_NOT_HAVE_CHECKING_STAFF: 'Does not have checking staff',
+  UNASSIGN_CHECKING_STAFF_SUCCESS: 'Unassign checking staff successfully'
   GET_LIST_REGISTER_EVENT_SUCCESS: 'Get list register event successfully'
+
 } as const
 
 export const EVENT_MESSAGES = {

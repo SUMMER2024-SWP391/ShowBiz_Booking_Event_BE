@@ -67,9 +67,44 @@ export const assignCheckingStaffController = async (
   return res.json({ message: EVENT_OPERATOR_MESSAGES.CREATE_CHECKING_STAFF_SUCCESS, data: result })
 }
 
+export const listCheckingStaffController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const event_id = new ObjectId(req.params.eventId)
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+  const checkingEventOwner = await eventOperatorService.checkEventOwner(event_id, event_operator_id)
+  if (!checkingEventOwner)
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.FORBIDDEN
+    })
+
+  const result = await eventOperatorService.listCheckingStaff(event_id)
+
+  if (!result.length) {
+    return res.json({ message: EVENT_OPERATOR_MESSAGES.DOES_NOT_HAVE_CHECKING_STAFF, data: [] })
+  }
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.LIST_CHECKING_STAFF_SUCCESS, data: result })
+}
+
+export const unassignCheckingStaffController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const event_id = new ObjectId(req.params.eventId)
+  const checking_staff_id = new ObjectId(req.params.checkingStaffId)
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+  const checkingEventOwner = await eventOperatorService.checkEventOwner(event_id, event_operator_id)
+  if (!checkingEventOwner)
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.FORBIDDEN
+    })
+
+  const result = await eventOperatorService.unassignCheckingStaff(event_id, checking_staff_id)
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.UNASSIGN_CHECKING_STAFF_SUCCESS, data: result })
+
 export const getListRegisterEventController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
   const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
   const result = await eventService.getListRegisterEvent(event_operator_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
+
 }
