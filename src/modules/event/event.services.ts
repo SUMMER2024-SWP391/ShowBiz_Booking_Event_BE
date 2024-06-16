@@ -220,6 +220,52 @@ class EventService {
     const result = await databaseService.events.findOne({ _id: new ObjectId(id) })
     return result
   }
+
+  async getListRegisterEvent(event_operator_id: ObjectId) {
+    return await databaseService.events
+      .aggregate([
+        {
+          $match: {
+            event_operator_id: event_operator_id
+          }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_REGISTERS,
+            localField: '_id',
+            foreignField: 'event_id',
+            as: 'registrations'
+          }
+        },
+        {
+          $addFields: {
+            total_visitor: { $size: '$registrations' }
+          }
+        },
+        {
+          $addFields: {
+            limit: {
+              $concat: [{ $toString: '$total_visitor' }, ' / ', { $toString: '$capacity' }]
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            capacity: 1,
+            description: 1,
+            date_event: 1,
+            time_start: 1,
+            time_end: 1,
+            location: 1,
+            total_visitor: 1,
+            limit: 1
+          }
+        }
+      ])
+      .toArray()
+  }
 }
 
 const eventService = new EventService()

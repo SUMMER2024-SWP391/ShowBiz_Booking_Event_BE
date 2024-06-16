@@ -9,6 +9,8 @@ import {
 import {
   assignCheckingStaffController,
   listCheckingStaffController,
+
+  getListRegisterEventController,
   loginController,
   registerEventOperatorController,
   unassignCheckingStaffController
@@ -48,6 +50,7 @@ eOperatorRouter.post(
 )
 
 /**
+
  * * Description: get list checking staff
  * Path: /list-checking-staff/:eventId
  * Method: GET
@@ -74,4 +77,16 @@ eOperatorRouter.delete(
   wrapAsync(unassignCheckingStaffController)
 )
 
+ * * Description: get list-event
+ * Path: /list-event
+ * Method: GET
+ * Header: { authorization: Bearer <access_token> }
+ */
+
+eOperatorRouter.get(
+  '/list-event',
+  accessTokenValidator,
+  isUserRole([UserRole.EventOperator]),
+  wrapAsync(getListRegisterEventController)
+)
 export default eOperatorRouter

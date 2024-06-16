@@ -12,6 +12,7 @@ import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '../user/user.messages'
 import checkingStaffServices from '../checking_staff/checking_staff.services'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
+import eventService from '../event/event.services'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
@@ -99,4 +100,11 @@ export const unassignCheckingStaffController = async (req: Request<ParamsDiction
   const result = await eventOperatorService.unassignCheckingStaff(event_id, checking_staff_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.UNASSIGN_CHECKING_STAFF_SUCCESS, data: result })
+
+export const getListRegisterEventController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+  const result = await eventService.getListRegisterEvent(event_operator_id)
+
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
+
 }
