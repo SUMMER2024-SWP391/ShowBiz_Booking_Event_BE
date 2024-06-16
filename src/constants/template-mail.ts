@@ -134,7 +134,7 @@ export const templateForgotPassword = (email: string, forgot_password_token: str
                       background-color: #ff942b;
                       text-decoration: none;
                       transition: all 0.2s ease;">
-                      <a style="text-decoration: none; color: white" href="${env.PRODUCTION_FRONTEND_URL}/users/verify-forgot-password-token?forgot_password_token=${forgot_password_token}">Reset Password</a>
+                      <a style="text-decoration: none; color: white" href="http://localhost:4000/users/verify-forgot-password-token?forgot_password_token=${forgot_password_token}">Reset Password</a>
                     </button>
                 </div>
             </div>
