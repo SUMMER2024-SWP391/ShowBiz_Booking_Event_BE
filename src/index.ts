@@ -16,6 +16,7 @@ import payment from './payment/zalo/server'
 import { initFolder } from './utils/file'
 import mediaRouter from './modules/media/media.routes'
 import staticRouter from './modules/static/static.routes'
+import path from 'path'
 
 initFolder()
 
@@ -49,3 +50,14 @@ app.listen(PORT, () => {
   console.log(`🚀 SHOWBIZ BOOKING EVENT - Server is running at ${env.DB_HOST}:${PORT}        🚀`)
   console.log(`🚀 You can test Swagger, which is running at ${env.DB_HOST}:${PORT}/api-docs  🚀`)
 })
+// function toBase64(filePath = 'C:\\Users\\hoangnv\\Desktop\\vnpay_nodejs\\tech.jpg') {
+//   const img = fs.readFileSync(filePath)
+
+//   return Buffer.from(img).toString('base64')
+// }
+
+// const base64String = toBase64()
+// // console.log(base64String)
+
+// const withPrefix = 'data:image/png;base64,' + base64String
+// console.log(withPrefix)

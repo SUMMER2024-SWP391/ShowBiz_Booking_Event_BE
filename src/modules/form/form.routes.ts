@@ -3,6 +3,7 @@ import { wrapAsync } from '~/utils/handler'
 import { createFormQuestionController, getFormController } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
+import { createFormQuestionMiddleware } from './form.middlewares'
 
 const formRouter = Router()
 
@@ -19,8 +20,8 @@ const formRouter = Router()
 formRouter.post(
   '/new/:id',
   accessTokenValidator,
-  wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Admin])),
-  //   createFormQuestionMiddleware,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  createFormQuestionMiddleware,
   wrapAsync(createFormQuestionController)
 )
 
