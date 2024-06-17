@@ -9,13 +9,12 @@ import {
 import {
   assignCheckingStaffController,
   listCheckingStaffController,
-
-  getListRegisterEventController,
   loginController,
   registerEventOperatorController,
   unassignCheckingStaffController
 } from './event_operator.controllers'
 import { UserRole } from '~/constants/enums'
+import { getListRegisterEventController } from '../user/user.controllers'
 
 const eOperatorRouter = Router()
 
@@ -76,7 +75,7 @@ eOperatorRouter.delete(
   wrapAsync(isUserRole([UserRole.EventOperator])),
   wrapAsync(unassignCheckingStaffController)
 )
-
+/**
  * * Description: get list-event
  * Path: /list-event
  * Method: GET
