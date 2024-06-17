@@ -2,6 +2,7 @@ import databaseService from '~/database/database.services'
 import { FormEvent } from './form.schema'
 import { ObjectId } from 'mongodb'
 import { EventQuestionType } from './form.enum'
+import { capitalize } from '~/utils/capitalize'
 
 class FormService {
   async createFormEvent(id: string, type: EventQuestionType) {
@@ -13,11 +14,11 @@ class FormService {
       })
     )
 
-    return await this.getFormEventByIdEndType(result.insertedId)
+    return await this.getFormEventByIdEndType(result.insertedId, type)
   }
 
-  async getFormEventByIdEndType(id: ObjectId) {
-    return await databaseService.forms.findOne({ event_id: id, type: EventQuestionType.REGISTER })
+  async getFormEventByIdEndType(id: ObjectId, type: EventQuestionType) {
+    return await databaseService.forms.findOne({ event_id: id, type: type })
   }
 }
 

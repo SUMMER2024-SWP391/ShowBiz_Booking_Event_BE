@@ -124,6 +124,9 @@ export const EVENT_MESSAGES = {
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
   GET_EVENT_LIST_OPERATOR_SUCCESS: 'Get event list operator successfully!',
 
+  //answer
+  ANSWER_FEEDBACK_SUCCESS: 'Answer feedback success!',
+
   //EVENT
   EVENT_ID_IS_REQUIRED: 'Event id is required!',
   EVENT_ID_IS_INVALID: 'Event id is invalid!',
