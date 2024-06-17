@@ -36,9 +36,6 @@ export const getFormController = async (req: Request, res: Response) => {
   const formQuestion = await questionService.getListQuestion(formDocument?._id as ObjectId)
 
   return res.json({
-    message: FORM_MESSAGE.GET_FORM_REGISTER_SUCCESS,
-    data: {
-      formQuestion: formQuestion
-    }
+    message: FORM_MESSAGE.GET_FORM_REGISTER_SUCCESS
   })
 }
