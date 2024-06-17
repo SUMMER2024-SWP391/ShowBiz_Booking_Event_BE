@@ -1,7 +1,7 @@
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Request, Response } from 'express'
 import formService from './form.services'
-import { CreateFormReqBody } from './form.request'
+import { CreateFormReqBody, UpdateFormQuestionReqBody } from './form.request'
 import questionService from '../question/question.services'
 import { ObjectId } from 'mongodb'
 import { FORM_MESSAGE } from './form.messages'
@@ -42,3 +42,20 @@ export const getFormController = async (req: Request, res: Response) => {
     }
   })
 }
+
+export const updateFormQuestionController = async (
+  req: Request<ParamsDictionary, any, UpdateFormQuestionReqBody>,
+  res: Response
+) => {
+  const { id } = req.params
+  const { questions, type } = req.body
+  //lấy form theo id và type
+  const formDocument = await formService.getFormEventByIdEndType(new ObjectId(id), type)
+  //thao tác update form
+  await questionService.updateListQuestion(formDocument?._id as ObjectId, questions)
+  res.json({
+    message: FORM_MESSAGE.UPDATE_FORM_REGISTER_SUCCESS
+  })
+}
+
+export const handleCheckFormController = async (req: Request, res: Response) => {}

@@ -27,6 +27,24 @@ class QuestionService {
       )
       .toArray()
   }
+
+  async updateListQuestion(id: ObjectId, questions: Array<{ _id: string; question: string }>) {
+    //update question list
+    await Promise.all(
+      questions.map(async (question) => {
+        await databaseService.questions.updateOne(
+          {
+            _id: new ObjectId(question._id)
+          },
+          {
+            $set: {
+              description: question.question
+            }
+          }
+        )
+      })
+    )
+  }
 }
 
 const questionService = new QuestionService()
