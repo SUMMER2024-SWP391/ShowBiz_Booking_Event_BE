@@ -112,9 +112,8 @@ export const EVENT_OPERATOR_MESSAGES = {
   EVENT_OPERATOR_IS_NOT_OWNER: 'Event operator is not owner',
   LIST_CHECKING_STAFF_SUCCESS: 'List checking staff successfully',
   DOES_NOT_HAVE_CHECKING_STAFF: 'Does not have checking staff',
-  UNASSIGN_CHECKING_STAFF_SUCCESS: 'Unassign checking staff successfully'
+  UNASSIGN_CHECKING_STAFF_SUCCESS: 'Unassign checking staff successfully',
   GET_LIST_REGISTER_EVENT_SUCCESS: 'Get list register event successfully'
-
 } as const
 
 export const EVENT_MESSAGES = {

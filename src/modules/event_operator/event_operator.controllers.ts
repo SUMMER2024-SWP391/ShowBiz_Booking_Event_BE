@@ -100,11 +100,10 @@ export const unassignCheckingStaffController = async (req: Request<ParamsDiction
   const result = await eventOperatorService.unassignCheckingStaff(event_id, checking_staff_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.UNASSIGN_CHECKING_STAFF_SUCCESS, data: result })
-
+}
 export const getListRegisterEventController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
   const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
   const result = await eventService.getListRegisterEvent(event_operator_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
-
 }
