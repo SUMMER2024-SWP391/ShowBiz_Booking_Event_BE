@@ -30,3 +30,7 @@ export interface HandleStatusEventReqBody {
 export interface RegisterEventReqBody {
   answers: Pick<Answer, 'question_id' | 'description'>[]
 }
+
+export interface FeedbackEventReqBody {
+  answers: Pick<Answer, 'question_id' | 'description'>[]
+}

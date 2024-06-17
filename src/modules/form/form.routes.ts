@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
-import { createFormQuestionController, getFormRegisterController } from './form.controller'
+import { createFormQuestionController, getFormController } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
 
@@ -26,8 +26,8 @@ formRouter.post(
 
 /**
  * Description : get form event list register
- * Path : /question-register/:id (id là event id)
+ * Path : /question/:id/:type (id là event id, type là Register hoặc Feedback)
  */
-formRouter.get('/question-register/:id', wrapAsync(getFormRegisterController))
+formRouter.get('/question/:id/:type', wrapAsync(getFormController))
 
 export default formRouter

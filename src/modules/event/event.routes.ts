@@ -3,6 +3,7 @@ import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { createEventValidator, paginationValidator } from './event.middlewares'
 import {
+  answerFeedbackEventController,
   createEventController,
   getEventByIdController,
   getEventListController,
@@ -62,6 +63,20 @@ eventsRouter.get(
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.EventOperator])),
   wrapAsync(getEventListOperatorController)
+)
+
+/**
+ * * Description: answer feedback question
+ * Path: /feedback-event/:id
+ * Method: POST
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: FeedbackEventReqBody
+ */
+eventsRouter.post(
+  '/feedback-event/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(answerFeedbackEventController)
 )
 
 export default eventsRouter

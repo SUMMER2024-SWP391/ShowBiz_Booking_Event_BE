@@ -2,7 +2,13 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { TokenPayload } from '../user/user.requests'
 import eventService from './event.services'
-import { EventRequestBody, HandleStatusEventReqBody, Pagination, RegisterEventReqBody } from './event.requests'
+import {
+  EventRequestBody,
+  FeedbackEventReqBody,
+  HandleStatusEventReqBody,
+  Pagination,
+  RegisterEventReqBody
+} from './event.requests'
 import { EVENT_MESSAGES } from '../user/user.messages'
 import { EventStatus } from '~/constants/enums'
 import answerService from '../answer/answer.services'
@@ -100,6 +106,22 @@ export const getEventListOperatorController = async (req: Request, res: Response
     message: EVENT_MESSAGES.GET_EVENT_LIST_OPERATOR_SUCCESS,
     data: {
       events: result
+    }
+  })
+}
+
+export const answerFeedbackEventController = async (
+  req: Request<ParamsDictionary, any, FeedbackEventReqBody>,
+  res: Response
+) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const result = await answerService.createListAnswer(user_id, req.body.answers)
+
+  return res.json({
+    message: EVENT_MESSAGES.ANSWER_FEEDBACK_SUCCESS,
+    data: {
+      feedback: result
     }
   })
 }
