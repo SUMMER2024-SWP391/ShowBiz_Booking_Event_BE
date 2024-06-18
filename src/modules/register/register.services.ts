@@ -2,16 +2,24 @@ import databaseService from '~/database/database.services'
 import Register from './register.schema'
 import { ObjectId } from 'mongodb'
 import { env } from '~/config/environment'
+import otpGenerator from 'otp-generator'
 
 class RegisterService {
   async registerEvent(id: string, user_id: string) {
+    const otp = otpGenerator.generate(8, {
+      lowerCaseAlphabets: true,
+      upperCaseAlphabets: true,
+      specialChars: true,
+      digits: true
+    })
+
     const result = await databaseService.registers.insertOne(
       new Register({
         _id: new ObjectId(),
         event_id: new ObjectId(id),
         visitor_id: new ObjectId(user_id),
         status_check_in: false,
-        qr_code: ''
+        otp_check_in: otp
       })
     )
 
