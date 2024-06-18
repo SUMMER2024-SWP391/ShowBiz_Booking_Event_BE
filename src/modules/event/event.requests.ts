@@ -16,6 +16,8 @@ export interface EventRequestBody {
   qr_code: string
   event_operator_id: ObjectId
   address: string
+  speaker_name: string
+  sponsor_name: string
 }
 
 export interface Pagination {

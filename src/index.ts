@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import YAML from 'yaml'
@@ -50,14 +50,14 @@ app.listen(PORT, () => {
   console.log(`🚀 SHOWBIZ BOOKING EVENT - Server is running at ${env.DB_HOST}:${PORT}        🚀`)
   console.log(`🚀 You can test Swagger, which is running at ${env.DB_HOST}:${PORT}/api-docs  🚀`)
 })
-// function toBase64(filePath = 'C:\\Users\\hoangnv\\Desktop\\vnpay_nodejs\\tech.jpg') {
+// function toBase64(filePath = 'C:\\Users\\hoangnv\\Desktop\\vnpay_nodejs\\badtrip.jpg') {
 //   const img = fs.readFileSync(filePath)
 
 //   return Buffer.from(img).toString('base64')
 // }
 
 // const base64String = toBase64()
-// // console.log(base64String)
+// console.log(base64String)
 
 // const withPrefix = 'data:image/png;base64,' + base64String
 // console.log(withPrefix)

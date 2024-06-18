@@ -17,6 +17,8 @@ interface EventType {
   category?: EventCategory
   address: string
   status?: EventStatus
+  speaker_name?: string
+  sponsor_name?: string
 }
 
 export default class Event {
@@ -35,6 +37,8 @@ export default class Event {
   address: string
   category: EventCategory
   status: EventStatus
+  speaker_name?: string
+  sponsor_name?: string
 
   constructor({
     _id,
@@ -50,7 +54,9 @@ export default class Event {
     image,
     event_operator_id,
     status,
-    address
+    address,
+    speaker_name,
+    sponsor_name
   }: EventType) {
     this._id = _id
     this.name = name
@@ -69,5 +75,7 @@ export default class Event {
     this.address =
       address ||
       'Lô E2a-7, Đường D1, Khu Công Nghệ Cao, P.Long Thạnh Mỹ, Tp.Thủ Đức, Hồ Chí Minh City, Vietnam, Trái Đất..'
+    this.speaker_name = speaker_name
+    this.sponsor_name = sponsor_name
   }
 }
