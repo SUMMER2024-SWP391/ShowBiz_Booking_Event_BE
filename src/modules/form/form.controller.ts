@@ -8,6 +8,8 @@ import { FORM_MESSAGE } from './form.messages'
 import eventService from '../event/event.services'
 import { capitalize } from '~/utils/capitalize'
 import { EventQuestionType } from './form.enum'
+import { EventStatus } from '~/constants/enums'
+import { checkActionOfEventOperatorValid } from '~/utils/common'
 
 export const createFormQuestionController = async (
   req: Request<ParamsDictionary, any, CreateFormReqBody>,
@@ -16,7 +18,7 @@ export const createFormQuestionController = async (
   const { id } = req.params
   const { type, questions } = req.body
   const formEvent = await formService.createFormEvent(id, capitalize(type.toLowerCase()) as EventQuestionType)
-  const listQuestion = await questionService.createNewListQuestion(formEvent?._id as ObjectId, questions)
+  const listQuestion = await questionService.createNewListQuestion(formEvent.insertedId as ObjectId, questions)
 
   return res.json({
     message: FORM_MESSAGE.CREATE_FORM_REGISTER_SUCCESS,
@@ -58,4 +60,21 @@ export const updateFormQuestionController = async (
   })
 }
 
-export const handleCheckFormController = async (req: Request, res: Response) => {}
+export const handleCheckFormController = async (req: Request, res: Response) => {
+  const { id } = req.params //lấy id từ params
+  //lấy event theo id
+  const event = await eventService.getEventById(id)
+  //lấy form theo id event
+  const [formRegister, formFeedback] = await Promise.all([
+    formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.REGISTER),
+    formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.FEEDBACK)
+  ])
+
+  const action = checkActionOfEventOperatorValid(event.status, Boolean(formRegister), Boolean(formFeedback))
+  res.json({
+    message: FORM_MESSAGE.CHECK_SUCCESS,
+    data: {
+      action
+    }
+  })
+}

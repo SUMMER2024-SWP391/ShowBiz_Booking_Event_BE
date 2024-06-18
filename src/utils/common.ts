@@ -5,6 +5,7 @@ import { USER_MESSAGES } from '~/modules/user/user.messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from './capitalize'
+import { EventStatus } from '~/constants/enums'
 
 export const verifyAccessToken = async (access_token: string, req?: Request) => {
   if (!access_token) {
@@ -109,4 +110,33 @@ function getCurrentDateFormatted(): string {
   const year = currentDate.getFullYear()
 
   return `${day}-${month}-${year}`
+}
+
+export function checkActionOfEventOperatorValid(
+  status: EventStatus,
+  formRegister: boolean,
+  formFeedback: boolean
+): string[] {
+  if (status === EventStatus.PENDING) {
+    if (!formRegister && !formFeedback) {
+      return ['create form register', 'create form feedback']
+    }
+    if (formRegister && formFeedback) {
+      return ['update form register', 'update form feedback']
+    }
+    if (!formRegister && formFeedback) {
+      return ['create form register', 'update form feedback']
+    }
+    if (formRegister && !formFeedback) {
+      return ['update form register', 'create form feedback']
+    }
+  } else if (status === EventStatus.APPROVED) {
+    if (!formFeedback) {
+      return ['create form feedback']
+    } else if (formFeedback) {
+      return ['update form feedback']
+    }
+  }
+
+  return ['do everything']
 }

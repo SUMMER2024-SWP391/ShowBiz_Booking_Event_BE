@@ -8,7 +8,7 @@ export interface CreateFormReqBody {
 export interface UpdateFormQuestionReqBody {
   questions: Array<{
     _id: string
-    question: string
+    description: string
   }>
   type: EventQuestionType
 }

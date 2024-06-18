@@ -28,7 +28,7 @@ class QuestionService {
       .toArray()
   }
 
-  async updateListQuestion(id: ObjectId, questions: Array<{ _id: string; question: string }>) {
+  async updateListQuestion(id: ObjectId, questions: Array<{ _id: string; description: string }>) {
     //update question list
     await Promise.all(
       questions.map(async (question) => {
@@ -38,7 +38,7 @@ class QuestionService {
           },
           {
             $set: {
-              description: question.question
+              description: question.description
             }
           }
         )
