@@ -14,7 +14,7 @@ class FormService {
       })
     )
 
-    return await this.getFormEventByIdEndType(result.insertedId, type)
+    return result
   }
 
   async getFormEventByIdEndType(id: ObjectId, type: EventQuestionType) {
