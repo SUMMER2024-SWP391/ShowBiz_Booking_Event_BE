@@ -133,7 +133,7 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
   return res.json({
     message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
     data: {
-      ticket: register
+      ticket: register[0]
     }
   })
 }

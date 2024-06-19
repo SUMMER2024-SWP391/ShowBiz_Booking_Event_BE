@@ -73,7 +73,6 @@ class RegisterService {
           $project: {
             event_id: 0,
             visitor_id: 0,
-            'event._id': 0,
             'event_operator._id': 0,
             'event.capacity': 0,
             'event.description': 0,
@@ -101,10 +100,32 @@ class RegisterService {
   }
 
   async getRegisterByEventIdAndUserId(event_id: string, visitor_id: string) {
-    return await databaseService.registers.findOne({
-      event_id: new ObjectId(event_id),
-      visitor_id: new ObjectId(visitor_id)
-    })
+    return await databaseService.registers
+      .aggregate([
+        {
+          $match: {
+            event_id: new ObjectId(event_id),
+            visitor_id: new ObjectId(visitor_id)
+          }
+        },
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'event_id',
+            foreignField: '_id',
+            as: 'event'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'visitor_id',
+            foreignField: '_id',
+            as: 'visitor'
+          }
+        }
+      ])
+      .toArray()
   }
 }
 
