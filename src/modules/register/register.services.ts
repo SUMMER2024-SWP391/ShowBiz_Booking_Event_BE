@@ -127,6 +127,12 @@ class RegisterService {
       ])
       .toArray()
   }
+
+  async checkIn(eventId: string) {
+    await databaseService.registers.updateOne({ event_id: new ObjectId(eventId) }, { $set: { status_check_in: true } })
+
+    return { message: 'Check in success' }
+  }
 }
 
 const registerService = new RegisterService()
