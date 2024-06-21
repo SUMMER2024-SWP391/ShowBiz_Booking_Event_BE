@@ -76,6 +76,7 @@ export const registerEventController = async (
 ) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
+
   //lưu câu trả lời của user vào bảng answers
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
   //lưu user đăng ký sự kiện vào bảng register

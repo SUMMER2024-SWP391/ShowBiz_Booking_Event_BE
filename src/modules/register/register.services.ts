@@ -1,7 +1,6 @@
 import databaseService from '~/database/database.services'
 import Register from './register.schema'
 import { ObjectId } from 'mongodb'
-import { env } from '~/config/environment'
 
 class RegisterService {
   async registerEvent(id: string, user_id: string) {
@@ -90,6 +89,13 @@ class RegisterService {
         }
       ])
       .toArray()
+  }
+
+  async checkRegistered(event_id: string, visitor_id: string) {
+    return await databaseService.registers.findOne({
+      event_id: new ObjectId(event_id),
+      visitor_id: new ObjectId(visitor_id)
+    })
   }
 }
 
