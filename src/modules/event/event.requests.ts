@@ -13,7 +13,7 @@ export interface EventRequestBody {
   time_end: string
   location: LocationType
   image: string
-  qr_code: string
+  qr_code?: string
   event_operator_id: ObjectId
   address: string
   speaker_name: string

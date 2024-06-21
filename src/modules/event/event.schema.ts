@@ -71,7 +71,7 @@ export default class Event {
     this.event_operator_id = event_operator_id
     this.image = image || ''
     this.category = ticket_price === 0 ? EventCategory.FREE : EventCategory.PAID
-    this.status = EventStatus.PENDING
+    this.status = status || EventStatus.PENDING
     this.address =
       address ||
       'Lô E2a-7, Đường D1, Khu Công Nghệ Cao, P.Long Thạnh Mỹ, Tp.Thủ Đức, Hồ Chí Minh City, Vietnam, Trái Đất..'
