@@ -16,7 +16,6 @@ import payment from './payment/zalo/server'
 import { initFolder } from './utils/file'
 import mediaRouter from './modules/media/media.routes'
 import staticRouter from './modules/static/static.routes'
-import path from 'path'
 
 initFolder()
 

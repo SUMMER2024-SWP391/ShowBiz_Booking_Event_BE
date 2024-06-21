@@ -8,13 +8,6 @@ import eventOperatorService from './event_operator.services'
 import eventService from '../event/event.services'
 import userService from '../user/user.services'
 import { UserRole } from '~/constants/enums'
-import { verifyToken } from '~/utils/jwt'
-import { env } from '~/config/environment'
-import { TokenPayload } from '../user/user.requests'
-import { ErrorWithStatus } from '~/models/Errors'
-import { capitalize } from '~/utils/capitalize'
-import { StatusCodes } from 'http-status-codes'
-import { JsonWebTokenError } from 'jsonwebtoken'
 
 export const registerEventOperatorValidator = validate(
   checkSchema(
@@ -109,5 +102,25 @@ export const assignCheckingStaffValidator = validate(
       }
     },
     ['body']
+  )
+)
+
+export const checkInValidator = validate(
+  checkSchema(
+    {
+      otp_check_in: {
+        custom: {
+          options: async (value, { req }) => {
+            const { otp_check_in } = req.body
+            const result = await databaseService.registers.findOne({ otp_check_in })
+
+            if (!result) throw new Error('WRONG_OTP_CHECK_IN')
+
+            return true
+          }
+        }
+      }
+    },
+    ['params']
   )
 )
