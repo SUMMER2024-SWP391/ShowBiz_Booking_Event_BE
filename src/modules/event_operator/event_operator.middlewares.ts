@@ -8,6 +8,7 @@ import eventOperatorService from './event_operator.services'
 import eventService from '../event/event.services'
 import userService from '../user/user.services'
 import { UserRole } from '~/constants/enums'
+import { canCheckIn, isToday } from '~/utils/common'
 
 export const registerEventOperatorValidator = validate(
   checkSchema(
@@ -116,6 +117,21 @@ export const checkInValidator = validate(
 
             if (!result) throw new Error('WRONG_OTP_CHECK_IN')
 
+            if (result.status_check_in) throw new Error('ALREADY_CHECKED_IN')
+
+            const event = await eventService.getEventById(result.event_id.toString())
+            console.log('🚀 ~ event:', event)
+
+            // người checkin chỉ có thể check in trước 30 phút so với thời gian bắt đầu của event
+            if (!isToday(event.date_event)) {
+              throw new Error('The event does not occur today!')
+            }
+
+            // chỉ được check in trước 30 phút so với thời gian bắt đầu của event
+            if (canCheckIn(event.time_start)) {
+              throw new Error('You can only check in 30 minutes before the event starts!')
+            }
+              
             return true
           }
         }
