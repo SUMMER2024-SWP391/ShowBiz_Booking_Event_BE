@@ -99,6 +99,14 @@ class RegisterService {
       .toArray()
   }
 
+
+  async checkRegistered(event_id: string, visitor_id: string) {
+    return await databaseService.registers.findOne({
+      event_id: new ObjectId(event_id),
+      visitor_id: new ObjectId(visitor_id)
+    })
+  }
+  
   async getRegisterByEventIdAndUserId(event_id: string, visitor_id: string) {
     return await databaseService.registers
       .aggregate([

@@ -5,6 +5,11 @@ import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
 import eventService from './event.services'
 import { EVENT_MESSAGES } from '../user/user.messages'
 import { Event, compareTimes, convertTimeToMinutes, isDateOneWeekLater, isTimeConflict } from '~/utils/common'
+import { NextFunction, Request, Response } from 'express'
+import { TokenPayload } from '../user/user.requests'
+import registerService from '../register/register.services'
+import { StatusCodes } from 'http-status-codes'
+import { ErrorWithStatus } from '~/models/Errors'
 
 export const createEventValidator = validate(
   checkSchema(
@@ -132,3 +137,13 @@ export const paginationValidator = validate(
     ['query']
   )
 )
+
+export const checkRegisteredEvent = async (req: Request, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { id } = req.params
+  const checkRegistered = await registerService.checkRegistered(id, user_id)
+  if (checkRegistered) {
+    throw new ErrorWithStatus({ message: EVENT_MESSAGES.YOU_REGISTERED_THIS_EVENT, status: StatusCodes.BAD_REQUEST })
+  }
+  next()
+}
