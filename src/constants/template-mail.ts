@@ -51,7 +51,7 @@ export const templateVerifyAccount = (email: string, verify_token: string): Mail
   }
 }
 
-export const templateRegisterEvent = (event: Event, qrcode: string, user: User): MailTemplate => {
+export const templateRegisterEvent = (event: Event, otp: string, user: User): MailTemplate => {
   return {
     from: `${env.EMAIL_USER}`,
     to: `${user.email}`,
@@ -83,9 +83,9 @@ export const templateRegisterEvent = (event: Event, qrcode: string, user: User):
                     Thời gian: ${event.date_event}<br>
                     Thời gian : ${event.time_start} - ${event.time_end}<br>
                     </p>
-                    <div style="display : flex">
+                    <div style="display : flex,text-center">
                       <div style="width: 200px,height : 200px">
-                        <img src="${qrcode}" alt="QRCode" style="width: 100%; height: 100%">
+                          ${otp}
                       </div>
                     </div>
                     <br>

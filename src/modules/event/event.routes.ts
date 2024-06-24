@@ -8,6 +8,7 @@ import {
   getEventByIdController,
   getEventListController,
   getEventListOperatorController,
+  getTicketByEventIdController,
   handleStatusEventController,
   registerEventController
 } from './event.controllers'
@@ -79,5 +80,7 @@ eventsRouter.post(
   wrapAsync(isUserRole([UserRole.Visitor])),
   wrapAsync(answerFeedbackEventController)
 )
+
+eventsRouter.get('/ticket/:id', accessTokenValidator, wrapAsync(getTicketByEventIdController))
 
 export default eventsRouter

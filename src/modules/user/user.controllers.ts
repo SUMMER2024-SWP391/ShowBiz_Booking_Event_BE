@@ -211,7 +211,6 @@ export const refreshTokenController = async (
 
 export const getListRegisterEventController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-
   const result = await registerService.getListRegisterEventByUserId(user_id)
 
   return res.json({
@@ -220,4 +219,11 @@ export const getListRegisterEventController = async (req: Request, res: Response
       events: result
     }
   })
+}
+
+export const checkInController = async (req: Request, res: Response) => {
+  const { eventId } = req.params
+  const result = await registerService.checkIn(eventId)
+
+  return res.json(result)
 }

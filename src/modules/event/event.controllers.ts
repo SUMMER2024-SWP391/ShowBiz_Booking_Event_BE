@@ -13,9 +13,7 @@ import { EVENT_MESSAGES } from '../user/user.messages'
 import { EventStatus } from '~/constants/enums'
 import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
-import { convertDataToQrCode } from '~/utils/qrCode'
 import Register from '../register/register.schema'
-import { ObjectId } from 'mongodb'
 import { templateRegisterEvent } from '~/constants/template-mail'
 import Event from './event.schema'
 import userService from '../user/user.services'
@@ -81,20 +79,19 @@ export const registerEventController = async (
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
   //lưu user đăng ký sự kiện vào bảng register
   const result = await registerService.registerEvent(id, user_id)
-  //tạo qr code
-  const qrCodeURL = await convertDataToQrCode(result as Register)
+
   //lưu qr code vào bảng register
-  const updateQrCode = await registerService.updateQrCode(result?._id as ObjectId, qrCodeURL)
+
   //lấy thông tin event, user để gửi mail
   const event = await eventService.getEventById(id)
   const user = await userService.getUserById(user_id)
-  const template = templateRegisterEvent(event as Event, (updateQrCode as Register).qr_code, user as User)
+  const template = templateRegisterEvent(event as Event, (result as Register).otp_check_in, user as User)
   // console.log(template)
   await sendEmail(template)
   res.json({
     message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
     data: {
-      register: updateQrCode
+      register: result
     }
   })
 }
@@ -123,6 +120,19 @@ export const answerFeedbackEventController = async (
     message: EVENT_MESSAGES.ANSWER_FEEDBACK_SUCCESS,
     data: {
       feedback: result
+    }
+  })
+}
+
+export const getTicketByEventIdController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const register = await registerService.getRegisterByEventIdAndUserId(id, user_id)
+
+  return res.json({
+    message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
+    data: {
+      ticket: register[0]
     }
   })
 }

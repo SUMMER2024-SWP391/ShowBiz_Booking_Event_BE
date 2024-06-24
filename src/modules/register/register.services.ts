@@ -1,16 +1,25 @@
 import databaseService from '~/database/database.services'
 import Register from './register.schema'
 import { ObjectId } from 'mongodb'
+import { env } from '~/config/environment'
+import otpGenerator from 'otp-generator'
 
 class RegisterService {
   async registerEvent(id: string, user_id: string) {
+    const otp = otpGenerator.generate(8, {
+      lowerCaseAlphabets: true,
+      upperCaseAlphabets: true,
+      specialChars: true,
+      digits: true
+    })
+
     const result = await databaseService.registers.insertOne(
       new Register({
         _id: new ObjectId(),
         event_id: new ObjectId(id),
         visitor_id: new ObjectId(user_id),
         status_check_in: false,
-        qr_code: ''
+        otp_check_in: otp
       })
     )
 
@@ -64,7 +73,6 @@ class RegisterService {
           $project: {
             event_id: 0,
             visitor_id: 0,
-            'event._id': 0,
             'event_operator._id': 0,
             'event.capacity': 0,
             'event.description': 0,
@@ -91,11 +99,47 @@ class RegisterService {
       .toArray()
   }
 
+
   async checkRegistered(event_id: string, visitor_id: string) {
     return await databaseService.registers.findOne({
       event_id: new ObjectId(event_id),
       visitor_id: new ObjectId(visitor_id)
     })
+  }
+  
+  async getRegisterByEventIdAndUserId(event_id: string, visitor_id: string) {
+    return await databaseService.registers
+      .aggregate([
+        {
+          $match: {
+            event_id: new ObjectId(event_id),
+            visitor_id: new ObjectId(visitor_id)
+          }
+        },
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'event_id',
+            foreignField: '_id',
+            as: 'event'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'visitor_id',
+            foreignField: '_id',
+            as: 'visitor'
+          }
+        }
+      ])
+      .toArray()
+  }
+
+  async checkIn(eventId: string) {
+    await databaseService.registers.updateOne({ event_id: new ObjectId(eventId) }, { $set: { status_check_in: true } })
+
+    return { message: 'Check in success' }
   }
 }
 

@@ -163,5 +163,7 @@ export const EVENT_MESSAGES = {
   REJECT_EVENT_SUCCESS: 'Reject event success',
   APPROVED_EVENT_SUCCESS: 'Approved event success',
   GET_EVENT_BY_ID_SUCCESS: 'Get event by id success',
-  REGISTER_EVENT_SUCCESS: 'Register event success'
+  REGISTER_EVENT_SUCCESS: 'Register event success',
+
+  GET_TICKET_BY_EVENT_ID_SUCCESS: 'Get ticket by event id success'
 } as const

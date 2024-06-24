@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import {
   assignCheckingStaffValidator,
+  checkInValidator,
   loginValidator,
   registerEventOperatorValidator
 } from './event_operator.middlewares'
@@ -14,7 +15,7 @@ import {
   unassignCheckingStaffController
 } from './event_operator.controllers'
 import { UserRole } from '~/constants/enums'
-import { getListRegisterEventController } from '../user/user.controllers'
+import { checkInController, getListRegisterEventController } from '../user/user.controllers'
 
 const eOperatorRouter = Router()
 
@@ -88,4 +89,19 @@ eOperatorRouter.get(
   isUserRole([UserRole.EventOperator]),
   wrapAsync(getListRegisterEventController)
 )
+
+/**
+ * * Description: Check in event by OTP
+ * Path: /
+ * Method: GET
+ * Header: { authorization: Bearer <access_token> }
+ */
+eOperatorRouter.post(
+  '/checking-staff/check-in/:eventId',
+  accessTokenValidator,
+  isUserRole([UserRole.EventOperator, UserRole.CheckingStaff]),
+  checkInValidator,
+  wrapAsync(checkInController)
+)
+
 export default eOperatorRouter

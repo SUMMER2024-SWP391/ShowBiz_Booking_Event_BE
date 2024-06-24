@@ -5,6 +5,8 @@ import { USER_MESSAGES } from '~/modules/user/user.messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { capitalize } from './capitalize'
+import { EventStatus } from '~/constants/enums'
+import { REGEX_TIME } from '~/constants/regex'
 
 export const verifyAccessToken = async (access_token: string, req?: Request) => {
   if (!access_token) {
@@ -19,7 +21,7 @@ export const verifyAccessToken = async (access_token: string, req?: Request) => 
       secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
     })
     if (req) {
-      ;(req as Request).decoded_authorization = decoded_authorization
+      (req as Request).decoded_authorization = decoded_authorization
       return true
     }
     return decoded_authorization
@@ -109,4 +111,78 @@ function getCurrentDateFormatted(): string {
   const year = currentDate.getFullYear()
 
   return `${day}-${month}-${year}`
+}
+
+export function checkActionOfEventOperatorValid(
+  status: EventStatus,
+  formRegister: boolean,
+  formFeedback: boolean
+): string[] {
+  if (status === EventStatus.PENDING) {
+    if (!formRegister && !formFeedback) {
+      return ['create form register', 'create form feedback']
+    }
+    if (formRegister && formFeedback) {
+      return ['update form register', 'update form feedback']
+    }
+    if (!formRegister && formFeedback) {
+      return ['create form register', 'update form feedback']
+    }
+    if (formRegister && !formFeedback) {
+      return ['update form register', 'create form feedback']
+    }
+  } else if (status === EventStatus.APPROVED) {
+    if (!formFeedback) {
+      return ['create form feedback']
+    } else if (formFeedback) {
+      return ['update form feedback']
+    }
+  }
+
+  return ['do everything']
+}
+
+export function isToday(dateString: string) {
+  const datePattern = /^([0-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-(\d{4})$/
+  
+  // Kiểm tra định dạng ngày
+  if (!datePattern.test(dateString)) {
+      return false
+  }
+
+  // Lấy ngày hiện tại
+  const today = new Date()
+  const todayString = ("0" + today.getDate()).slice(-2) + "-" + 
+                      ("0" + (today.getMonth() + 1)).slice(-2) + "-" + 
+                      today.getFullYear()
+
+  // So sánh ngày hiện tại với chuỗi ngày đầu vào
+  return dateString === todayString
+}
+
+export function canCheckIn(eventTime: string): boolean {
+  if (!REGEX_TIME.test(eventTime)) {
+    throw new Error("Invalid time format. Please use 'HH:mm' format.")
+}
+
+  const [inputHours, inputMinutes] = eventTime.split(':').map(Number)
+
+  const now = new Date()
+  const currentHours = now.getHours()
+  const currentMinutes = now.getMinutes()
+
+  // Calculate total minutes from midnight for input time
+  const totalMinutesInput = inputHours * 60 + inputMinutes
+
+  // Calculate total minutes from midnight for current time
+  const totalMinutesCurrent = currentHours * 60 + currentMinutes
+
+  // Calculate total minutes from midnight for current time minus 30 minutes
+  const totalMinutes30BeforeCurrent = totalMinutesCurrent - 30
+
+  // Calculate total minutes from midnight for current time plus 5 minutes
+  const totalMinutes5AfterCurrent = totalMinutesCurrent + 5
+
+  // Check if input time is within the valid range
+  return totalMinutesInput <= totalMinutes30BeforeCurrent || totalMinutesInput >= totalMinutes5AfterCurrent
 }
