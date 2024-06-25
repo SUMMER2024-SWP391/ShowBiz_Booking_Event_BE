@@ -80,10 +80,10 @@ export const listCheckingStaffController = async (req: Request<ParamsDictionary,
   const result = await eventOperatorService.listCheckingStaff(event_id)
 
   if (!result.length) {
-    return res.json({ message: EVENT_OPERATOR_MESSAGES.DOES_NOT_HAVE_CHECKING_STAFF, data: [] })
+    return res.json({ message: EVENT_OPERATOR_MESSAGES.DOES_NOT_HAVE_CHECKING_STAFF, data: { result: [] } })
   }
 
-  return res.json({ message: EVENT_OPERATOR_MESSAGES.LIST_CHECKING_STAFF_SUCCESS, data: result })
+  return res.json({ message: EVENT_OPERATOR_MESSAGES.LIST_CHECKING_STAFF_SUCCESS, data: { result } })
 }
 
 export const unassignCheckingStaffController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {

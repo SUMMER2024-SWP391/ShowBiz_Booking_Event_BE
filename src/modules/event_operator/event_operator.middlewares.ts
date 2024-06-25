@@ -131,7 +131,7 @@ export const checkInValidator = validate(
             if (canCheckIn(event.time_start)) {
               throw new Error('You can only check in 30 minutes before the event starts!')
             }
-              
+
             return true
           }
         }

@@ -115,7 +115,6 @@ class EventOperatorService {
         },
         {
           $project: {
-            _id: 0,
             'checking_staff._id': 1,
             'checking_staff.user_name': 1,
             'checking_staff.email': 1
