@@ -40,10 +40,10 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
       redirecturl: `${env.DB_HOST}:${env.PORT_FE}`
     }
-  
+
     const items: any[] = []
     const transID: number = Math.floor(Math.random() * 1000000)
-  
+
     const order = {
       app_id: config.app_id,
       app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
@@ -59,7 +59,7 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       bank_code: '',
       mac: ''
     }
-  
+
     // appid|app_trans_id|appuser|amount|apptime|embeddata|item
     const data: string =
       config.app_id +
@@ -76,14 +76,14 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       '|' +
       order.item
     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString()
-  
+
     try {
       const result = await axios.post(config.endpoint, null, { params: order })
-  
+
       return res.status(StatusCodes.OK).json(result.data)
     } catch (error) {
       console.log('🚀 ~ error:', error)
-  
+
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
