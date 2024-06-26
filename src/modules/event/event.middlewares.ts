@@ -138,12 +138,26 @@ export const paginationValidator = validate(
   )
 )
 
-export const checkRegisteredEvent = async (req: Request, res: Response, next: NextFunction) => {
+export const registerrEventValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const { id } = req.params
   const checkRegistered = await registerService.checkRegistered(id, user_id)
   if (checkRegistered) {
     throw new ErrorWithStatus({ message: EVENT_MESSAGES.YOU_REGISTERED_THIS_EVENT, status: StatusCodes.BAD_REQUEST })
+  }
+
+  const [event, numberUserRegister] = await Promise.all([
+    await eventService.getEventById(id),
+    await registerService.getNumberPeopleOfEventByEventId(id)
+  ])
+
+  if (Number(event.capacity) <= numberUserRegister) {
+    next(
+      new ErrorWithStatus({
+        message: EVENT_MESSAGES.EVENT_IS_FULL,
+        status: StatusCodes.LOCKED
+      })
+    )
   }
   next()
 }

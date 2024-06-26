@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
-import { checkRegisteredEvent, createEventValidator, paginationValidator } from './event.middlewares'
+import { registerrEventValidator, createEventValidator, paginationValidator } from './event.middlewares'
 import {
   answerFeedbackEventController,
   createEventController,
@@ -56,7 +56,7 @@ eventsRouter.post(
   '/register-event/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
-  wrapAsync(checkRegisteredEvent),
+  wrapAsync(registerrEventValidator),
   wrapAsync(registerEventController)
 )
 

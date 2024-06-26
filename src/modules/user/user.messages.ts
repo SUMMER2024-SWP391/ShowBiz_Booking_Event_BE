@@ -165,5 +165,7 @@ export const EVENT_MESSAGES = {
   GET_EVENT_BY_ID_SUCCESS: 'Get event by id success',
   REGISTER_EVENT_SUCCESS: 'Register event success',
 
-  GET_TICKET_BY_EVENT_ID_SUCCESS: 'Get ticket by event id success'
+  GET_TICKET_BY_EVENT_ID_SUCCESS: 'Get ticket by event id success',
+
+  EVENT_IS_FULL: 'Event is full'
 } as const
