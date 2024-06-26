@@ -36,8 +36,10 @@ export const getEventListController = async (req: Request<ParamsDictionary, any,
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
     data: {
       events,
-      total_events: total,
-      sum_page
+      paginate: {
+        total_events: total,
+        sum_page
+      }
     }
   })
 }
