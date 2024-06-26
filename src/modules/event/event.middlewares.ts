@@ -124,7 +124,7 @@ export const paginationValidator = validate(
         custom: {
           options: async (value, { req }) => {
             const num = Number(value)
-            const result = await eventService.getAllEventList()
+            const result = await eventService.getAllEventListApproved()
 
             if (num < 1) throw new Error(EVENT_MESSAGES.PAGE_MUST_BE_POSITIVE)
             if (num > Math.ceil(result / Number(req.query?.limit))) throw new Error(EVENT_MESSAGES.INVALID_PAGE)
