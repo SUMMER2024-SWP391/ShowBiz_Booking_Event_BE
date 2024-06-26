@@ -7,16 +7,19 @@ import qs from 'qs'
 import { StatusCodes } from 'http-status-codes'
 import { env } from '~/config/environment'
 import { omit } from 'lodash'
+import databaseService from '~/database/database.services'
+import { ObjectId } from 'mongodb'
+import { EventCategory } from '~/constants/enums'
+import { accessTokenValidator } from '~/modules/user/user.middlewares'
+import { TokenPayload } from '~/modules/user/user.requests'
+import { config } from '~/config/zalo'
 
 const payment = express()
 
 // APP INFO, STK TEST: 4111 1111 1111 1111
-const config = {
-  app_id: env.APP_ID as string,
-  key1: env.KEY1 as string,
-  key2: env.KEY2 as string,
-  endpoint: 'https://sb-openapi.zalopay.vn/v2/create'
-}
+// NGUYYEN VAN A
+// 01/24
+// 123
 
 payment.use(bodyParser.json())
 
@@ -26,57 +29,65 @@ payment.use(bodyParser.json())
  * Sandbox POST https://sb-openapi.zalopay.vn/v2/create
  * Real POST https://openapi.zalopay.vn/v2/create
  */
-payment.post('/payment', async (_req: Request, res: Response): Promise<Response> => {
-  const embed_data = {
-    // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
-    redirecturl: `${env.DB_HOST}:${env.PORT_FE}`
+payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, res: Response): Promise<Response> => {
+  const { eventId } = _req.params
+  const user = _req.decoded_authorization as TokenPayload
+  const _user = await databaseService.users.findOne({ _id: new ObjectId(user.user_id) })
+  const event = await databaseService.events.findOne({ _id: new ObjectId(eventId) })
+
+  if (event?.ticket_price !== 0 && event?.category === EventCategory.PAID) {
+    const embed_data = {
+      // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
+      redirecturl: `${env.DB_HOST}:${env.PORT_FE}`
+    }
+  
+    const items: any[] = []
+    const transID: number = Math.floor(Math.random() * 1000000)
+  
+    const order = {
+      app_id: config.app_id,
+      app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
+      app_user: _user?.user_name,
+      app_time: Date.now(),
+      item: JSON.stringify(items),
+      embed_data: JSON.stringify(embed_data),
+      amount: event?.ticket_price,
+      // khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
+      // Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
+      callback_url: 'https://b074-1-53-37-194.ngrok-free.app/callback',
+      description: `Booking Event - Payment for the order #${transID}`,
+      bank_code: '',
+      mac: ''
+    }
+  
+    // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+    const data: string =
+      config.app_id +
+      '|' +
+      order.app_trans_id +
+      '|' +
+      order.app_user +
+      '|' +
+      order.amount +
+      '|' +
+      order.app_time +
+      '|' +
+      order.embed_data +
+      '|' +
+      order.item
+    order.mac = CryptoJS.HmacSHA256(data, config.key1).toString()
+  
+    try {
+      const result = await axios.post(config.endpoint, null, { params: order })
+  
+      return res.status(StatusCodes.OK).json(result.data)
+    } catch (error) {
+      console.log('🚀 ~ error:', error)
+  
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
+    }
   }
-
-  const items: any[] = []
-  const transID: number = Math.floor(Math.random() * 1000000)
-
-  const order = {
-    app_id: config.app_id,
-    app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-    app_user: 'user123',
-    app_time: Date.now(), // milliseconds
-    item: JSON.stringify(items),
-    embed_data: JSON.stringify(embed_data),
-    amount: 50000,
-    // khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
-    // Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
-    callback_url: 'https://b074-1-53-37-194.ngrok-free.app/callback',
-    description: `Booking Event - Payment for the order #${transID}`,
-    bank_code: '',
-    mac: ''
-  }
-
-  // appid|app_trans_id|appuser|amount|apptime|embeddata|item
-  const data: string =
-    config.app_id +
-    '|' +
-    order.app_trans_id +
-    '|' +
-    order.app_user +
-    '|' +
-    order.amount +
-    '|' +
-    order.app_time +
-    '|' +
-    order.embed_data +
-    '|' +
-    order.item
-  order.mac = CryptoJS.HmacSHA256(data, config.key1).toString()
-
-  try {
-    const result = await axios.post(config.endpoint, null, { params: order })
-
-    return res.status(StatusCodes.OK).json(result.data)
-  } catch (error) {
-    console.log('🚀 ~ error:', error)
-
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
-  }
+  return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
 })
 
 /**
