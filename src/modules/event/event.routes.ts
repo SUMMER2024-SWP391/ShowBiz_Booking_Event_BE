@@ -56,7 +56,7 @@ eventsRouter.post(
   '/register-event/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
-  checkRegisteredEvent,
+  wrapAsync(checkRegisteredEvent),
   wrapAsync(registerEventController)
 )
 
