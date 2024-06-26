@@ -99,14 +99,13 @@ class RegisterService {
       .toArray()
   }
 
-
   async checkRegistered(event_id: string, visitor_id: string) {
     return await databaseService.registers.findOne({
       event_id: new ObjectId(event_id),
       visitor_id: new ObjectId(visitor_id)
     })
   }
-  
+
   async getRegisterByEventIdAndUserId(event_id: string, visitor_id: string) {
     return await databaseService.registers
       .aggregate([
@@ -140,6 +139,14 @@ class RegisterService {
     await databaseService.registers.updateOne({ event_id: new ObjectId(eventId) }, { $set: { status_check_in: true } })
 
     return { message: 'Check in success' }
+  }
+
+  async getNumberPeopleOfEventByEventId(id: string) {
+    const number = await databaseService.registers.countDocuments({
+      event_id: new ObjectId(id)
+    })
+
+    return number
   }
 }
 
