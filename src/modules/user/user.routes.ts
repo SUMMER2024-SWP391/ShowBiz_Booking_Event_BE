@@ -188,7 +188,7 @@ usersRouter.patch(
 usersRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController))
 
 /**
- * * Description: Get all reister event
+ * * Description: Get all register event
  * Path: /list-register-event
  * Method: GET
  * Header: { Authorization: Bearer <access_token> }
