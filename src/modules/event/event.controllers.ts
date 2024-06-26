@@ -19,11 +19,16 @@ import Event from './event.schema'
 import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
+import formService from '../form/form.services'
+import { EventQuestionType } from '../form/form.enum'
+import questionService from '../question/question.services'
+import { QUESTION_REGISTER } from '~/constants/question_register'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await eventService.createEvent(user_id, req.body)
-
+  const formEvent = await formService.createFormEvent(String(result?._id), EventQuestionType.REGISTER)
+  await questionService.createNewListQuestion(formEvent.insertedId, QUESTION_REGISTER)
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
 

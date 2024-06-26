@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
 import { EventStatus } from '~/constants/enums'
+import { omit } from 'lodash'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {

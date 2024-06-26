@@ -19,6 +19,7 @@ interface EventType {
   status?: EventStatus
   speaker_name?: string
   sponsor_name?: string
+  is_required_form_register: boolean
 }
 
 export default class Event {
@@ -39,6 +40,7 @@ export default class Event {
   status: EventStatus
   speaker_name?: string
   sponsor_name?: string
+  is_required_form_register: boolean
 
   constructor({
     _id,
@@ -56,7 +58,8 @@ export default class Event {
     status,
     address,
     speaker_name,
-    sponsor_name
+    sponsor_name,
+    is_required_form_register
   }: EventType) {
     this._id = _id
     this.name = name
@@ -77,5 +80,6 @@ export default class Event {
       'Lô E2a-7, Đường D1, Khu Công Nghệ Cao, P.Long Thạnh Mỹ, Tp.Thủ Đức, Hồ Chí Minh City, Vietnam, Trái Đất..'
     this.speaker_name = speaker_name
     this.sponsor_name = sponsor_name
+    this.is_required_form_register = is_required_form_register
   }
 }
