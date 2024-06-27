@@ -3,9 +3,10 @@ import { EventRequestBody } from './event.requests'
 import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
-import { EventStatus } from '~/constants/enums'
+import { EventCategory, EventStatus } from '~/constants/enums'
 import { omit } from 'lodash'
 import { EventReponse } from './event.response'
+import dayjs from 'dayjs'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -283,6 +284,22 @@ class EventService {
         }
       ])
       .toArray()
+  }
+
+  async getListEventApproved() {
+    const result = await databaseService.events
+      .find({
+        status: EventStatus.APPROVED,
+        is_required_form_register: true,
+        category: EventCategory.PAID
+      })
+      .toArray()
+
+    return result.filter(
+      (event) =>
+        dayjs(`${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`, 'DD-MM-YYYY') <=
+        dayjs(event.date_event, 'DD-MM-YYYY')
+    )
   }
 }
 

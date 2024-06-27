@@ -3,6 +3,7 @@ import Register from './register.schema'
 import { ObjectId } from 'mongodb'
 import { env } from '~/config/environment'
 import otpGenerator from 'otp-generator'
+import Event from '../event/event.schema'
 
 class RegisterService {
   async registerEvent(id: string, user_id: string) {
@@ -151,6 +152,20 @@ class RegisterService {
     })
 
     return number
+  }
+
+  async getListRegiserPeople(eventList: Event[]) {
+    const result: Register[] = []
+    for (let i = 0; i < eventList.length; i++) {
+      const register = await databaseService.registers
+        .find({
+          event_id: eventList[i]._id
+        })
+        .toArray()
+      result.concat(register)
+    }
+
+    return result
   }
 }
 
