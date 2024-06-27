@@ -3,6 +3,13 @@ import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { registerrEventValidator, createEventValidator, paginationValidator } from './event.middlewares'
 import {
+  checkRegisteredEvent,
+  createEventValidator,
+  paginationValidator,
+  paymentValidator,
+  processPayment
+} from './event.middlewares'
+import {
   answerFeedbackEventController,
   createEventController,
   getEventByIdController,
@@ -10,7 +17,8 @@ import {
   getEventListOperatorController,
   getTicketByEventIdController,
   handleStatusEventController,
-  registerEventController
+  registerEventController,
+  registerEventWithNoFormNoPaymentController
 } from './event.controllers'
 import { UserRole } from '~/constants/enums'
 
@@ -46,7 +54,7 @@ eventsRouter.post('/:idEvent', wrapAsync(handleStatusEventController))
 eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 
 /**
- * * Description: Get form event list register
+ * * Description: Register event
  * Path : /register-event/:id  (id là eventId)
  * Method: POST
  * Headers: { Authorization: 'Bearer <access_token>' }
@@ -55,6 +63,7 @@ eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 eventsRouter.post(
   '/register-event/:id',
   accessTokenValidator,
+  wrapAsync(checkRegisteredEvent),
   wrapAsync(isUserRole([UserRole.Visitor])),
   wrapAsync(registerrEventValidator),
   wrapAsync(registerEventController)
@@ -82,5 +91,13 @@ eventsRouter.post(
 )
 
 eventsRouter.get('/ticket/:id', accessTokenValidator, wrapAsync(getTicketByEventIdController))
+
+eventsRouter.post(
+  '/register-event/no-payment-no-form/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(checkRegisteredEvent),
+  wrapAsync(registerEventWithNoFormNoPaymentController)
+)
 
 export default eventsRouter

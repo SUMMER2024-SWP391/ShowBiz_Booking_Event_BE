@@ -248,7 +248,6 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: env.JWT_SECRET_ACCESS_TOKEN as string
               })
-
               ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
@@ -433,7 +432,7 @@ export const isUserRole = (arrayRole: UserRole[]) => async (req: Request, res: R
   if (!arrayRole.includes(user?.role as UserRole)) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.UNAUTHORIZED,
-      status: StatusCodes.UNAUTHORIZED
+      status: StatusCodes.FORBIDDEN
     })
   }
   next()

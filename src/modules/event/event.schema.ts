@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 import { EventCategory, EventStatus, EventTypeEnum, LocationType } from '~/constants/enums'
 
-interface EventType {
+export interface EventType {
   _id?: ObjectId
   name: string
   capacity: number
@@ -20,6 +20,7 @@ interface EventType {
   speaker_name?: string
   sponsor_name?: string
   is_required_form_register: boolean
+  [key: string]: any
 }
 
 export default class Event {

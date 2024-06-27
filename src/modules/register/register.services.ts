@@ -13,13 +13,17 @@ class RegisterService {
       digits: true
     })
 
+    const date = `${new Date().getMinutes() + 'm'}-${new Date().getHours() + 'h'}-${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+
     const result = await databaseService.registers.insertOne(
       new Register({
         _id: new ObjectId(),
         event_id: new ObjectId(id),
         visitor_id: new ObjectId(user_id),
         status_check_in: false,
-        otp_check_in: otp
+        otp_check_in: otp,
+        time_register: date,
+        status_register: true
       })
     )
 

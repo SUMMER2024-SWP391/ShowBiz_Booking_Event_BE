@@ -1,3 +1,4 @@
+import { ParamsDictionary } from 'express-serve-static-core'
 import axios from 'axios'
 import CryptoJS from 'crypto-js'
 import express, { Request, Response } from 'express'
@@ -87,7 +88,9 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
-  return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
+  return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
+  // return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
+  // return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
 })
 
 /**
@@ -178,6 +181,12 @@ payment.post('/check-status-order/:app_trans_id', async (req: Request, res: Resp
     console.log('🚀 ~ error:', error)
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
   }
+})
+
+payment.get('/info/import', async (req: Request, res: Response): Promise<void> => {
+  const { amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status } = req.query
+  console.log(amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status)
+  res.send({ message: 'hihi' })
 })
 
 export default payment
