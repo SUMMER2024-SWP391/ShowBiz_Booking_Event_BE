@@ -9,7 +9,7 @@ import {
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
 import { createFormQuestionMiddleware, updateFormQuestionMiddleware } from './form.middlewares'
-import { checkRegisteredEvent, isHasFormRegister } from '../event/event.middlewares'
+import { isHasFormRegister, registerEventValidator } from '../event/event.middlewares'
 import { registerEventWithNoFormNoPaymentController } from '../event/event.controllers'
 
 const formRouter = Router()
@@ -43,7 +43,7 @@ formRouter.get(
   '/question/register/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
-  wrapAsync(checkRegisteredEvent),
+  wrapAsync(registerEventValidator),
   wrapAsync(isHasFormRegister),
   wrapAsync(registerEventWithNoFormNoPaymentController)
 )

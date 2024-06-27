@@ -146,7 +146,7 @@ export const paginationValidator = validate(
   )
 )
 
-export const registerrEventValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const registerEventValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const { id } = req.params // eventId
   const checkRegistered = await registerService.checkRegistered(id, user_id)
