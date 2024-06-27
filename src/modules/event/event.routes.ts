@@ -1,14 +1,7 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
-import { registerrEventValidator, createEventValidator, paginationValidator } from './event.middlewares'
-import {
-  checkRegisteredEvent,
-  createEventValidator,
-  paginationValidator,
-  paymentValidator,
-  processPayment
-} from './event.middlewares'
+import { createEventValidator, paginationValidator, registerEventValidator } from './event.middlewares'
 import {
   answerFeedbackEventController,
   createEventController,
@@ -63,9 +56,8 @@ eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 eventsRouter.post(
   '/register-event/:id',
   accessTokenValidator,
-  wrapAsync(checkRegisteredEvent),
   wrapAsync(isUserRole([UserRole.Visitor])),
-  wrapAsync(registerrEventValidator),
+  wrapAsync(registerEventValidator),
   wrapAsync(registerEventController)
 )
 
@@ -96,7 +88,7 @@ eventsRouter.post(
   '/register-event/no-payment-no-form/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
-  wrapAsync(checkRegisteredEvent),
+  wrapAsync(registerEventValidator),
   wrapAsync(registerEventWithNoFormNoPaymentController)
 )
 
