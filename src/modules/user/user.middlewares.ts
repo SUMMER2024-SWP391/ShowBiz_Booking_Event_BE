@@ -432,7 +432,7 @@ export const isUserRole = (arrayRole: UserRole[]) => async (req: Request, res: R
   if (!arrayRole.includes(user?.role as UserRole)) {
     throw new ErrorWithStatus({
       message: USER_MESSAGES.UNAUTHORIZED,
-      status: StatusCodes.UNAUTHORIZED
+      status: StatusCodes.FORBIDDEN
     })
   }
   next()

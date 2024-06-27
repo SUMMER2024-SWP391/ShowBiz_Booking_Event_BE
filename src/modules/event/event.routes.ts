@@ -1,7 +1,13 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
-import { checkRegisteredEvent, createEventValidator, isHasFormRegister, paginationValidator, paymentValidator, processPayment } from './event.middlewares'
+import {
+  checkRegisteredEvent,
+  createEventValidator,
+  paginationValidator,
+  paymentValidator,
+  processPayment
+} from './event.middlewares'
 import {
   answerFeedbackEventController,
   createEventController,
@@ -10,7 +16,8 @@ import {
   getEventListOperatorController,
   getTicketByEventIdController,
   handleStatusEventController,
-  registerEventController
+  registerEventController,
+  registerEventWithNoFormNoPaymentController
 } from './event.controllers'
 import { UserRole } from '~/constants/enums'
 
@@ -55,10 +62,9 @@ eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 eventsRouter.post(
   '/register-event/:id',
   accessTokenValidator,
-  wrapAsync(isUserRole([UserRole.Visitor])),
-  isHasFormRegister,
-  processPayment,
   wrapAsync(checkRegisteredEvent),
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(processPayment),
   wrapAsync(registerEventController)
 )
 
@@ -84,5 +90,13 @@ eventsRouter.post(
 )
 
 eventsRouter.get('/ticket/:id', accessTokenValidator, wrapAsync(getTicketByEventIdController))
+
+eventsRouter.post(
+  '/register-event/no-payment-no-form/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(checkRegisteredEvent),
+  wrapAsync(registerEventWithNoFormNoPaymentController)
+)
 
 export default eventsRouter

@@ -1,3 +1,4 @@
+import { ParamsDictionary } from 'express-serve-static-core'
 import axios from 'axios'
 import CryptoJS from 'crypto-js'
 import express, { Request, Response } from 'express'
@@ -40,10 +41,10 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
       redirecturl: `${env.DB_HOST}:${env.PORT_FE}`
     }
-  
+
     const items: any[] = []
     const transID: number = Math.floor(Math.random() * 1000000)
-  
+
     const order = {
       app_id: config.app_id,
       app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
@@ -59,7 +60,7 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       bank_code: '',
       mac: ''
     }
-  
+
     // appid|app_trans_id|appuser|amount|apptime|embeddata|item
     const data: string =
       config.app_id +
@@ -76,15 +77,15 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       '|' +
       order.item
     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString()
-  
+
     try {
       const result = await axios.post(config.endpoint, null, { params: order })
       console.log('🚀 ~ result:', result)
-  
+
       res.redirect(result.data.order_url)
     } catch (error) {
       console.log('🚀 ~ error:', error)
-  
+
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
@@ -181,6 +182,12 @@ payment.post('/check-status-order/:app_trans_id', async (req: Request, res: Resp
     console.log('🚀 ~ error:', error)
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
   }
+})
+
+payment.get('/info/import', async (req: Request, res: Response): Promise<void> => {
+  const { amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status } = req.query
+  console.log(amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status)
+  res.send({ message: 'hihi' })
 })
 
 export default payment

@@ -5,6 +5,7 @@ import Event from './event.schema'
 import { env } from '~/config/environment'
 import { EventStatus } from '~/constants/enums'
 import { omit } from 'lodash'
+import { EventReponse } from './event.response'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -145,7 +146,7 @@ class EventService {
 
   async getEventById(id: string) {
     const result = await databaseService.events
-      .aggregate([
+      .aggregate<EventReponse>([
         {
           $match: {
             _id: new ObjectId(id)

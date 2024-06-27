@@ -103,6 +103,26 @@ export const registerEventController = async (
   })
 }
 
+export const registerEventWithNoFormNoPaymentController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+
+  const result = await registerService.registerEvent(id, user_id)
+
+  //lấy thông tin event, user để gửi mail
+  const event = await eventService.getEventById(id)
+  const user = await userService.getUserById(user_id)
+  const template = templateRegisterEvent(event as Event, (result as Register).otp_check_in, user as User)
+
+  await sendEmail(template)
+  res.json({
+    message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
+    data: {
+      register: result
+    }
+  })
+}
+
 export const getEventListOperatorController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await eventService.getEventListOperator(user_id)

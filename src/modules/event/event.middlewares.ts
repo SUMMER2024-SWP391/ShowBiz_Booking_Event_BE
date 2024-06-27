@@ -151,7 +151,7 @@ export const checkRegisteredEvent = async (req: Request, res: Response, next: Ne
   const { id } = req.params // eventId
   const checkRegistered = await registerService.checkRegistered(id, user_id)
   if (checkRegistered) {
-    throw new ErrorWithStatus({ message: EVENT_MESSAGES.YOU_REGISTERED_THIS_EVENT, status: StatusCodes.BAD_REQUEST })
+    throw new ErrorWithStatus({ message: EVENT_MESSAGES.YOU_REGISTERED_THIS_EVENT, status: StatusCodes.CONFLICT })
   }
   next()
 }
@@ -160,24 +160,22 @@ export const isHasFormRegister = async (req: Request, res: Response, next: NextF
   const { id } = req.params // eventId
   const event = await eventService.getEventById(id)
   // nếu event không có form và không có cả payment(ticket_price = 0 và category = FREE) thì chuyển sang middleware tiếp theo
-  if (!event.form) {
+  if (!event.is_required_form_register) {
     return next()
-  } else { // nếu event có form thì phải lấy câu trả lời của user
+  } else {
+    // nếu event có form thì phải lấy câu trả lời của user
     const { user_id } = req.decoded_authorization as TokenPayload
     // const checkRegistered = await registerService.checkRegistered(id, user_id)
     // if (!checkRegistered) {
     //   throw new ErrorWithStatus({ message: EVENT_MESSAGES.YOU_NOT_REGISTERED_THIS_EVENT, status: StatusCodes.BAD_REQUEST })
     // }
-    const form = await getFormController(req, res)
-    console.log(form)
-  } 
-  
+    await getFormController(req, res)
+  }
+
   next()
 }
 
-export const paymentValidator = async (req: Request, res: Response, next: NextFunction) => {
-
-}
+export const paymentValidator = async (req: Request, res: Response, next: NextFunction) => {}
 
 export const processPayment = async (req: Request, res: Response): Promise<Response> => {
   const id = req.params as any
@@ -226,14 +224,19 @@ export const processPayment = async (req: Request, res: Response): Promise<Respo
     try {
       const result = await axios.post(config.endpoint, null, { params: order })
       console.log('🚀 ~ result.data.order_url:', result.data.order_url)
-      
-      return res.redirect(result.data.order_url) as any
+
+      return res.json({
+        message: 'Answer form success',
+        data: {
+          url: result.data.order_url
+        }
+      })
     } catch (error) {
       console.log('🚀 ~ error:', error)
 
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
-  
+
   return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
 }
