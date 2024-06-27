@@ -104,7 +104,8 @@ class UserService {
         token: refresh_token
       })
     )
-    const template = templateVerifyAccount(email, email_verify_token)
+    const user = (await databaseService.users.findOne({ _id: user_id })) as User
+    const template = templateVerifyAccount(user, email_verify_token)
     await sendEmail(template)
 
     return { access_token, refresh_token }
@@ -352,7 +353,9 @@ class UserService {
       { $set: { email_verify_token, updated_at: '$$NOW' } }
     ])
 
-    const template = templateVerifyAccount(email, email_verify_token)
+    const user = (await databaseService.users.findOne({ _id: new ObjectId(user_id) })) as User
+
+    const template = templateVerifyAccount(user, email_verify_token)
     await sendEmail(template)
 
     return { message: USER_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS }
@@ -392,9 +395,9 @@ class UserService {
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       { $set: { forgot_password_token, updated_at: '$$NOW' } }
     ])
-    const user = await userService.getUserById(user_id)
+    const user = (await userService.getUserById(user_id)) as User
 
-    const template = templateForgotPassword(user?.email as string, forgot_password_token)
+    const template = templateForgotPassword(user, forgot_password_token)
     await sendEmail(template)
 
     return { message: USER_MESSAGES.SEND_EMAIL_FORGOT_PASSWORD_SUCCESS }
