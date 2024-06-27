@@ -9,6 +9,7 @@ import eventService from '../event/event.services'
 import userService from '../user/user.services'
 import { UserRole } from '~/constants/enums'
 import { canCheckIn, isToday } from '~/utils/common'
+import registerService from '../register/register.services'
 
 export const registerEventOperatorValidator = validate(
   checkSchema(
@@ -113,7 +114,7 @@ export const checkInValidator = validate(
         custom: {
           options: async (value, { req }) => {
             const { otp_check_in } = req.body
-            const result = await databaseService.registers.findOne({ otp_check_in })
+            const result = await registerService.findRegisterByOtp(otp_check_in)
 
             if (!result) throw new Error('WRONG_OTP_CHECK_IN')
 
@@ -131,7 +132,7 @@ export const checkInValidator = validate(
             if (canCheckIn(event.time_start)) {
               throw new Error('You can only check in 30 minutes before the event starts!')
             }
-              
+
             return true
           }
         }

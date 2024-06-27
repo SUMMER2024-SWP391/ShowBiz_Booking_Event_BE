@@ -12,7 +12,7 @@ import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
-import { REGEX_FPT_EMAIL, REGEX_FPT_EVENT_OPERATOR_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
+import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
 import userService from './user.services'
 
 export const passwordSchema: ParamSchema = {

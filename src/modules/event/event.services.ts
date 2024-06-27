@@ -266,6 +266,17 @@ class EventService {
       ])
       .toArray()
   }
+
+  async checkPayment(event_id: string) {
+    const event = await databaseService.events.findOne({ _id: new ObjectId(event_id) })
+
+    return (event?.ticket_price as number) > 0 ? true : false
+  }
+
+  async cancelEvent(visitor_id: string) {
+    await databaseService.registers.deleteOne({ visitor_id: new ObjectId(visitor_id) })
+    await databaseService.answers.deleteMany({ visitor_id: new ObjectId(visitor_id) })
+  }
 }
 
 const eventService = new EventService()

@@ -21,7 +21,7 @@ export const verifyAccessToken = async (access_token: string, req?: Request) => 
       secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
     })
     if (req) {
-      (req as Request).decoded_authorization = decoded_authorization
+      ;(req as Request).decoded_authorization = decoded_authorization
       return true
     }
     return decoded_authorization
@@ -144,17 +144,16 @@ export function checkActionOfEventOperatorValid(
 
 export function isToday(dateString: string) {
   const datePattern = /^([0-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-(\d{4})$/
-  
+
   // Kiểm tra định dạng ngày
   if (!datePattern.test(dateString)) {
-      return false
+    return false
   }
 
   // Lấy ngày hiện tại
   const today = new Date()
-  const todayString = ("0" + today.getDate()).slice(-2) + "-" + 
-                      ("0" + (today.getMonth() + 1)).slice(-2) + "-" + 
-                      today.getFullYear()
+  const todayString =
+    ('0' + today.getDate()).slice(-2) + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getFullYear()
 
   // So sánh ngày hiện tại với chuỗi ngày đầu vào
   return dateString === todayString
@@ -163,7 +162,7 @@ export function isToday(dateString: string) {
 export function canCheckIn(eventTime: string): boolean {
   if (!REGEX_TIME.test(eventTime)) {
     throw new Error("Invalid time format. Please use 'HH:mm' format.")
-}
+  }
 
   const [inputHours, inputMinutes] = eventTime.split(':').map(Number)
 
@@ -185,4 +184,21 @@ export function canCheckIn(eventTime: string): boolean {
 
   // Check if input time is within the valid range
   return totalMinutesInput <= totalMinutes30BeforeCurrent || totalMinutesInput >= totalMinutes5AfterCurrent
+}
+
+export function canCancelEvent(dateEvent: string, timeStart: string): boolean {
+  const date = convertToDate(dateEvent)
+
+  const [hours, minutes] = timeStart.split(':').map(Number)
+  const eventDate = new Date(date)
+  eventDate.setHours(hours, minutes, 0, 0)
+
+  const now = new Date()
+  //khoảng cách thời gian hiện tại so với thời gian bắt đầu sự kiện
+  const diff = eventDate.getTime() - now.getTime()
+
+  //đổi sang giờ
+  const diffInHours = diff / (1000 * 60 * 60)
+
+  return diffInHours >= 48
 }

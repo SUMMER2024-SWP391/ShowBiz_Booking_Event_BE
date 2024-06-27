@@ -136,3 +136,19 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
     }
   })
 }
+
+export const cancelEventController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const checkPayment = await eventService.checkPayment(id)
+  if (checkPayment) {
+    return res.json({
+      message: EVENT_MESSAGES.EVENT_HAVE_PAYMENT
+    })
+  }
+  await eventService.cancelEvent(user_id)
+
+  return res.json({
+    message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS
+  })
+}

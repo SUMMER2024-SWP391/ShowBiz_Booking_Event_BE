@@ -9,6 +9,8 @@ export const USER_MESSAGES = {
   LOGOUT_SUCCESS: 'Logout success!',
   REGISTER_SUCCESS: 'Register success!',
 
+  YOU_CAN_ONLY_CANCEL_BEFORE_48H: 'You can only cancel before 48 hours!',
+
   // access token
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist!',
 
@@ -124,6 +126,8 @@ export const EVENT_MESSAGES = {
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
   GET_EVENT_LIST_OPERATOR_SUCCESS: 'Get event list operator successfully!',
   YOU_REGISTERED_THIS_EVENT: 'You registered this event!',
+  YOU_HAVE_NOT_REGISTERED_THIS_EVENT: 'You have not registered this event!',
+  EVENT_HAVE_PAYMENT: 'Event have payment!',
 
   //answer
   ANSWER_FEEDBACK_SUCCESS: 'Answer feedback success!',
@@ -132,6 +136,7 @@ export const EVENT_MESSAGES = {
   EVENT_ID_IS_REQUIRED: 'Event id is required!',
   EVENT_ID_IS_INVALID: 'Event id is invalid!',
   EVENT_NOT_FOUND: 'Event not found!',
+  CANCEL_EVENT_SUCCESS: 'Cancel event success!',
 
   //PAGE
   INVALID_PAGE: 'Page out of range!',
