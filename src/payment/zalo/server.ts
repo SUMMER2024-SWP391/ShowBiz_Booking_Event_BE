@@ -79,15 +79,18 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
   
     try {
       const result = await axios.post(config.endpoint, null, { params: order })
+      console.log('🚀 ~ result:', result)
   
-      return res.status(StatusCodes.OK).json(result.data)
+      res.redirect(result.data.order_url)
     } catch (error) {
       console.log('🚀 ~ error:', error)
   
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
   }
-  return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
+  return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
+  // return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
+  // return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
 })
 
 /**

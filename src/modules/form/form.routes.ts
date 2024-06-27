@@ -21,7 +21,6 @@ const formRouter = Router()
  *  type : register || feedback
  * }
  */
-
 formRouter.post(
   '/new/:id',
   accessTokenValidator,
@@ -42,7 +41,6 @@ formRouter.get('/question/:id/:type', wrapAsync(getFormController))
  * Headers: { Authorization }
  * Body : {UpdateFormQuestionReqBody}
  */
-
 formRouter.post(
   '/update/:id',
   accessTokenValidator,

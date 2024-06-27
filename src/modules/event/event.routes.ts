@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
-import { checkRegisteredEvent, createEventValidator, paginationValidator } from './event.middlewares'
+import { checkRegisteredEvent, createEventValidator, isHasFormRegister, paginationValidator, paymentValidator, processPayment } from './event.middlewares'
 import {
   answerFeedbackEventController,
   createEventController,
@@ -46,7 +46,7 @@ eventsRouter.post('/:idEvent', wrapAsync(handleStatusEventController))
 eventsRouter.get('/:idEvent', wrapAsync(getEventByIdController))
 
 /**
- * * Description: Get form event list register
+ * * Description: Register event
  * Path : /register-event/:id  (id là eventId)
  * Method: POST
  * Headers: { Authorization: 'Bearer <access_token>' }
@@ -56,6 +56,8 @@ eventsRouter.post(
   '/register-event/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
+  isHasFormRegister,
+  processPayment,
   wrapAsync(checkRegisteredEvent),
   wrapAsync(registerEventController)
 )
