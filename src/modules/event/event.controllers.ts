@@ -176,6 +176,7 @@ export const cancelEventController = async (req: Request, res: Response) => {
       message: EVENT_MESSAGES.EVENT_HAVE_PAYMENT
     })
   }
+
   await eventService.cancelEvent(user_id, id)
 
   return res.json({
