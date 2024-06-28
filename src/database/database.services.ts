@@ -1,3 +1,4 @@
+import { PaymentZalo } from './../payment/zalo/payment.schema'
 import { Collection, Db, MongoClient } from 'mongodb'
 import User from '~/modules/user/user.schema'
 import { env } from '~/config/environment'
@@ -70,6 +71,10 @@ class DatabaseService {
 
   get imageEvents(): Collection<ImageEvent> {
     return this.db.collection(env.DB_COLLECTION_IMAGE_EVENTS as string)
+  }
+
+  get payments(): Collection<PaymentZalo> {
+    return this.db.collection(env.DB_COLLECTION_PAYMENT as string)
   }
 }
 

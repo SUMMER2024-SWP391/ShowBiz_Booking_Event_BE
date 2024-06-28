@@ -4,6 +4,8 @@ import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
 import { EventStatus } from '~/constants/enums'
+import { omit } from 'lodash'
+import { EventReponse } from './event.response'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -17,14 +19,21 @@ class EventService {
     return await databaseService.events.findOne({ _id: result.insertedId })
   }
 
-  async getAllEventList() {
-    return await databaseService.events.countDocuments()
+  async getAllEventListApproved() {
+    return await databaseService.events.countDocuments({
+      status: EventStatus.APPROVED
+    })
   }
 
   async getEventList({ limit, page }: { limit: number; page: number }) {
     const [events, total, event] = await Promise.all([
       databaseService.events
         .aggregate([
+          {
+            $match: {
+              status: EventStatus.APPROVED
+            }
+          },
           {
             $lookup: {
               from: env.DB_COLLECTION_USERS,
@@ -33,7 +42,7 @@ class EventService {
               as: 'event_operator'
             }
           },
-          { $skip: (page - 1) * limit },
+          { $skip: page * limit - limit },
           { $limit: limit },
           {
             $project: {
@@ -61,9 +70,18 @@ class EventService {
           })
         }),
       databaseService.events
-        .aggregate([{ $skip: (page - 1) * limit }, { $limit: limit }, { $count: 'total' }])
+        .aggregate([
+          {
+            $match: {
+              status: EventStatus.APPROVED
+            }
+          },
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+          { $count: 'total' }
+        ])
         .toArray(),
-      this.getAllEventList()
+      this.getAllEventListApproved()
     ])
     const sum_page = Math.ceil(event / limit)
 
@@ -125,7 +143,7 @@ class EventService {
       await databaseService.events
         .aggregate([{ $skip: (page - 1) * limit }, { $limit: limit }, { $count: 'total' }])
         .toArray(),
-      this.getAllEventList()
+      this.getAllEventListApproved()
     ])
     const sum_page = Math.ceil(event / limit)
 
@@ -144,7 +162,7 @@ class EventService {
 
   async getEventById(id: string) {
     const result = await databaseService.events
-      .aggregate([
+      .aggregate<EventReponse>([
         {
           $match: {
             _id: new ObjectId(id)

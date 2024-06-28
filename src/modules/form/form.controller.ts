@@ -29,18 +29,16 @@ export const createFormQuestionController = async (
 }
 
 export const getFormController = async (req: Request, res: Response) => {
-  const { id, type } = req.params
+  const { id } = req.params
   const event = await eventService.getEventById(id)
-  const formDocument = await formService.getFormEventByIdEndType(
-    new ObjectId(event._id),
-    capitalize(type.toLowerCase()) as EventQuestionType
-  )
+  const formDocument = await formService.getFormEventByIdEndType(new ObjectId(event._id), EventQuestionType.REGISTER)
   const formQuestion = await questionService.getListQuestion(formDocument?._id as ObjectId)
 
   return res.json({
     message: FORM_MESSAGE.GET_FORM_REGISTER_SUCCESS,
     data: {
-      formQuestion: formQuestion
+      formQuestion: formQuestion,
+      event
     }
   })
 }
@@ -70,7 +68,11 @@ export const handleCheckFormController = async (req: Request, res: Response) => 
     formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.FEEDBACK)
   ])
 
-  const action = checkActionOfEventOperatorValid(event.status, Boolean(formRegister), Boolean(formFeedback))
+  const action = checkActionOfEventOperatorValid(
+    event.status as EventStatus,
+    Boolean(formRegister),
+    Boolean(formFeedback)
+  )
   res.json({
     message: FORM_MESSAGE.CHECK_SUCCESS,
     data: {

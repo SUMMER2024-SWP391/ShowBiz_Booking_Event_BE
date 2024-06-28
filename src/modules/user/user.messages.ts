@@ -125,9 +125,9 @@ export const EVENT_MESSAGES = {
   CREATE_EVENT_REQUEST_SUCCESS: 'Create event request successfully! Wait for admin confirm!',
   GET_EVENT_LIST_SUCCESS: 'Get event list successfully!',
   GET_EVENT_LIST_OPERATOR_SUCCESS: 'Get event list operator successfully!',
-  YOU_REGISTERED_THIS_EVENT: 'You registered this event!',
   YOU_HAVE_NOT_REGISTERED_THIS_EVENT: 'You have not registered this event!',
   EVENT_HAVE_PAYMENT: 'Event have payment!',
+  YOU_REGISTERED_THIS_EVENT: 'You already registered this event!',
 
   //answer
   ANSWER_FEEDBACK_SUCCESS: 'Answer feedback success!',
@@ -170,5 +170,7 @@ export const EVENT_MESSAGES = {
   GET_EVENT_BY_ID_SUCCESS: 'Get event by id success',
   REGISTER_EVENT_SUCCESS: 'Register event success',
 
-  GET_TICKET_BY_EVENT_ID_SUCCESS: 'Get ticket by event id success'
+  GET_TICKET_BY_EVENT_ID_SUCCESS: 'Get ticket by event id success',
+
+  EVENT_IS_FULL: 'Event is full'
 } as const

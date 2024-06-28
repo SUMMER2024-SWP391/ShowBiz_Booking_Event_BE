@@ -20,10 +20,16 @@ import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
 import { ObjectId } from 'mongodb'
+import formService from '../form/form.services'
+import { EventQuestionType } from '../form/form.enum'
+import questionService from '../question/question.services'
+import { QUESTION_REGISTER } from '~/constants/question_register'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await eventService.createEvent(user_id, req.body)
+  const formEvent = await formService.createFormEvent(String(result?._id), EventQuestionType.REGISTER)
+  await questionService.createNewListQuestion(formEvent.insertedId, QUESTION_REGISTER)
 
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
@@ -37,8 +43,10 @@ export const getEventListController = async (req: Request<ParamsDictionary, any,
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
     data: {
       events,
-      total_events: total,
-      sum_page
+      paginate: {
+        total_events: total,
+        sum_page
+      }
     }
   })
 }
@@ -88,6 +96,26 @@ export const registerEventController = async (
   const user = await userService.getUserById(user_id)
   const template = templateRegisterEvent(event as Event, (result as Register).otp_check_in, user as User)
   // console.log(template)
+  await sendEmail(template)
+  res.json({
+    message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
+    data: {
+      register: result
+    }
+  })
+}
+
+export const registerEventWithNoFormNoPaymentController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+
+  const result = await registerService.registerEvent(id, user_id)
+
+  //lấy thông tin event, user để gửi mail
+  const event = await eventService.getEventById(id)
+  const user = await userService.getUserById(user_id)
+  const template = templateRegisterEvent(event as Event, (result as Register).otp_check_in, user as User)
+
   await sendEmail(template)
   res.json({
     message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,

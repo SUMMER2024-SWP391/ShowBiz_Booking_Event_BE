@@ -16,6 +16,7 @@ import payment from './payment/zalo/server'
 import { initFolder } from './utils/file'
 import mediaRouter from './modules/media/media.routes'
 import staticRouter from './modules/static/static.routes'
+import eventService from './modules/event/event.services'
 
 initFolder()
 
@@ -49,6 +50,7 @@ app.listen(PORT, () => {
   console.log(`🚀 SHOWBIZ BOOKING EVENT - Server is running at ${env.DB_HOST}:${PORT}        🚀`)
   console.log(`🚀 You can test Swagger, which is running at ${env.DB_HOST}:${PORT}/api-docs  🚀`)
 })
+
 // function toBase64(filePath = 'C:\\Users\\hoangnv\\Desktop\\vnpay_nodejs\\badtrip.jpg') {
 //   const img = fs.readFileSync(filePath)
 

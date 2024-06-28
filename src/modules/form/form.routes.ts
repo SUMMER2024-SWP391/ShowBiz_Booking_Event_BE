@@ -9,6 +9,8 @@ import {
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
 import { createFormQuestionMiddleware, updateFormQuestionMiddleware } from './form.middlewares'
+import { isHasFormRegister, registerEventValidator } from '../event/event.middlewares'
+import { registerEventWithNoFormNoPaymentController } from '../event/event.controllers'
 
 const formRouter = Router()
 
@@ -21,7 +23,6 @@ const formRouter = Router()
  *  type : register || feedback
  * }
  */
-
 formRouter.post(
   '/new/:id',
   accessTokenValidator,
@@ -31,10 +32,21 @@ formRouter.post(
 )
 
 /**
- * Description : get form event list register
- * Path : /question/:id/:type (id là event id, type là Register hoặc Feedback)
+ * Description : get form question register
+ * Path : /question/:id/:type (id là event id
+ * route này sẽ handle 3 trường hợp là
+ * I. ko có form mà có payment
+ * II ko có form và cũng ko có payment
+ * III nếu có form thì trả về form
  */
-formRouter.get('/question/:id/:type', wrapAsync(getFormController))
+formRouter.get(
+  '/question/register/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(registerEventValidator),
+  wrapAsync(isHasFormRegister),
+  wrapAsync(registerEventWithNoFormNoPaymentController)
+)
 
 /**
  * Description: Update form register or feedback
@@ -42,7 +54,6 @@ formRouter.get('/question/:id/:type', wrapAsync(getFormController))
  * Headers: { Authorization }
  * Body : {UpdateFormQuestionReqBody}
  */
-
 formRouter.post(
   '/update/:id',
   accessTokenValidator,
