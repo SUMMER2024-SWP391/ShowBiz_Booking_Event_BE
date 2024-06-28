@@ -389,7 +389,6 @@ export const templateRegisterEvent = (event: Event, otp: string, user: User): Ma
 															</td>
 														</tr>
 													</table>
-													<div class="spacer_block block-8" style="height:30px;line-height:30px;font-size:1px;">&#8202;</div>
 												</td>
 											</tr>
 										</tbody>
@@ -465,7 +464,9 @@ export const templateRegisterEvent = (event: Event, otp: string, user: User): Ma
 															<td class="pad" style="padding-bottom:15px;padding-left:10px;padding-right:10px;padding-top:10px;">
 																<div style="color:#646464;font-family:Cabin, Arial, Helvetica Neue, Helvetica, sans-serif;font-size:18px;line-height:150%;text-align:left;mso-line-height-alt:27px;">
 																	<p style="margin: 0;">&nbsp;Chúng tôi rất mong được gặp bạn vào ngày <span style="font-weight: 300; font-size: 25px">${event.date_event}</span> tại <span style="font-weight: 300; font-size: 25px">${event.location}</span> vào lúc <span style="font-weight: 300; font-size: 25px">${event.time_start}</span> tới <span style="font-weight: 300; font-size: 25px">${event.time_end}</span>. Nếu bạn có bất kỳ câu hỏi hay thắc mắc nào, xin vui lòng liên hệ với chúng tôi qua email: <a style="text-decoration: none; ">${env.EMAIL_USER}</a>&nbsp;</p>
-																</div>
+                                  <br>
+                                  <p style="margin: 0;">Mã OTP của bạn là: <span style="font-weight: 300; font-size: 25px">${otp}</span></p>
+                                </div>
 															</td>
 														</tr>
 													</table>
@@ -477,6 +478,8 @@ export const templateRegisterEvent = (event: Event, otp: string, user: User): Ma
 							</tr>
 						</tbody>
 					</table>
+          <br>
+          <br>
 				</td>
 			</tr>
 		</tbody>
