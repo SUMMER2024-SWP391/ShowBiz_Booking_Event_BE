@@ -3,7 +3,6 @@ import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import {
   cancelEventValidator,
-  checkRegisteredEvent,
   createEventValidator,
   paginationValidator,
   registerEventValidator
