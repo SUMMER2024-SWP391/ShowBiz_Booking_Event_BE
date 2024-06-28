@@ -273,9 +273,11 @@ class EventService {
     return (event?.ticket_price as number) > 0 ? true : false
   }
 
-  async cancelEvent(visitor_id: string) {
-    await databaseService.registers.deleteOne({ visitor_id: new ObjectId(visitor_id) })
-    await databaseService.answers.deleteMany({ visitor_id: new ObjectId(visitor_id) })
+  async cancelEvent(visitor_id: string, event_id: string) {
+    await databaseService.registers.deleteOne({
+      visitor_id: new ObjectId(visitor_id),
+      event_id: new ObjectId(event_id)
+    })
   }
 }
 
