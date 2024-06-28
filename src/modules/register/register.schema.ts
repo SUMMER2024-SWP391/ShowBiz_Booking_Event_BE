@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { StatusRegisterEvent } from '~/constants/enums'
 
 type RegisterType = {
   _id?: ObjectId
@@ -7,7 +8,7 @@ type RegisterType = {
   status_check_in: boolean
   otp_check_in: string
   time_register: string
-  status_register: boolean
+  status_register: StatusRegisterEvent
 }
 
 export default class Register {
@@ -17,7 +18,7 @@ export default class Register {
   status_check_in: boolean
   otp_check_in: string
   time_register: string
-  status_register: boolean
+  status_register: StatusRegisterEvent
 
   constructor(data: RegisterType) {
     this._id = data._id
