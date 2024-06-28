@@ -44,8 +44,7 @@ formRouter.get(
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
   wrapAsync(registerEventValidator),
-  wrapAsync(isHasFormRegister),
-  wrapAsync(registerEventWithNoFormNoPaymentController)
+  wrapAsync(getFormController)
 )
 
 /**

@@ -10,7 +10,7 @@ import {
   RegisterEventReqBody
 } from './event.requests'
 import { EVENT_MESSAGES } from '../user/user.messages'
-import { EventStatus } from '~/constants/enums'
+import { EventCategory, EventStatus } from '~/constants/enums'
 import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
 import Register from '../register/register.schema'
@@ -24,6 +24,7 @@ import formService from '../form/form.services'
 import { EventQuestionType } from '../form/form.enum'
 import questionService from '../question/question.services'
 import { QUESTION_REGISTER } from '~/constants/question_register'
+import axios from 'axios'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -86,6 +87,26 @@ export const registerEventController = async (
 
   //lưu câu trả lời của user vào bảng answers
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
+
+  const _event = await eventService.getEventById(id)
+  if (_event.category === EventCategory.PAID) {
+    const token = req.headers.authorization?.split(' ')[1]
+    const result = await axios<{ message: string; data: { url: string } }>({
+      method: 'post',
+      url: `http://localhost:4000/zalo/payment/${_event._id}`,
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+
+    return res.json({
+      message: result.data.message,
+      data: {
+        url: result.data.data.url
+      }
+    })
+  }
+
   //lưu user đăng ký sự kiện vào bảng register
   const result = await registerService.registerEvent(id, user_id)
 
@@ -97,7 +118,7 @@ export const registerEventController = async (
   const template = templateRegisterEvent(event as Event, (result as Register).otp_check_in, user as User)
   // console.log(template)
   await sendEmail(template)
-  res.json({
+  return res.json({
     message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
     data: {
       register: result
@@ -180,5 +201,33 @@ export const cancelEventController = async (req: Request, res: Response) => {
 
   return res.json({
     message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS
+  })
+}
+
+export const registerEventHasFormNoPaymentController = async (
+  req: Request<ParamsDictionary, any, RegisterEventReqBody>,
+  res: Response
+) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+
+  //lưu câu trả lời của user vào bảng answers
+  const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
+  //lưu user đăng ký sự kiện vào bảng register
+  const result = await registerService.registerEvent(id, user_id)
+
+  //lưu qr code vào bảng register
+
+  //lấy thông tin event, user để gửi mail
+  const event = await eventService.getEventById(id)
+  const user = await userService.getUserById(user_id)
+  const template = templateRegisterEvent(event as Event, (result as Register).otp_check_in, user as User)
+  // console.log(template)
+  await sendEmail(template)
+  res.json({
+    message: EVENT_MESSAGES.REGISTER_EVENT_SUCCESS,
+    data: {
+      register: result
+    }
   })
 }

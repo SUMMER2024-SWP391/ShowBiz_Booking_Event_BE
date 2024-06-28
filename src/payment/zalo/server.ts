@@ -18,6 +18,12 @@ import registerService from '~/modules/register/register.services'
 import Register from '~/modules/register/register.schema'
 import { PaymentZalo } from './payment.schema'
 import otpGenerator from 'otp-generator'
+import eventService from '~/modules/event/event.services'
+import userService from '~/modules/user/user.services'
+import { templateRegisterEvent } from '~/constants/template-mail'
+import { sendEmail } from '~/modules/sendMail/sendMailService'
+import Event from '~/modules/event/event.schema'
+import User from '~/modules/user/user.schema'
 const payment = express()
 
 // APP INFO, STK TEST: 4111 1111 1111 1111
@@ -64,8 +70,6 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       mac: ''
     }
 
-    console.log(order.app_trans_id)
-
     // appid|app_trans_id|appuser|amount|apptime|embeddata|item
     const data: string =
       config.app_id +
@@ -85,7 +89,6 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
 
     try {
       const result = await axios.post(config.endpoint, null, { params: order })
-
       return res.json({
         message: 'To payment form success',
         data: {
@@ -227,6 +230,15 @@ payment.get('/info/import', async (req: Request, res: Response): Promise<void> =
       })
     )
   ])
+
+  const [event, user, registerData] = await Promise.all([
+    await eventService.getEventById(event_id as string),
+    await userService.getUserById(user_id as string),
+    await databaseService.registers.findOne({ _id: register.insertedId })
+  ])
+  const template = templateRegisterEvent(event as Event, (registerData as Register).otp_check_in, user as User)
+
+  await sendEmail(template)
 
   const url = `${env.CLIENT_REDIRECT_CALLBACK_TICKET}${event_id}`
   res.redirect(url)
