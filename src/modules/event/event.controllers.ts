@@ -19,6 +19,7 @@ import Event from './event.schema'
 import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
+import { ObjectId } from 'mongodb'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -140,13 +141,14 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
 export const cancelEventController = async (req: Request, res: Response) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
+
   const checkPayment = await eventService.checkPayment(id)
   if (checkPayment) {
     return res.json({
       message: EVENT_MESSAGES.EVENT_HAVE_PAYMENT
     })
   }
-  await eventService.cancelEvent(user_id)
+  await eventService.cancelEvent(user_id, id)
 
   return res.json({
     message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS
