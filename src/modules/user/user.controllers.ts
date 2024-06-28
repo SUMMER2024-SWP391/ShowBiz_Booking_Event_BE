@@ -22,6 +22,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import { hashPassword } from '~/utils/crypto'
 import registerService from '../register/register.services'
+import checkingStaffServices from '../checking_staff/checking_staff.services'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -32,6 +33,8 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
     role: user.role as UserRole
   })
 
+  const listEvent = await checkingStaffServices.listEventOfStaff(user_id.toString())
+
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     data: {
@@ -41,7 +44,8 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
         user_name: user?.user_name,
         role: user.role as UserRole,
         verify: user?.status
-      }
+      },
+      listEvent
     }
   })
 }
