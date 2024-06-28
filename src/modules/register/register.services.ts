@@ -1,7 +1,6 @@
 import databaseService from '~/database/database.services'
 import Register from './register.schema'
 import { ObjectId } from 'mongodb'
-import { env } from '~/config/environment'
 import otpGenerator from 'otp-generator'
 
 class RegisterService {
@@ -143,6 +142,10 @@ class RegisterService {
     await databaseService.registers.updateOne({ event_id: new ObjectId(eventId) }, { $set: { status_check_in: true } })
 
     return { message: 'Check in success' }
+  }
+
+  async findRegisterByOtp(otp_check_in: string) {
+    return await databaseService.registers.findOne({ otp_check_in })
   }
 
   async getNumberPeopleOfEventByEventId(id: string) {

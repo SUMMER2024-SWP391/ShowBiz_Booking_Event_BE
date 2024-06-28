@@ -19,6 +19,7 @@ import Event from './event.schema'
 import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
+import { ObjectId } from 'mongodb'
 import formService from '../form/form.services'
 import { EventQuestionType } from '../form/form.enum'
 import questionService from '../question/question.services'
@@ -29,6 +30,7 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   const result = await eventService.createEvent(user_id, req.body)
   const formEvent = await formService.createFormEvent(String(result?._id), EventQuestionType.REGISTER)
   await questionService.createNewListQuestion(formEvent.insertedId, QUESTION_REGISTER)
+
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
 
@@ -161,5 +163,22 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
     data: {
       ticket: register[0]
     }
+  })
+}
+
+export const cancelEventController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { user_id } = req.decoded_authorization as TokenPayload
+
+  const checkPayment = await eventService.checkPayment(id)
+  if (checkPayment) {
+    return res.json({
+      message: EVENT_MESSAGES.EVENT_HAVE_PAYMENT
+    })
+  }
+  await eventService.cancelEvent(user_id, id)
+
+  return res.json({
+    message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS
   })
 }

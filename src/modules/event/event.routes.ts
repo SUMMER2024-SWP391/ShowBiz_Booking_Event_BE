@@ -1,9 +1,16 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
-import { createEventValidator, paginationValidator, registerEventValidator } from './event.middlewares'
+import {
+  cancelEventValidator,
+  checkRegisteredEvent,
+  createEventValidator,
+  paginationValidator,
+  registerEventValidator
+} from './event.middlewares'
 import {
   answerFeedbackEventController,
+  cancelEventController,
   createEventController,
   getEventByIdController,
   getEventListController,
@@ -83,6 +90,20 @@ eventsRouter.post(
 )
 
 eventsRouter.get('/ticket/:id', accessTokenValidator, wrapAsync(getTicketByEventIdController))
+
+/**
+ * Description: Cancel event
+ *  Path: /cancel-event/:id
+ *  Method: Post
+ *  Header: { Authorization: Bearer <access_token> }
+ */
+eventsRouter.post(
+  '/cancel-event/:id',
+  accessTokenValidator,
+  isUserRole([UserRole.Visitor]),
+  cancelEventValidator,
+  wrapAsync(cancelEventController)
+)
 
 eventsRouter.post(
   '/register-event/no-payment-no-form/:id',

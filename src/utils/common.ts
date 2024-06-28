@@ -185,3 +185,20 @@ export function canCheckIn(eventTime: string): boolean {
   // Check if input time is within the valid range
   return totalMinutesInput <= totalMinutes30BeforeCurrent || totalMinutesInput >= totalMinutes5AfterCurrent
 }
+
+export function canCancelEvent(dateEvent: string, timeStart: string): boolean {
+  const date = convertToDate(dateEvent)
+
+  const [hours, minutes] = timeStart.split(':').map(Number)
+  const eventDate = new Date(date)
+  eventDate.setHours(hours, minutes, 0, 0)
+
+  const now = new Date()
+  //khoảng cách thời gian hiện tại so với thời gian bắt đầu sự kiện
+  const diff = eventDate.getTime() - now.getTime()
+
+  //đổi sang giờ
+  const diffInHours = diff / (1000 * 60 * 60)
+
+  return diffInHours >= 48
+}

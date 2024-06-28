@@ -3,8 +3,15 @@ import { EventCategory, EventTypeEnum, LocationType } from '~/constants/enums'
 import { validate } from '~/utils/validation'
 import { REGEX_DATE, REGEX_TIME } from '~/constants/regex'
 import eventService from './event.services'
-import { EVENT_MESSAGES } from '../user/user.messages'
-import { Event, compareTimes, convertTimeToMinutes, isDateOneWeekLater, isTimeConflict } from '~/utils/common'
+import { EVENT_MESSAGES, USER_MESSAGES } from '../user/user.messages'
+import {
+  Event,
+  canCancelEvent,
+  compareTimes,
+  convertTimeToMinutes,
+  isDateOneWeekLater,
+  isTimeConflict
+} from '~/utils/common'
 import { NextFunction, Request, Response } from 'express'
 import { TokenPayload } from '../user/user.requests'
 import registerService from '../register/register.services'
@@ -188,6 +195,44 @@ export const isHasFormRegister = async (req: Request, res: Response, next: NextF
 
   next()
 }
+
+export const cancelEventValidator = validate(
+  checkSchema(
+    {
+      id: {
+        notEmpty: { errorMessage: EVENT_MESSAGES.EVENT_ID_IS_REQUIRED },
+        isMongoId: { errorMessage: EVENT_MESSAGES.EVENT_ID_IS_INVALID },
+        custom: {
+          options: async (value, { req }) => {
+            const event = await eventService.getEventById(value)
+            if (!event) {
+              throw new ErrorWithStatus({
+                message: EVENT_MESSAGES.EVENT_NOT_FOUND,
+                status: StatusCodes.NOT_FOUND
+              })
+            }
+
+            const { user_id } = req.decoded_authorization as TokenPayload
+            const checkVisitor = await registerService.checkRegistered(value, user_id)
+            if (!checkVisitor) {
+              throw new ErrorWithStatus({
+                message: EVENT_MESSAGES.YOU_HAVE_NOT_REGISTERED_THIS_EVENT,
+                status: StatusCodes.FORBIDDEN
+              })
+            }
+
+            if (!canCancelEvent(event.date_event, event.time_start)) {
+              throw new Error(USER_MESSAGES.YOU_CAN_ONLY_CANCEL_BEFORE_48H)
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['params']
+  )
+)
 
 export const paymentValidator = async (req: Request, res: Response, next: NextFunction) => {}
 
