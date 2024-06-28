@@ -10,11 +10,14 @@ import { env } from '~/config/environment'
 import { omit } from 'lodash'
 import databaseService from '~/database/database.services'
 import { ObjectId } from 'mongodb'
-import { EventCategory } from '~/constants/enums'
+import { EventCategory, StatusRegisterEvent } from '~/constants/enums'
 import { accessTokenValidator } from '~/modules/user/user.middlewares'
 import { TokenPayload } from '~/modules/user/user.requests'
 import { config } from '~/config/zalo'
-
+import registerService from '~/modules/register/register.services'
+import Register from '~/modules/register/register.schema'
+import { PaymentZalo } from './payment.schema'
+import otpGenerator from 'otp-generator'
 const payment = express()
 
 // APP INFO, STK TEST: 4111 1111 1111 1111
@@ -39,10 +42,10 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
   if (event?.ticket_price !== 0 && event?.category === EventCategory.PAID) {
     const embed_data = {
       // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
-      redirecturl: `${env.DB_HOST}:${env.PORT_FE}`
+      redirecturl: `${env.DB_HOST}:${env.PORT}/zalo/info/import?user_id=${user.user_id}&event_id=${event._id}`
     }
 
-    const items: any[] = []
+    const items = [{ itemid: event._id, itename: event.name, iteprice: event.ticket_price }]
     const transID: number = Math.floor(Math.random() * 1000000)
 
     const order = {
@@ -60,6 +63,8 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
       bank_code: '',
       mac: ''
     }
+
+    console.log(order.app_trans_id)
 
     // appid|app_trans_id|appuser|amount|apptime|embeddata|item
     const data: string =
@@ -81,9 +86,14 @@ payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, re
     try {
       const result = await axios.post(config.endpoint, null, { params: order })
 
-      return res.status(StatusCodes.OK).json(result.data)
+      return res.json({
+        message: 'To payment form success',
+        data: {
+          url: result.data.order_url
+        }
+      })
     } catch (error) {
-      console.log('🚀 ~ error:', error)
+      // console.log('🚀 ~ error:', error)
 
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
     }
@@ -184,9 +194,42 @@ payment.post('/check-status-order/:app_trans_id', async (req: Request, res: Resp
 })
 
 payment.get('/info/import', async (req: Request, res: Response): Promise<void> => {
-  const { amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status } = req.query
-  console.log(amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status)
-  res.send({ message: 'hihi' })
+  const { amount, appid, apptransid, bankcode, checksum, discountamount, pmcid, status, user_id, event_id } = req.query
+
+  const register_id = new ObjectId()
+
+  const otp = otpGenerator.generate(8, {
+    lowerCaseAlphabets: true,
+    upperCaseAlphabets: true,
+    specialChars: true,
+    digits: true
+  })
+
+  const [register, payment] = await Promise.all([
+    databaseService.registers.insertOne(
+      new Register({
+        _id: register_id,
+        event_id: new ObjectId(event_id as string),
+        visitor_id: new ObjectId(user_id as string),
+        otp_check_in: otp,
+        status_check_in: false,
+        status_register: StatusRegisterEvent.SUCCESS,
+        time_register: new Date().toISOString()
+      })
+    ),
+    databaseService.payments.insertOne(
+      new PaymentZalo({
+        _id: new ObjectId(),
+        apptransid: apptransid as string,
+        date: new Date(),
+        reigster_id: register_id,
+        return_code: 1
+      })
+    )
+  ])
+
+  const url = `${env.CLIENT_REDIRECT_CALLBACK_TICKET}${event_id}`
+  res.redirect(url)
 })
 
 export default payment

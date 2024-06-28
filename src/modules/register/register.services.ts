@@ -1,9 +1,9 @@
 import databaseService from '~/database/database.services'
 import Register from './register.schema'
 import { ObjectId } from 'mongodb'
-import { env } from '~/config/environment'
 import otpGenerator from 'otp-generator'
 import Event from '../event/event.schema'
+import { StatusRegisterEvent } from '~/constants/enums'
 
 class RegisterService {
   async registerEvent(id: string, user_id: string) {
@@ -24,7 +24,7 @@ class RegisterService {
         status_check_in: false,
         otp_check_in: otp,
         time_register: date,
-        status_register: true
+        status_register: StatusRegisterEvent.SUCCESS
       })
     )
 
@@ -51,7 +51,7 @@ class RegisterService {
   }
 
   async getListRegisterEventByUserId(user_id: string) {
-    return await databaseService.registers
+    const result = await databaseService.registers
       .aggregate([
         {
           $match: {
@@ -102,6 +102,8 @@ class RegisterService {
         }
       ])
       .toArray()
+
+    return result
   }
 
   async checkRegistered(event_id: string, visitor_id: string) {
