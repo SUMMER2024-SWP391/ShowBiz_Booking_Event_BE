@@ -10,9 +10,11 @@ import dayjs from 'dayjs'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
+    const ticket_price = body.ticket_price
     const result = await databaseService.events.insertOne(
       new Event({
         ...body,
+        category: ticket_price == 0 ? EventCategory.FREE : EventCategory.PAID,
         event_operator_id: new ObjectId(user_id)
       })
     )

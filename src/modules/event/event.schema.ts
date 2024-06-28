@@ -14,7 +14,7 @@ export interface EventType {
   location: LocationType
   event_operator_id: ObjectId
   image?: string
-  category?: EventCategory
+  category: EventCategory
   address: string
   status?: EventStatus
   speaker_name?: string
@@ -56,6 +56,7 @@ export default class Event {
     location,
     image,
     event_operator_id,
+    category,
     status,
     address,
     speaker_name,
@@ -74,7 +75,7 @@ export default class Event {
     this.location = location
     this.event_operator_id = event_operator_id
     this.image = image || ''
-    this.category = ticket_price === 0 ? EventCategory.FREE : EventCategory.PAID
+    this.category = category
     this.status = status || EventStatus.PENDING
     this.address =
       address ||

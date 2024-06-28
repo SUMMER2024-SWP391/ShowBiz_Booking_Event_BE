@@ -17,6 +17,7 @@ import {
   getTicketByEventIdController,
   handleStatusEventController,
   registerEventController,
+  registerEventHasFormNoPaymentController,
   registerEventWithNoFormNoPaymentController
 } from './event.controllers'
 import { UserRole } from '~/constants/enums'
@@ -104,6 +105,7 @@ eventsRouter.post(
   wrapAsync(cancelEventController)
 )
 
+//xử lý ko form ko payment là route này
 eventsRouter.post(
   '/register-event/no-payment-no-form/:id',
   accessTokenValidator,
@@ -111,5 +113,12 @@ eventsRouter.post(
   wrapAsync(registerEventValidator),
   wrapAsync(registerEventWithNoFormNoPaymentController)
 )
-
+//xử lý có form mà  ko có payment là route này
+eventsRouter.post(
+  '/register-event/no-payment/has-form/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(registerEventValidator),
+  wrapAsync(registerEventHasFormNoPaymentController)
+)
 export default eventsRouter
