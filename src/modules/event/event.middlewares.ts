@@ -222,7 +222,10 @@ export const cancelEventValidator = validate(
             }
 
             if (!canCancelEvent(event.date_event, event.time_start)) {
-              throw new Error(USER_MESSAGES.YOU_CAN_ONLY_CANCEL_BEFORE_48H)
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.YOU_CAN_ONLY_CANCEL_BEFORE_48H,
+                status: StatusCodes.FORBIDDEN
+              })
             }
 
             return true

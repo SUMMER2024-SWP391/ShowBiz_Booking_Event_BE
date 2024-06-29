@@ -306,8 +306,12 @@ class EventService {
 
   async checkPayment(event_id: string) {
     const event = await databaseService.events.findOne({ _id: new ObjectId(event_id) })
-
-    return (event?.ticket_price as number) > 0 ? true : false
+    const price = event?.ticket_price as number
+    const category = event?.category as string
+    if (category === 'Free' || price === 0) {
+      return false
+    }
+    return true
   }
 
   async cancelEvent(visitor_id: string, event_id: string) {
