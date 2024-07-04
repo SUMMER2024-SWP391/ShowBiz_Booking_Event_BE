@@ -3,10 +3,11 @@ import { EventRequestBody } from './event.requests'
 import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
-import { EventCategory, EventStatus } from '~/constants/enums'
-import { omit } from 'lodash'
+import { EventCategory, EventStatus, StatusRegisterEvent, UserRole } from '~/constants/enums'
 import { EventReponse } from './event.response'
 import dayjs from 'dayjs'
+import User from '../user/user.schema'
+import { convertToDateEvent } from '~/utils/common'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -319,6 +320,180 @@ class EventService {
       visitor_id: new ObjectId(visitor_id),
       event_id: new ObjectId(event_id)
     })
+  }
+
+  async totalCheckInOrNotInMonth(status: boolean, user: User, startOfMonth: Date, endOfMonth: Date) {
+    const start = convertToDateEvent(startOfMonth)
+    const end = convertToDateEvent(endOfMonth)
+    const userID = new ObjectId(user._id)
+    const events = await databaseService.events
+      .find({
+        date_event: { $gte: start, $lte: end },
+        ...(user.role !== UserRole.Admin && { event_operator_id: new ObjectId(user._id) })
+      })
+      .toArray()
+    const eventIds = events.map((event) => event._id)
+    const totalCheckIn = await databaseService.registers
+      .aggregate([
+        {
+          $match: {
+            event_id: { $in: eventIds },
+            status_check_in: status
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 }
+          }
+        }
+      ])
+      .toArray()
+    const totalCheckInCount = totalCheckIn.length > 0 ? totalCheckIn[0].count : 0
+
+    return totalCheckInCount
+  }
+
+  async totalRegisterInMonth(user: User, startOfMonth: Date, endOfMonth: Date) {
+    const start = convertToDateEvent(startOfMonth)
+    const end = convertToDateEvent(endOfMonth)
+    const userID = new ObjectId(user._id)
+    const events = await databaseService.events
+      .find({
+        date_event: { $gte: start, $lte: end },
+        ...(user.role !== UserRole.Admin && { event_operator_id: new ObjectId(user._id) })
+      })
+      .toArray()
+    const eventIds = events.map((event) => event._id)
+    return await databaseService.registers
+      .aggregate([
+        {
+          $match: {
+            event_id: { $in: eventIds }
+          }
+        }
+      ])
+      .toArray()
+  }
+
+  async getEventwithStatusInMonth(user: User, startOfMonth: Date, endOfMonth: Date) {
+    const start = convertToDateEvent(startOfMonth)
+    const end = convertToDateEvent(endOfMonth)
+    return await databaseService.events
+      .find({
+        date_event: { $gte: start, $lte: end },
+        ...(user.role !== UserRole.Admin && { event_operator_id: new ObjectId(user._id) })
+      })
+      .toArray()
+  }
+
+  async getStatisticalData(user: User, startOfMonth: Date, endOfMonth: Date) {
+    const role = user.role
+    if (role === 'Admin') {
+      const [
+        totalEvent,
+        totalEventPending,
+        totalEventApproved,
+        totalEventReject,
+        totalRegister,
+        totalRegisterSuccess,
+        totalRegisterCancel,
+        totalCheckin,
+        totalNotCheckin
+      ] = await Promise.all([
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.length
+        }),
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.filter((item) => item.status === EventStatus.PENDING).length
+        }),
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.filter((item) => item.status === EventStatus.APPROVED).length
+        }),
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.filter((item) => item.status === EventStatus.REJECTED).length
+        }),
+        this.totalRegisterInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          const totalRegister = event.length
+          return totalRegister
+        }),
+        this.totalRegisterInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          const totalSuccessRegister = event.filter(
+            (item) => item.status_register === StatusRegisterEvent.SUCCESS
+          ).length
+          return totalSuccessRegister
+        }),
+        this.totalRegisterInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          const totalCancelRegister = event.filter((item) => item.status_register === StatusRegisterEvent.CANCEL).length
+          return totalCancelRegister
+        }),
+        this.totalCheckInOrNotInMonth(true, user, startOfMonth, endOfMonth),
+        this.totalCheckInOrNotInMonth(false, user, startOfMonth, endOfMonth)
+      ])
+      return {
+        totalEvent,
+        totalEventPending,
+        totalEventApproved,
+        totalEventReject,
+        totalRegister,
+        totalRegisterSuccess,
+        totalRegisterCancel,
+        totalCheckin,
+        totalNotCheckin
+      }
+    } else {
+      const [
+        totalEvent,
+        totalEventPending,
+        totalEventApproved,
+        totalEventReject,
+        totalRegister,
+        totalSuccessRegister,
+        totalCancelRegister,
+        totalCheckin,
+        totalNotCheckin
+      ] = await Promise.all([
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.length
+        }),
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.filter((item) => item.status === EventStatus.PENDING).length
+        }),
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.filter((item) => item.status === EventStatus.APPROVED).length
+        }),
+        this.getEventwithStatusInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          return event.filter((item) => item.status === EventStatus.REJECTED).length
+        }),
+        this.totalRegisterInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          const totalRegister = event.length
+          return totalRegister
+        }),
+        this.totalRegisterInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          const totalSuccessRegister = event.filter(
+            (item) => item.status_register === StatusRegisterEvent.SUCCESS
+          ).length
+          return totalSuccessRegister
+        }),
+        this.totalRegisterInMonth(user, startOfMonth, endOfMonth).then((event) => {
+          const totalCancelRegister = event.filter((item) => item.status_register === StatusRegisterEvent.CANCEL).length
+          return totalCancelRegister
+        }),
+        this.totalCheckInOrNotInMonth(true, user, startOfMonth, endOfMonth),
+        this.totalCheckInOrNotInMonth(false, user, startOfMonth, endOfMonth)
+      ])
+      return {
+        totalEvent,
+        totalEventPending,
+        totalEventApproved,
+        totalEventReject,
+        totalRegister,
+        totalSuccessRegister,
+        totalCancelRegister,
+        totalCheckin,
+        totalNotCheckin
+      }
+    }
   }
 }
 

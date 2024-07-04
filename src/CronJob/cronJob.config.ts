@@ -9,5 +9,5 @@ const taskCheckPaymentPeople = cron.schedule('0 * * * *', async () => {
   //lấy ra danh sách register
   const listRegister = await registerService.getListRegiserPeople(eventList)
   //lấy ra danh sách payment
-//   const listPayment  =  await
+  //   const listPayment  =  await
 })
