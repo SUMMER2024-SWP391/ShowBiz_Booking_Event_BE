@@ -58,14 +58,12 @@ export const oauthController = async (req: Request, res: Response) => {
   return res.redirect(urlRedirect)
 }
 
-export const registerController = async (
-  req: Request<ParamsDictionary, any, RegisterReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
-  const result = await userService.register(req.body)
+export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
+  await userService.register(req.body)
 
-  return res.json({ message: USER_MESSAGES.REGISTER_SUCCESS, result })
+  return res.json({
+    message: USER_MESSAGES.REGISTER_SUCCESS
+  })
 }
 
 export const logoutController = async (req: Request<ParamsDictionary, any, LogoutReqBody>, res: Response) => {

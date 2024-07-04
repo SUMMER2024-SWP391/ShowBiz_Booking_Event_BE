@@ -23,7 +23,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/express": "^4.17.21",
     "@types/formidable": "^2.0.6",
-    "@types/lodash": "^4.17.0",
+    "@types/lodash": "^4.17.6",
     "@types/node": "^20.12.7",
     "@types/nodemailer": "^6.4.15",
     "@types/otp-generator": "^4.0.2",

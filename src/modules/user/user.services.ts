@@ -80,16 +80,14 @@ class UserService {
       status: UserStatus.UNVERIFIED,
       role: UserRole.Visitor
     })
-    const { email, user_name, phone_number, password, date_of_birth } = payload
+    const { email, user_name, password, mssv } = payload
     await databaseService.users.insertOne(
       new User({
         _id: user_id,
         user_name,
         email,
         email_verify_token,
-        phone_number,
-        password: hashPassword(password),
-        date_of_birth: new Date(date_of_birth)
+        password: hashPassword(password)
       })
     )
 
@@ -226,8 +224,7 @@ class UserService {
         user_name: userInfo.name,
         email: userInfo.email,
         password,
-        confirm_password: password,
-        date_of_birth: new Date().toISOString()
+        mssv: ''
       })
 
       const user = await databaseService.users.findOne({ email: userInfo.email })
