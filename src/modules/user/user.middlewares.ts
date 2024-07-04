@@ -176,10 +176,6 @@ export const registerValidator = validate(
         trim: true,
         custom: {
           options: async (value) => {
-            if (!REGEX_FPT_EMAIL.test(value)) {
-              throw new Error(USER_MESSAGES.EMAIL_NOT_MATCH_REGEX)
-            }
-
             const isExistEmail = await userService.checkEmailExist(value)
             if (isExistEmail) throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTED)
 
@@ -187,10 +183,7 @@ export const registerValidator = validate(
           }
         }
       },
-      phone_number: phoneNumberSchema,
-      password: passwordSchema,
-      confirm_password: confirmPasswordSchema,
-      date_of_birth: dateOfBirthSchema
+      password: passwordSchema
     },
     ['body']
   )
