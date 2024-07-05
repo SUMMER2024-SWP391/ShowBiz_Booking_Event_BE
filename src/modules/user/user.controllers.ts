@@ -23,6 +23,7 @@ import { StatusCodes } from 'http-status-codes'
 import { hashPassword } from '~/utils/crypto'
 import registerService from '../register/register.services'
 import checkingStaffServices from '../checking_staff/checking_staff.services'
+import eventService from '../event/event.services'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -226,6 +227,13 @@ export const getListRegisterEventController = async (req: Request, res: Response
 export const checkInController = async (req: Request, res: Response) => {
   const { eventId } = req.params
   const result = await registerService.checkIn(eventId)
+
+  return res.json(result)
+}
+
+export const searchEventController = async (req: Request, res: Response) => {
+  const { eventName } = req.query
+  const result = await eventService.searchEvent(eventName as string)
 
   return res.json(result)
 }

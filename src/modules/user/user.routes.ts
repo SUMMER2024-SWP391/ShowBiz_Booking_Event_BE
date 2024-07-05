@@ -9,6 +9,7 @@ import {
   registerEventOperatorMiddleware,
   registerValidator,
   resetPasswordValidator,
+  searchEventMiddleware,
   updateMeValidator,
   verifiedUserValidator,
   verifyEmailTokenValidator,
@@ -29,7 +30,8 @@ import {
   resetPasswordController,
   changePasswordController,
   refreshTokenController,
-  getListRegisterEventController
+  getListRegisterEventController,
+  searchEventController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -194,5 +196,13 @@ usersRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshToken
  * Header: { Authorization: Bearer <access_token> }
  */
 usersRouter.get('/list-register-event', accessTokenValidator, wrapAsync(getListRegisterEventController))
+
+/**
+ * * Description: search event
+ * Path: /search-event
+ * Method: GET
+ * Query: { keyword: string }
+ */
+usersRouter.get('/search-event', searchEventMiddleware, wrapAsync(searchEventController))
 
 export default usersRouter

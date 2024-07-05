@@ -17,6 +17,11 @@ export const USER_MESSAGES = {
   // refresh token
   REFRESH_TOKEN_SUCCESS: 'Refresh token success!',
 
+  //search
+  SEARCH_MUST_BE_A_STRING: 'Search must be a string!',
+  SEARCH_LENGTH_MUST_BE_FROM_1_TO_100: 'Search length must be from 1 to 100!',
+  SEARCH_NO_SPECIAL_CHARACTERS: 'Search must not contain special characters!',
+
   // password
   PASSWORD_IS_REQUIRED: 'Password is required!',
   PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50: 'Password length must be from 6 to 50!',

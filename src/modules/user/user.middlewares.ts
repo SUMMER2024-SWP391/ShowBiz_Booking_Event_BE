@@ -12,7 +12,7 @@ import { capitalize } from '~/utils/capitalize'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
-import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM } from '~/constants/regex'
+import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM, SEARCH_NO_SPECIAL_CHARACTERS } from '~/constants/regex'
 import userService from './user.services'
 
 export const passwordSchema: ParamSchema = {
@@ -546,5 +546,26 @@ export const changePasswordValidator = validate(
       confirm_password: confirmPasswordSchema
     },
     ['body']
+  )
+)
+
+export const searchEventMiddleware = validate(
+  checkSchema(
+    {
+      search: {
+        optional: true,
+        isString: { errorMessage: USER_MESSAGES.SEARCH_MUST_BE_A_STRING },
+        trim: true,
+        isLength: {
+          options: { min: 1, max: 100 },
+          errorMessage: USER_MESSAGES.SEARCH_LENGTH_MUST_BE_FROM_1_TO_100
+        },
+        matches: {
+          options: SEARCH_NO_SPECIAL_CHARACTERS,
+          errorMessage: USER_MESSAGES.SEARCH_NO_SPECIAL_CHARACTERS
+        }
+      }
+    },
+    ['query']
   )
 )
