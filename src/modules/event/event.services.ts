@@ -495,6 +495,30 @@ class EventService {
       }
     }
   }
+
+  async searchEvent(eventName: string) {
+    return await databaseService.events
+      .aggregate([
+        {
+          $match: {
+            name: { $regex: eventName, $options: 'i' }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            date_event: 1,
+            time_start: 1,
+            time_end: 1,
+            location: 1,
+            ticket_price: 1,
+            category: 1
+          }
+        }
+      ])
+      .toArray()
+  }
 }
 
 const eventService = new EventService()
