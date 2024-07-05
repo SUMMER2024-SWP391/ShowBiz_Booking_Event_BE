@@ -19,12 +19,12 @@ import Event from './event.schema'
 import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
-import { ObjectId } from 'mongodb'
 import formService from '../form/form.services'
 import { EventQuestionType } from '../form/form.enum'
 import questionService from '../question/question.services'
 import { QUESTION_REGISTER } from '~/constants/question_register'
 import axios from 'axios'
+import moment from 'moment'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -230,5 +230,19 @@ export const registerEventHasFormNoPaymentController = async (
     data: {
       register: result
     }
+  })
+}
+
+export const getStatisticalDataController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await userService.getUserById(user_id)
+  const startOfMonth = moment().startOf('month').toDate()
+  const endOfMonth = moment().endOf('month').toDate()
+
+  const result = await eventService.getStatisticalData(user as User, startOfMonth, endOfMonth)
+
+  return res.json({
+    message: EVENT_MESSAGES.GET_STATISTICAL_DATA_SUCCESS,
+    data: result
   })
 }

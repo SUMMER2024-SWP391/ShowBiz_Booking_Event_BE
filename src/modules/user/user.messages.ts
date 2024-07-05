@@ -129,6 +129,9 @@ export const EVENT_MESSAGES = {
   EVENT_HAVE_PAYMENT: 'Event have payment!',
   YOU_REGISTERED_THIS_EVENT: 'You already registered this event!',
 
+  //statistical
+  GET_STATISTICAL_DATA_SUCCESS: 'Get statistical data successfully!',
+
   //answer
   ANSWER_FEEDBACK_SUCCESS: 'Answer feedback success!',
 

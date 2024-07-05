@@ -14,6 +14,7 @@ import {
   getEventByIdController,
   getEventListController,
   getEventListOperatorController,
+  getStatisticalDataController,
   getTicketByEventIdController,
   handleStatusEventController,
   registerEventController,
@@ -120,5 +121,18 @@ eventsRouter.post(
   wrapAsync(isUserRole([UserRole.Visitor])),
   wrapAsync(registerEventValidator),
   wrapAsync(registerEventHasFormNoPaymentController)
+)
+
+/**
+ * * Description: Get statistical data of events
+ * Path: /statistical
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+eventsRouter.get(
+  '/data/statistical',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Admin, UserRole.EventOperator])),
+  wrapAsync(getStatisticalDataController)
 )
 export default eventsRouter
