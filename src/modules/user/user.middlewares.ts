@@ -183,7 +183,17 @@ export const registerValidator = validate(
           }
         }
       },
-      password: passwordSchema
+      password: passwordSchema,
+      mssv: {
+        custom: {
+          options: async (value) => {
+            const isExistMssv = await userService.checkMssvExist(value)
+            if (isExistMssv) throw new Error(USER_MESSAGES.MSSV_ALREADY_EXISTED)
+
+            return true
+          }
+        }
+      }
     },
     ['body']
   )

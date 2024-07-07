@@ -36,7 +36,8 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 }
 
 export const getAccountController = async (req: Request, res: Response) => {
-  const result = await userService.getAccount()
+  const { role } = req.query
+  const result = await userService.getAccount(role as UserRole)
 
   return res.json({
     message: USER_MESSAGES.GET_ACCOUNT_SUCCESS,

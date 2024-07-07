@@ -292,20 +292,18 @@ class UserService {
   }
 
   // get account dành cho admin
-  async getAccount() {
+  async getAccount(role?: UserRole) {
+    const query = role ? { role } : {}
     const userList = await databaseService.users
-      .find(
-        {},
-        {
-          projection: {
-            _id: 1,
-            user_name: 1,
-            email: 1,
-            role: 1,
-            status: 1
-          }
+      .find(query, {
+        projection: {
+          _id: 1,
+          user_name: 1,
+          email: 1,
+          role: 1,
+          status: 1
         }
-      )
+      })
       .toArray()
 
     return userList
@@ -500,6 +498,10 @@ class UserService {
       access_token,
       refresh_token: new_refresh_token
     }
+  }
+
+  async checkMssvExist(mssv: string) {
+    return Boolean(await databaseService.users.findOne({ mssv }))
   }
 }
 

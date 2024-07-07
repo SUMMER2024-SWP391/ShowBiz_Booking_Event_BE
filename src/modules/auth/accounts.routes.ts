@@ -67,11 +67,12 @@ adminsRouter.patch(
 adminsRouter.get('/:id', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getUserByIdController))
 
 /**
- ** Description: Get all account
+ ** Description: Get account
  * Method: GET
  * Headers: { Authorization: 'Bearer <access_token>' }
+ * Query : role
  */
-adminsRouter.get('/', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getAccountController))
+adminsRouter.get('/list/user', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getAccountController))
 
 /**
  ** Description: Delete account by id
@@ -121,7 +122,6 @@ adminsRouter.get(
   '/get-all/event-list',
   accessTokenValidator,
   wrapAsync(checkRoleAdmin),
-  paginationValidator,
   wrapAsync(getEventListController)
 )
 
