@@ -1,4 +1,5 @@
 export const USER_MESSAGES = {
+  MSSV_ALREADY_EXISTED: 'Student code already existed',
   CREATE_EVENT_OPERATOR_SUCCESS: 'Create event operator success',
 
   VALIDATION_ERROR: 'VALIDATION ERROR!',
