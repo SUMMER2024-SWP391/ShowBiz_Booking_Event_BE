@@ -4,6 +4,8 @@ import { wrapAsync } from '~/utils/handler'
 import {
   assignCheckingStaffValidator,
   checkInValidator,
+  isValidEvent,
+  isValidEventOperator,
   loginValidator,
   registerEventOperatorValidator
 } from './event_operator.middlewares'
@@ -15,7 +17,7 @@ import {
   unassignCheckingStaffController
 } from './event_operator.controllers'
 import { UserRole } from '~/constants/enums'
-import { checkInController, getListRegisterEventController } from '../user/user.controllers'
+import { cancelEventRequestController, checkInController, getListRegisterEventController } from '../user/user.controllers'
 
 const eOperatorRouter = Router()
 
@@ -50,7 +52,6 @@ eOperatorRouter.post(
 )
 
 /**
-
  * * Description: get list checking staff
  * Path: /list-checking-staff/:eventId
  * Method: GET
@@ -69,7 +70,6 @@ eOperatorRouter.get(
  * Method: DELETE
  * Request: { email: string}
  */
-
 eOperatorRouter.delete(
   '/event/:eventId/unassign-checking-staff/:checkingStaffId',
   accessTokenValidator,
@@ -82,7 +82,6 @@ eOperatorRouter.delete(
  * Method: GET
  * Header: { authorization: Bearer <access_token> }
  */
-
 eOperatorRouter.get(
   '/list-event',
   accessTokenValidator,
@@ -102,6 +101,21 @@ eOperatorRouter.post(
   isUserRole([UserRole.EventOperator, UserRole.CheckingStaff]),
   checkInValidator,
   wrapAsync(checkInController)
+)
+
+/**
+ * * Description: Delete create event request
+ * Path: /
+ * Method: DELETE
+ * Header: { authorization: Bearer <access_token> }
+ */
+eOperatorRouter.patch(
+  '/event/:eventId',
+  accessTokenValidator,
+  isUserRole([UserRole.EventOperator]),
+  wrapAsync(isValidEventOperator), // check if event operator is the owner of the event
+  wrapAsync(isValidEvent), // pending thì cho cancel
+  wrapAsync(cancelEventRequestController)
 )
 
 export default eOperatorRouter
