@@ -15,7 +15,7 @@ import { filterMiddleware } from '~/errors/common.middlewares'
 import { updateAccountReqBody } from './account.request'
 import { confirmEventValidator } from './account.middleware'
 import { paginationValidator } from '../event/event.middlewares'
-import { getEventListController } from '../event/event.controllers'
+import { getEventListAdminController } from '../event/event.controllers'
 
 const adminsRouter = Router()
 
@@ -122,7 +122,7 @@ adminsRouter.get(
   '/get-all/event-list',
   accessTokenValidator,
   wrapAsync(checkRoleAdmin),
-  wrapAsync(getEventListController)
+  wrapAsync(getEventListAdminController)
 )
 
 export default adminsRouter
