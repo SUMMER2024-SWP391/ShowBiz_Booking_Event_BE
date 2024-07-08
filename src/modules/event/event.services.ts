@@ -519,7 +519,6 @@ class EventService {
             $project: {
               status: 0,
               description: 0,
-              image: 0,
               date_event: 0,
               type_event: 0,
               category: 0,
@@ -560,7 +559,7 @@ class EventService {
       this.getAllEventListApproved()
     ])
     const sum_page = Math.ceil(event / limit)
-
+    console.log(events[0])
     return { events, total: total[0].total, sum_page }
   }
 }
