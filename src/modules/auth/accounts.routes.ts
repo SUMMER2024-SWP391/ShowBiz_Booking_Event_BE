@@ -116,7 +116,7 @@ adminsRouter.get(
  * Path: /
  * Method: GET
  * Headers: { Authorization: 'Bearer <access_token>' }
- * Query: { page: number, limit: number }
+ * Query: { status }
  */
 adminsRouter.get(
   '/get-all/event-list',
