@@ -29,9 +29,11 @@ class EventService {
     })
   }
 
-  async getEventAdminList() {
+  async getEventAdminList(status: EventStatus) {
+    const query = status ? { status } : {}
     const events = await databaseService.events
       .aggregate([
+        { $match: query },
         {
           $lookup: {
             from: env.DB_COLLECTION_USERS,

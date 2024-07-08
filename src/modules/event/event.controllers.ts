@@ -35,11 +35,9 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
 
-export const getEventListAdminController = async (
-  req: Request<ParamsDictionary, any, any, Pagination>,
-  res: Response
-) => {
-  const events = await eventService.getEventAdminList()
+export const getEventListAdminController = async (req: Request, res: Response) => {
+  const { status } = req.query
+  const events = await eventService.getEventAdminList(status as EventStatus)
 
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
