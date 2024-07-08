@@ -515,6 +515,9 @@ class EventService {
               as: 'event_operator'
             }
           },
+          //skip , limit
+          { $skip: page * limit - limit },
+          { $limit: limit },
           {
             $project: {
               status: 0,
@@ -559,7 +562,6 @@ class EventService {
       this.getAllEventListApproved()
     ])
     const sum_page = Math.ceil(event / limit)
-    console.log(events[0])
     return { events, total: total[0].total, sum_page }
   }
 }
