@@ -37,10 +37,6 @@ export const createEventValidator = validate(
         isNumeric: { errorMessage: EVENT_MESSAGES.CAPACITY_MUST_BE_A_NUMBER },
         notEmpty: { errorMessage: EVENT_MESSAGES.CAPACITY_IS_REQUIRED }
       },
-      ticket_price: {
-        isNumeric: { errorMessage: EVENT_MESSAGES.TICKET_PRICE_MUST_BE_A_NUMBER },
-        notEmpty: { errorMessage: EVENT_MESSAGES.TICKET_PRICE_IS_REQUIRED }
-      },
       type_event: {
         isIn: {
           options: [Object.values(EventTypeEnum)],
