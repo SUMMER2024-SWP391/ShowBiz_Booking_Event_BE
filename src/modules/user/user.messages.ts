@@ -181,5 +181,10 @@ export const EVENT_MESSAGES = {
 
   GET_TICKET_BY_EVENT_ID_SUCCESS: 'Get ticket by event id success',
 
-  EVENT_IS_FULL: 'Event is full'
+  EVENT_IS_FULL: 'Event is full',
+
+  EVENT_IS_ALREADY_REJECTED: 'You can not cancel this event because it is already rejected by admin!',
+  EVENT_IS_ALREADY_CANCELED: 'You can not cancel this event because it is already canceled by you!',
+
+  EVENT_OPERATOR_IS_NOT_OWNER: 'This event is not yours!',
 } as const

@@ -496,6 +496,11 @@ class EventService {
       ])
       .toArray()
   }
+
+  async cancelEventRequest(eventId: string) {
+    await databaseService.events.updateOne({ _id: new ObjectId(eventId) }, { $set: { status: EventStatus.CANCELED } })
+    return { message: 'Cancel event request successfully!' }
+  }
 }
 
 const eventService = new EventService()

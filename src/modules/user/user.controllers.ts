@@ -237,3 +237,10 @@ export const searchEventController = async (req: Request, res: Response) => {
 
   return res.json(result)
 }
+
+export const cancelEventRequestController = async (req: Request, res: Response) => {
+  const { eventId } = req.params
+  const result = await eventService.cancelEventRequest(eventId)
+
+  return res.json(result)
+}
