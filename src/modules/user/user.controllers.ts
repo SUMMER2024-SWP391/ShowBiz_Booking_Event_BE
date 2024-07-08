@@ -24,6 +24,7 @@ import { hashPassword } from '~/utils/crypto'
 import registerService from '../register/register.services'
 import checkingStaffServices from '../checking_staff/checking_staff.services'
 import eventService from '../event/event.services'
+import { sendEmail } from '../sendMail/sendMailService'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -126,6 +127,8 @@ export const registerEventOperatorController = async (
   res: Response
 ) => {
   await userService.registerEventOperator(req.body)
+
+  // await sendEmail()
 
   return res.json({ message: USER_MESSAGES.CREATE_EVENT_OPERATOR_SUCCESS })
 }

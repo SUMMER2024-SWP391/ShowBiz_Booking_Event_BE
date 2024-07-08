@@ -524,11 +524,8 @@ class EventService {
             $project: {
               status: 0,
               description: 0,
-              date_event: 0,
               type_event: 0,
               category: 0,
-              time_start: 0,
-              time_end: 0,
               address: 0,
               event_operator_id: 0,
               event_operator: {

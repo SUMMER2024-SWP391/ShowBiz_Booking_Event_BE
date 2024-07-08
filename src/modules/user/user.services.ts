@@ -357,13 +357,13 @@ class UserService {
   }
 
   async registerEventOperator(body: EventOperatorRegisterReqBody) {
-    const { password, email, name, phone_number } = body
+    const { password, email, user_name, phone_number } = body
     const id = new ObjectId()
 
     return await databaseService.users.insertOne(
       new User({
         _id: id,
-        user_name: name,
+        user_name,
         email: email,
         phone_number: phone_number,
         password: hashPassword(password),
