@@ -500,8 +500,71 @@ class UserService {
     }
   }
 
+  async getListVisitor() {
+    return await databaseService.users
+      .find(
+        { role: UserRole.Visitor },
+        {
+          projection: {
+            _id: 1,
+            user_name: 1,
+            email: 1,
+            phone_number: 1,
+            date_of_birth: 1,
+            status: 1
+          }
+        }
+      )
+      .toArray()
+  }
+  async getListEventOperator() {
+    return await databaseService.users
+      .find(
+        { role: UserRole.EventOperator },
+        {
+          projection: {
+            _id: 1,
+            user_name: 1,
+            email: 1,
+            phone_number: 1,
+            date_of_birth: 1,
+            status: 1
+          }
+        }
+      )
+      .toArray()
+  }
+  async getListCheckingStaff() {
+    return await databaseService.checking_staffs
+      .aggregate([
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $project: {
+            _id: 0,
+            user_name: '$user.user_name',
+            email: '$user.email',
+            phone_number: '$user.phone_number',
+            date_of_birth: '$user.date_of_birth',
+            status: '$user.status'
+          }
+        }
+      ])
+      .toArray()
+  }
+
   async checkMssvExist(mssv: string) {
     return Boolean(await databaseService.users.findOne({ mssv }))
+
   }
 }
 

@@ -241,6 +241,33 @@ export const searchEventController = async (req: Request, res: Response) => {
   return res.json(result)
 }
 
+export const getListVisitorController = async (req: Request, res: Response) => {
+  const result = await userService.getListVisitor()
+  console.log(result)
+
+  return res.json({
+    message: USER_MESSAGES.GET_LIST_VISITOR_EVENT_SUCCESS,
+    data: result
+  })
+}
+
+export const getListEventOperatorController = async (req: Request, res: Response) => {
+  const result = await userService.getListEventOperator()
+
+  return res.json({
+    message: USER_MESSAGES.GET_LIST_EVENT_OPERATOR_EVENT_SUCCESS,
+    data: result
+  })
+}
+
+export const getListCheckingStaffController = async (req: Request, res: Response) => {
+  const result = await userService.getListCheckingStaff()
+
+  return res.json({
+    message: USER_MESSAGES.GET_LIST_CHEKCING_STAFF_EVENT_SUCCESS,
+    data: result
+  })
+}
 export const cancelEventRequestController = async (req: Request, res: Response) => {
   const { eventId } = req.params
   const result = await eventService.cancelEventRequest(eventId)
