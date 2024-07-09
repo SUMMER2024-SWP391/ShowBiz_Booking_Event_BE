@@ -20,7 +20,6 @@ export interface EventType {
   speaker_name?: string
   sponsor_name?: string
   is_required_form_register: boolean
-  [key: string]: any
 }
 
 export default class Event {
