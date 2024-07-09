@@ -15,7 +15,7 @@ import { filterMiddleware } from '~/errors/common.middlewares'
 import { updateAccountReqBody } from './account.request'
 import { confirmEventValidator } from './account.middleware'
 import { paginationValidator } from '../event/event.middlewares'
-import { getEventListController } from '../event/event.controllers'
+import { getEventListAdminController } from '../event/event.controllers'
 
 const adminsRouter = Router()
 
@@ -67,11 +67,12 @@ adminsRouter.patch(
 adminsRouter.get('/:id', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getUserByIdController))
 
 /**
- ** Description: Get all account
+ ** Description: Get account
  * Method: GET
  * Headers: { Authorization: 'Bearer <access_token>' }
+ * Query : role
  */
-adminsRouter.get('/', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getAccountController))
+adminsRouter.get('/list/user', accessTokenValidator, wrapAsync(checkRoleAdmin), wrapAsync(getAccountController))
 
 /**
  ** Description: Delete account by id
@@ -115,14 +116,13 @@ adminsRouter.get(
  * Path: /
  * Method: GET
  * Headers: { Authorization: 'Bearer <access_token>' }
- * Query: { page: number, limit: number }
+ * Query: { status }
  */
 adminsRouter.get(
   '/get-all/event-list',
   accessTokenValidator,
   wrapAsync(checkRoleAdmin),
-  paginationValidator,
-  wrapAsync(getEventListController)
+  wrapAsync(getEventListAdminController)
 )
 
 export default adminsRouter

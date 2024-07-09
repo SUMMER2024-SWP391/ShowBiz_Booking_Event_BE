@@ -35,19 +35,14 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
 
-export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
-  const limit = Number(req.query.limit) ? Number(req.query.limit) : 5
-  const page = Number(req.query.page) ? Number(req.query.page) : 1
-  const { events, total, sum_page } = await eventService.getEventList({ limit, page })
+export const getEventListAdminController = async (req: Request, res: Response) => {
+  const { status } = req.query
+  const events = await eventService.getEventAdminList(status as EventStatus)
 
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
     data: {
-      events,
-      paginate: {
-        total_events: total,
-        sum_page
-      }
+      events
     }
   })
 }
@@ -244,5 +239,21 @@ export const getStatisticalDataController = async (req: Request, res: Response) 
   return res.json({
     message: EVENT_MESSAGES.GET_STATISTICAL_DATA_SUCCESS,
     data: result
+  })
+}
+
+export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
+  const { limit = 5, page = 1 } = req.query
+  const { events, sum_page, total } = await eventService.getEventList({ limit: Number(limit), page: Number(page) })
+
+  return res.json({
+    message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
+    data: {
+      events,
+      paginate: {
+        total,
+        sum_page
+      }
+    }
   })
 }

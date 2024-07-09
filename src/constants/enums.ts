@@ -40,7 +40,8 @@ export enum UserRole {
 export enum EventStatus {
   PENDING = 'Pending', //0
   APPROVED = 'Approved', //1
-  REJECTED = 'Rejected' //2
+  REJECTED = 'Rejected', //2 - by admin
+  CANCELED = 'Canceled' //3 - by event operator
 }
 
 export enum StatusRegisterEvent {

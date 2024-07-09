@@ -29,67 +29,46 @@ class EventService {
     })
   }
 
-  async getEventList({ limit, page }: { limit: number; page: number }) {
-    const [events, total, event] = await Promise.all([
-      databaseService.events
-        .aggregate([
-          {
-            $match: {
-              status: EventStatus.APPROVED
-            }
-          },
-          {
-            $lookup: {
-              from: env.DB_COLLECTION_USERS,
-              localField: 'event_operator_id',
-              foreignField: '_id',
-              as: 'event_operator'
-            }
-          },
-          { $skip: page * limit - limit },
-          { $limit: limit },
-          {
-            $project: {
-              event_operator_id: 0,
-              event_operator: {
-                password: 0,
-                created_at: 0,
-                role: 0,
-                status: 0,
-                email_verify_token: 0,
-                forgot_password_token: 0,
-                date_of_birth: 0,
-                point: 0
-              }
+  async getEventAdminList(status: EventStatus) {
+    const query = status ? { status } : {}
+    const events = await databaseService.events
+      .aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'event_operator_id',
+            foreignField: '_id',
+            as: 'event_operator'
+          }
+        },
+        {
+          $project: {
+            event_operator_id: 0,
+            event_operator: {
+              password: 0,
+              created_at: 0,
+              role: 0,
+              status: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0,
+              date_of_birth: 0,
+              point: 0
             }
           }
-        ])
-        .toArray()
-        .then((events) => {
-          return events.map((event) => {
-            return {
-              ...event,
-              event_operator: event.event_operator[0]
-            }
-          })
-        }),
-      databaseService.events
-        .aggregate([
-          {
-            $match: {
-              status: EventStatus.APPROVED
-            }
-          },
-          { $skip: (page - 1) * limit },
-          { $limit: limit },
-          { $count: 'total' }
-        ])
-        .toArray(),
-      this.getAllEventListApproved()
-    ])
-    const sum_page = Math.ceil(event / limit)
+        }
+      ])
+      .toArray()
+      .then((events) => {
+        return events.map((event) => {
+          return {
+            ...event,
+            event_operator: event.event_operator[0]
+          }
+        })
+      })
 
-    return { events, total: total[0].total, sum_page }
+    return events
   }
 
   async getPendingEventList({ limit, page }: { limit: number; page: number }) {
@@ -518,6 +497,71 @@ class EventService {
         }
       ])
       .toArray()
+  }
+
+  async cancelEventRequest(eventId: string) {
+    await databaseService.events.updateOne({ _id: new ObjectId(eventId) }, { $set: { status: EventStatus.CANCELED } })
+    return { message: 'Cancel event request successfully!' }
+  }
+
+  async getEventList({ limit, page }: { limit: number; page: number }) {
+    const [events, total, event] = await Promise.all([
+      databaseService.events
+        .aggregate([
+          { $match: { status: EventStatus.APPROVED } },
+          {
+            $lookup: {
+              from: env.DB_COLLECTION_USERS,
+              localField: 'event_operator_id',
+              foreignField: '_id',
+              as: 'event_operator'
+            }
+          },
+          //skip , limit
+          { $skip: page * limit - limit },
+          { $limit: limit },
+          {
+            $project: {
+              status: 0,
+              description: 0,
+              type_event: 0,
+              category: 0,
+              address: 0,
+              event_operator_id: 0,
+              event_operator: {
+                password: 0,
+                created_at: 0,
+                role: 0,
+                status: 0,
+                email_verify_token: 0,
+                forgot_password_token: 0,
+                date_of_birth: 0,
+                point: 0,
+                verify_status: 0,
+                avatar: 0,
+                phone_number: 0,
+                updated_at: 0,
+                email: 0
+              }
+            }
+          }
+        ])
+        .toArray()
+        .then((events) => {
+          return events.map((event) => {
+            return {
+              ...event,
+              event_operator: event.event_operator[0]
+            }
+          })
+        }),
+      await databaseService.events
+        .aggregate([{ $skip: (page - 1) * limit }, { $limit: limit }, { $count: 'total' }])
+        .toArray(),
+      this.getAllEventListApproved()
+    ])
+    const sum_page = Math.ceil(event / limit)
+    return { events, total: total[0].total, sum_page }
   }
 }
 

@@ -7,9 +7,14 @@ import { hashPassword } from '~/utils/crypto'
 import eventOperatorService from './event_operator.services'
 import eventService from '../event/event.services'
 import userService from '../user/user.services'
-import { UserRole } from '~/constants/enums'
+import { EventStatus, UserRole } from '~/constants/enums'
 import { canCheckIn, isToday } from '~/utils/common'
 import registerService from '../register/register.services'
+import { NextFunction, Request, Response } from 'express'
+import { ErrorWithStatus } from '~/models/Errors'
+import { StatusCodes } from 'http-status-codes'
+import { TokenPayload } from '../user/user.requests'
+import { ObjectId } from 'mongodb'
 
 export const registerEventOperatorValidator = validate(
   checkSchema(
@@ -141,3 +146,38 @@ export const checkInValidator = validate(
     ['params']
   )
 )
+
+export const isValidEventOperator = async (req: Request, res: Response, next: NextFunction) => {
+  const decoded_authorization = req.decoded_authorization as TokenPayload
+  
+  const validEvent = await databaseService.events.findOne({
+    _id: new ObjectId(req.params.eventId),
+    event_operator_id: new ObjectId(decoded_authorization.user_id)
+  })
+  
+  if (!validEvent) throw new ErrorWithStatus({
+    message: EVENT_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+    status: StatusCodes.BAD_REQUEST
+  })
+
+  next()
+}
+
+export const isValidEvent = async (req: Request, res: Response, next: NextFunction) => {
+  const { eventId } = req.params
+  const event = await eventService.getEventById(eventId)
+
+  if (!event) throw new Error(EVENT_MESSAGES.EVENT_NOT_FOUND)
+
+  if (event.status === EventStatus.REJECTED) throw new ErrorWithStatus({
+    message: EVENT_MESSAGES.EVENT_IS_ALREADY_REJECTED,
+    status: StatusCodes.BAD_REQUEST
+  })
+
+  if (event.status === EventStatus.CANCELED) throw new ErrorWithStatus({
+    message: EVENT_MESSAGES.EVENT_IS_ALREADY_CANCELED,
+    status: StatusCodes.BAD_REQUEST
+  })
+
+  next()
+}
