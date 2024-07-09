@@ -8,6 +8,7 @@ import { EventReponse } from './event.response'
 import dayjs from 'dayjs'
 import User from '../user/user.schema'
 import { convertToDateEvent } from '~/utils/common'
+import { time } from 'console'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -210,7 +211,12 @@ class EventService {
             location: 1,
             status: 1,
             _id: 1,
-            ticket_price: 1
+            ticket_price: 1,
+            date_event: 1,
+            time_start: 1,
+            time_end: 1,
+            image: 1,
+            address: 1
           }
         }
       )
