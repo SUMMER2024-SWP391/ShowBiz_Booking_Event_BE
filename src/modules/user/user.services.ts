@@ -360,7 +360,7 @@ class UserService {
     const { password, email, user_name, phone_number } = body
     const id = new ObjectId()
 
-    return await databaseService.users.insertOne(
+    const result = await databaseService.users.insertOne(
       new User({
         _id: id,
         user_name,
@@ -370,6 +370,8 @@ class UserService {
         role: UserRole.EventOperator
       })
     )
+
+    return await this.findUserById(result.insertedId.toString())
   }
 
   async getUserById(id: string) {

@@ -4,7 +4,7 @@ import { EventCategory, EventStatus, EventTypeEnum, LocationType } from '~/const
 export interface EventType {
   _id?: ObjectId
   name: string
-  capacity: number
+  capacity: number | string
   ticket_price?: number
   description?: string
   type_event: EventTypeEnum
@@ -26,7 +26,7 @@ export interface EventType {
 export default class Event {
   _id?: ObjectId
   name: string
-  capacity: number
+  capacity: number | string
   ticket_price: number
   description: string
   type_event: EventTypeEnum

@@ -144,7 +144,10 @@ export const registerEventWithNoFormNoPaymentController = async (req: Request, r
 export const getEventListOperatorController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await eventService.getEventListOperator(user_id)
-
+  for (let i = 0; i < result.length; i++) {
+    const numberMemberRegister = await registerService.getNumberMemberRegister(result[i]._id)
+    result[i] = { ...result[i], capacity: `${numberMemberRegister}/${result[i].capacity}` }
+  }
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_OPERATOR_SUCCESS,
     data: {

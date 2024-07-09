@@ -173,6 +173,10 @@ class RegisterService {
 
     return result
   }
+
+  async getNumberMemberRegister(event_id: ObjectId) {
+    return await databaseService.registers.countDocuments({ event_id: new ObjectId(event_id) })
+  }
 }
 
 const registerService = new RegisterService()
