@@ -564,7 +564,6 @@ class UserService {
 
   async checkMssvExist(mssv: string) {
     return Boolean(await databaseService.users.findOne({ mssv }))
-
   }
 }
 
