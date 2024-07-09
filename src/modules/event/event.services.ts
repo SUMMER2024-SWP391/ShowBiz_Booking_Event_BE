@@ -295,10 +295,10 @@ class EventService {
   }
 
   async cancelEvent(visitor_id: string, event_id: string) {
-    await databaseService.registers.deleteOne({
-      visitor_id: new ObjectId(visitor_id),
-      event_id: new ObjectId(event_id)
-    })
+    await databaseService.registers.updateOne(
+      { event_id: new ObjectId(event_id), visitor_id: new ObjectId(visitor_id) },
+      { $set: { status_register: StatusRegisterEvent.CANCEL } }
+    )
   }
 
   async totalCheckInOrNotInMonth(status: boolean, user: User, startOfMonth: Date, endOfMonth: Date) {
