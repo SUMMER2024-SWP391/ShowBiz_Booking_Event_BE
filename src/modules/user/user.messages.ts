@@ -33,6 +33,11 @@ export const USER_MESSAGES = {
   CONFIRM_PASSWORD_MUST_BE_STRONG: 'Confirm password must be strong!',
   CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD: 'Confirm password must be the same as password!',
 
+  //get list user
+  GET_LIST_VISITOR_EVENT_SUCCESS: 'Get list visitor event success',
+  GET_LIST_EVENT_OPERATOR_EVENT_SUCCESS: 'Get list event operator event success',
+  GET_LIST_CHEKCING_STAFF_EVENT_SUCCESS: 'Get list checking staff event success',
+
   // name
   NAME_IS_REQUIRED: 'User name is required!',
   NAME_MUST_BE_A_STRING: 'User name must be a string!',

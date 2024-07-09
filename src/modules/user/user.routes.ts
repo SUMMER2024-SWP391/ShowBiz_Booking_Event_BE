@@ -31,7 +31,10 @@ import {
   changePasswordController,
   refreshTokenController,
   getListRegisterEventController,
-  searchEventController
+  searchEventController,
+  getListVisitorController,
+  getListEventOperatorController,
+  getListCheckingStaffController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -204,5 +207,45 @@ usersRouter.get('/list-register-event', accessTokenValidator, wrapAsync(getListR
  * Query: { keyword: string }
  */
 usersRouter.get('/search-event', searchEventMiddleware, wrapAsync(searchEventController))
+
+/**
+ * Description: List visitor
+ * Path: /list-visitor
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+
+usersRouter.get(
+  '/list-visitor',
+  accessTokenValidator,
+  isUserRole([UserRole.Admin]),
+  wrapAsync(getListVisitorController)
+)
+/**
+ * Description: List visitor
+ * Path: /list-visitor
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+
+usersRouter.get(
+  '/list-event-operator',
+  accessTokenValidator,
+  isUserRole([UserRole.Admin]),
+  wrapAsync(getListEventOperatorController)
+)
+/**
+ * Description: List visitor
+ * Path: /list-visitor
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+
+usersRouter.get(
+  '/list-checking-staff',
+  accessTokenValidator,
+  isUserRole([UserRole.Admin]),
+  wrapAsync(getListCheckingStaffController)
+)
 
 export default usersRouter
