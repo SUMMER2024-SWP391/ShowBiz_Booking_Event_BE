@@ -181,12 +181,18 @@ export const answerFeedbackEventController = async (
 export const getTicketByEventIdController = async (req: Request, res: Response) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
-  const register = await registerService.getRegisterByEventIdAndUserId(id, user_id)
+  const [register, user_profile, event] = await Promise.all([
+    registerService.getRegisterByEventIdAndUserId(id, user_id),
+    userService.getUserById(user_id),
+    eventService.getEventById(id)
+  ])
+
+  const ticket = { ...register, user_profile, event }
 
   return res.json({
     message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
     data: {
-      ticket: register[0]
+      ticket: ticket
     }
   })
 }

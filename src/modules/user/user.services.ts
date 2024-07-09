@@ -367,7 +367,8 @@ class UserService {
         email: email,
         phone_number: phone_number,
         password: hashPassword(password),
-        role: UserRole.EventOperator
+        role: UserRole.EventOperator,
+        status: UserStatus.VERIFIED
       })
     )
 
