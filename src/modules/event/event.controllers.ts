@@ -15,7 +15,7 @@ import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
 import Register from '../register/register.schema'
 import { templateRegisterEvent } from '~/constants/template-mail'
-import Event from './event.schema'
+import Event, { EventType } from './event.schema'
 import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
@@ -143,10 +143,16 @@ export const registerEventWithNoFormNoPaymentController = async (req: Request, r
 
 export const getEventListOperatorController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const result = await eventService.getEventListOperator(user_id)
-  for (let i = 0; i < result.length; i++) {
-    const numberMemberRegister = await registerService.getNumberMemberRegister(result[i]._id)
-    result[i] = { ...result[i], capacity: `${numberMemberRegister}/${result[i].capacity}` }
+  const events = await eventService.getEventListOperator(user_id)
+  const result: Array<EventType & { is_has_form_feedback: boolean }> = []
+  for (let i = 0; i < events.length; i++) {
+    const numberMemberRegister = await registerService.getNumberMemberRegister(events[i]._id)
+    const formFeedback = await formService.getFormEventByIdEndType(events[i]._id, EventQuestionType.FEEDBACK)
+    result.push({
+      ...events[i],
+      capacity: `${numberMemberRegister}/${events[i].capacity}`,
+      is_has_form_feedback: Boolean(formFeedback)
+    })
   }
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_OPERATOR_SUCCESS,

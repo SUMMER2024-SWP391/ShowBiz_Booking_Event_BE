@@ -80,3 +80,18 @@ export const handleCheckFormController = async (req: Request, res: Response) => 
     }
   })
 }
+
+export const getFormFeedbackController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const event = await eventService.getEventById(id)
+  const formDocument = await formService.getFormEventByIdEndType(new ObjectId(event._id), EventQuestionType.FEEDBACK)
+  const formQuestion = await questionService.getListQuestion(formDocument?._id as ObjectId)
+
+  return res.json({
+    message: FORM_MESSAGE.GET_FORM_REGISTER_SUCCESS,
+    data: {
+      formQuestion: formQuestion,
+      event
+    }
+  })
+}
