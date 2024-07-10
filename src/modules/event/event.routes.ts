@@ -35,7 +35,11 @@ const eventsRouter = Router()
  *         date_event: string, time_start: string, time_end: string,
  *         location: LocationType, } -> rest of the fields are optional
  */
-eventsRouter.post('/', accessTokenValidator, createEventValidator, wrapAsync(createEventController))
+eventsRouter.post('/', accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  createEventValidator,
+  wrapAsync(createEventController)
+)
 
 /**
  * * Description: Get event list(pagination)
