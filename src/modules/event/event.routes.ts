@@ -19,7 +19,8 @@ import {
   handleStatusEventController,
   registerEventController,
   registerEventHasFormNoPaymentController,
-  registerEventWithNoFormNoPaymentController
+  registerEventWithNoFormNoPaymentController,
+  searchEventController
 } from './event.controllers'
 import { UserRole } from '~/constants/enums'
 
@@ -135,4 +136,12 @@ eventsRouter.get(
   wrapAsync(isUserRole([UserRole.Admin, UserRole.EventOperator])),
   wrapAsync(getStatisticalDataController)
 )
+
+/**
+ * * Description: Search event based on name and description
+ * Path: /search/:keyword
+ * Method: GET
+ */
+eventsRouter.get('/search/:keyword', wrapAsync(searchEventController))
+
 export default eventsRouter

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { EventCategory, EventStatus, EventTypeEnum, LocationType } from '~/constants/enums'
+import databaseService from '~/database/database.services'
 
 export interface EventType {
   _id?: ObjectId
@@ -85,3 +86,5 @@ export default class Event {
     this.is_required_form_register = is_required_form_register
   }
 }
+
+databaseService.events.createIndex({ name: 'text', description: 'text' })

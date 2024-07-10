@@ -501,6 +501,13 @@ class EventService {
     await databaseService.events.updateOne({ _id: new ObjectId(eventId) }, { $set: { status: EventStatus.CANCELED } })
     return { message: 'Cancel event request successfully!' }
   }
+
+  async searchEventsQuery(query: string) {
+    return await databaseService.events.find({
+      status: EventStatus.APPROVED,
+      $text: { $search: query }
+    }).toArray()
+  }
 }
 
 const eventService = new EventService()
