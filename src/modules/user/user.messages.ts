@@ -139,6 +139,7 @@ export const EVENT_MESSAGES = {
   YOU_HAVE_NOT_REGISTERED_THIS_EVENT: 'You have not registered this event!',
   EVENT_HAVE_PAYMENT: 'Event have payment!',
   YOU_REGISTERED_THIS_EVENT: 'You already registered this event!',
+  GET_EVENT_LIST_EVENT_STAFF_SUCCESS: 'Get event list event staff successfully!',
 
   //statistical
   GET_STATISTICAL_DATA_SUCCESS: 'Get statistical data successfully!',
@@ -192,5 +193,5 @@ export const EVENT_MESSAGES = {
   EVENT_IS_ALREADY_CANCELED: 'You can not cancel this event because it is already canceled by you!',
 
   EVENT_OPERATOR_IS_NOT_OWNER: 'This event is not yours!',
-  SEARCH_EVENT_SUCCESS: 'Search event success',
+  SEARCH_EVENT_SUCCESS: 'Search event success'
 } as const

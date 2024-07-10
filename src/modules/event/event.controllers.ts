@@ -257,7 +257,6 @@ export const getStatisticalDataController = async (req: Request, res: Response) 
   })
 }
 
-
 export const searchEventController = async (req: Request, res: Response) => {
   const { keyword } = req.params
   const result = await eventService.searchEventsQuery(keyword)
@@ -282,6 +281,17 @@ export const getEventListController = async (req: Request<ParamsDictionary, any,
         total,
         sum_page
       }
+    }
+  })
+}
+
+export const getEventListEventStaffController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const events = await eventService.getListEventOfStaff(user_id)
+  return res.json({
+    message: EVENT_MESSAGES.GET_EVENT_LIST_EVENT_STAFF_SUCCESS,
+    data: {
+      events
     }
   })
 }
