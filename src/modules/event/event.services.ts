@@ -510,12 +510,13 @@ class EventService {
     return { message: 'Cancel event request successfully!' }
   }
 
-
   async searchEventsQuery(query: string) {
-    return await databaseService.events.find({
-      status: EventStatus.APPROVED,
-      $text: { $search: query }
-    }).toArray()
+    return await databaseService.events
+      .find({
+        status: EventStatus.APPROVED,
+        $text: { $search: query }
+      })
+      .toArray()
   }
 
   async getEventList({ limit, page }: { limit: number; page: number }) {
@@ -576,6 +577,16 @@ class EventService {
     ])
     const sum_page = Math.ceil(event / limit)
     return { events, total: total[0].total, sum_page }
+  }
+
+  async getListEventOfStaff(user_id: string) {
+    const eventIdList = await databaseService.checking_staffs.find({ user_id: new ObjectId(user_id) }).toArray()
+    const eventList: Event[] = []
+    for (const event of eventIdList) {
+      const eventItem = await eventService.getEventById(event.event_id.toString())
+      eventList.push(eventItem as Event)
+    }
+    return eventList
   }
 }
 

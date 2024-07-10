@@ -13,6 +13,7 @@ import {
   createEventController,
   getEventByIdController,
   getEventListController,
+  getEventListEventStaffController,
   getEventListOperatorController,
   getStatisticalDataController,
   getTicketByEventIdController,
@@ -147,5 +148,7 @@ eventsRouter.get(
  * Method: GET
  */
 eventsRouter.get('/search/:keyword', wrapAsync(searchEventController))
+
+eventsRouter.get('/staff/list', accessTokenValidator, wrapAsync(getEventListEventStaffController))
 
 export default eventsRouter

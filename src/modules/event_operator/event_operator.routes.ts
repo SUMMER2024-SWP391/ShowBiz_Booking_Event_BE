@@ -17,7 +17,11 @@ import {
   unassignCheckingStaffController
 } from './event_operator.controllers'
 import { UserRole } from '~/constants/enums'
-import { cancelEventRequestController, checkInController, getListRegisterEventController } from '../user/user.controllers'
+import {
+  cancelEventRequestController,
+  checkInController,
+  getListRegisterEventController
+} from '../user/user.controllers'
 
 const eOperatorRouter = Router()
 
@@ -98,7 +102,7 @@ eOperatorRouter.get(
 eOperatorRouter.post(
   '/checking-staff/check-in/:eventId',
   accessTokenValidator,
-  isUserRole([UserRole.EventOperator, UserRole.CheckingStaff]),
+  wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Visitor])),
   checkInValidator,
   wrapAsync(checkInController)
 )
