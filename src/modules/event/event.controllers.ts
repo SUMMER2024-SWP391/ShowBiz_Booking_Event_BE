@@ -15,7 +15,7 @@ import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
 import Register from '../register/register.schema'
 import { templateRegisterEvent } from '~/constants/template-mail'
-import Event from './event.schema'
+import Event, { EventType } from './event.schema'
 import userService from '../user/user.services'
 import User from '../user/user.schema'
 import { sendEmail } from '../sendMail/sendMailService'
@@ -35,8 +35,9 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
 }
 
-export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
-  const events = await eventService.getEventList()
+export const getEventListAdminController = async (req: Request, res: Response) => {
+  const { status } = req.query
+  const events = await eventService.getEventAdminList(status as EventStatus)
 
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
@@ -142,8 +143,17 @@ export const registerEventWithNoFormNoPaymentController = async (req: Request, r
 
 export const getEventListOperatorController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const result = await eventService.getEventListOperator(user_id)
-
+  const events = await eventService.getEventListOperator(user_id)
+  const result: Array<EventType & { is_has_form_feedback: boolean }> = []
+  for (let i = 0; i < events.length; i++) {
+    const numberMemberRegister = await registerService.getNumberMemberRegister(events[i]._id)
+    const formFeedback = await formService.getFormEventByIdEndType(events[i]._id, EventQuestionType.FEEDBACK)
+    result.push({
+      ...events[i],
+      capacity: `${numberMemberRegister}/${events[i].capacity}`,
+      is_has_form_feedback: Boolean(formFeedback)
+    })
+  }
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_OPERATOR_SUCCESS,
     data: {
@@ -171,12 +181,18 @@ export const answerFeedbackEventController = async (
 export const getTicketByEventIdController = async (req: Request, res: Response) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
-  const register = await registerService.getRegisterByEventIdAndUserId(id, user_id)
+  const [register, user_profile, event] = await Promise.all([
+    registerService.getRegisterByEventIdAndUserId(id, user_id),
+    userService.getUserById(user_id),
+    eventService.getEventById(id)
+  ])
+
+  const ticket = { ...register, user_profile, event }
 
   return res.json({
     message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
     data: {
-      ticket: register[0]
+      ticket: ticket
     }
   })
 }
@@ -241,6 +257,7 @@ export const getStatisticalDataController = async (req: Request, res: Response) 
   })
 }
 
+
 export const searchEventController = async (req: Request, res: Response) => {
   const { keyword } = req.params
   const result = await eventService.searchEventsQuery(keyword)
@@ -249,6 +266,22 @@ export const searchEventController = async (req: Request, res: Response) => {
     message: result.length > 0 ? EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS : EVENT_MESSAGES.EVENT_NOT_FOUND,
     data: {
       events: result
+    }
+  })
+}
+
+export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
+  const { limit = 5, page = 1 } = req.query
+  const { events, sum_page, total } = await eventService.getEventList({ limit: Number(limit), page: Number(page) })
+
+  return res.json({
+    message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
+    data: {
+      events,
+      paginate: {
+        total,
+        sum_page
+      }
     }
   })
 }

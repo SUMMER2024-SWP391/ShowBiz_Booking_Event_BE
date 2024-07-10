@@ -8,6 +8,7 @@ import { EventReponse } from './event.response'
 import dayjs from 'dayjs'
 import User from '../user/user.schema'
 import { convertToDateEvent } from '~/utils/common'
+import { time } from 'console'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -29,9 +30,11 @@ class EventService {
     })
   }
 
-  async getEventList() {
+  async getEventAdminList(status: EventStatus) {
+    const query = status ? { status } : {}
     const events = await databaseService.events
       .aggregate([
+        { $match: query },
         {
           $lookup: {
             from: env.DB_COLLECTION_USERS,
@@ -208,7 +211,12 @@ class EventService {
             location: 1,
             status: 1,
             _id: 1,
-            ticket_price: 1
+            ticket_price: 1,
+            date_event: 1,
+            time_start: 1,
+            time_end: 1,
+            image: 1,
+            address: 1
           }
         }
       )
@@ -293,10 +301,10 @@ class EventService {
   }
 
   async cancelEvent(visitor_id: string, event_id: string) {
-    await databaseService.registers.deleteOne({
-      visitor_id: new ObjectId(visitor_id),
-      event_id: new ObjectId(event_id)
-    })
+    await databaseService.registers.updateOne(
+      { event_id: new ObjectId(event_id), visitor_id: new ObjectId(visitor_id) },
+      { $set: { status_register: StatusRegisterEvent.CANCEL } }
+    )
   }
 
   async totalCheckInOrNotInMonth(status: boolean, user: User, startOfMonth: Date, endOfMonth: Date) {
@@ -502,11 +510,72 @@ class EventService {
     return { message: 'Cancel event request successfully!' }
   }
 
+
   async searchEventsQuery(query: string) {
     return await databaseService.events.find({
       status: EventStatus.APPROVED,
       $text: { $search: query }
     }).toArray()
+  }
+
+  async getEventList({ limit, page }: { limit: number; page: number }) {
+    const [events, total, event] = await Promise.all([
+      databaseService.events
+        .aggregate([
+          { $match: { status: EventStatus.APPROVED } },
+          {
+            $lookup: {
+              from: env.DB_COLLECTION_USERS,
+              localField: 'event_operator_id',
+              foreignField: '_id',
+              as: 'event_operator'
+            }
+          },
+          //skip , limit
+          { $skip: page * limit - limit },
+          { $limit: limit },
+          {
+            $project: {
+              status: 0,
+              description: 0,
+              type_event: 0,
+              category: 0,
+              address: 0,
+              event_operator_id: 0,
+              event_operator: {
+                password: 0,
+                created_at: 0,
+                role: 0,
+                status: 0,
+                email_verify_token: 0,
+                forgot_password_token: 0,
+                date_of_birth: 0,
+                point: 0,
+                verify_status: 0,
+                avatar: 0,
+                phone_number: 0,
+                updated_at: 0,
+                email: 0
+              }
+            }
+          }
+        ])
+        .toArray()
+        .then((events) => {
+          return events.map((event) => {
+            return {
+              ...event,
+              event_operator: event.event_operator[0]
+            }
+          })
+        }),
+      await databaseService.events
+        .aggregate([{ $skip: (page - 1) * limit }, { $limit: limit }, { $count: 'total' }])
+        .toArray(),
+      this.getAllEventListApproved()
+    ])
+    const sum_page = Math.ceil(event / limit)
+    return { events, total: total[0].total, sum_page }
   }
 }
 

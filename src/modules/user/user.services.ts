@@ -357,19 +357,22 @@ class UserService {
   }
 
   async registerEventOperator(body: EventOperatorRegisterReqBody) {
-    const { password, email, name, phone_number } = body
+    const { password, email, user_name, phone_number } = body
     const id = new ObjectId()
 
-    return await databaseService.users.insertOne(
+    const result = await databaseService.users.insertOne(
       new User({
         _id: id,
-        user_name: name,
+        user_name,
         email: email,
         phone_number: phone_number,
         password: hashPassword(password),
-        role: UserRole.EventOperator
+        role: UserRole.EventOperator,
+        status: UserStatus.VERIFIED
       })
     )
+
+    return await this.findUserById(result.insertedId.toString())
   }
 
   async getUserById(id: string) {
@@ -498,6 +501,68 @@ class UserService {
       access_token,
       refresh_token: new_refresh_token
     }
+  }
+
+  async getListVisitor() {
+    return await databaseService.users
+      .find(
+        { role: UserRole.Visitor },
+        {
+          projection: {
+            _id: 1,
+            user_name: 1,
+            email: 1,
+            phone_number: 1,
+            date_of_birth: 1,
+            status: 1
+          }
+        }
+      )
+      .toArray()
+  }
+  async getListEventOperator() {
+    return await databaseService.users
+      .find(
+        { role: UserRole.EventOperator },
+        {
+          projection: {
+            _id: 1,
+            user_name: 1,
+            email: 1,
+            phone_number: 1,
+            date_of_birth: 1,
+            status: 1
+          }
+        }
+      )
+      .toArray()
+  }
+  async getListCheckingStaff() {
+    return await databaseService.checking_staffs
+      .aggregate([
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $project: {
+            _id: 0,
+            user_name: '$user.user_name',
+            email: '$user.email',
+            phone_number: '$user.phone_number',
+            date_of_birth: '$user.date_of_birth',
+            status: '$user.status'
+          }
+        }
+      ])
+      .toArray()
   }
 
   async checkMssvExist(mssv: string) {

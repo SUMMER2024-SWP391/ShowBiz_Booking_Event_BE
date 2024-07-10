@@ -5,7 +5,7 @@ import databaseService from '~/database/database.services'
 export interface EventType {
   _id?: ObjectId
   name: string
-  capacity: number
+  capacity: number | string
   ticket_price?: number
   description?: string
   type_event: EventTypeEnum
@@ -21,13 +21,12 @@ export interface EventType {
   speaker_name?: string
   sponsor_name?: string
   is_required_form_register: boolean
-  [key: string]: any
 }
 
 export default class Event {
   _id?: ObjectId
   name: string
-  capacity: number
+  capacity: number | string
   ticket_price: number
   description: string
   type_event: EventTypeEnum

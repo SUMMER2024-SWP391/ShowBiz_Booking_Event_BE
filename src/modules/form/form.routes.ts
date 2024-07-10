@@ -3,6 +3,7 @@ import { wrapAsync } from '~/utils/handler'
 import {
   createFormQuestionController,
   getFormController,
+  getFormFeedbackController,
   handleCheckFormController,
   updateFormQuestionController
 } from './form.controller'
@@ -74,6 +75,13 @@ formRouter.get(
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.EventOperator])),
   wrapAsync(handleCheckFormController)
+)
+
+formRouter.get(
+  '/question/feedback/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.Visitor, UserRole.EventOperator, UserRole.Admin])),
+  wrapAsync(getFormFeedbackController)
 )
 
 export default formRouter

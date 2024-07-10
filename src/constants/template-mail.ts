@@ -719,3 +719,53 @@ export const templateForgotPassword = (user: User, forgot_password_token: string
         `
   }
 }
+
+export const templateRegisterAccountSuccess = (user: User): MailTemplate => {
+  return {
+    from: `${env.EMAIL_USER}`,
+    to: `${user.email}`,
+    subject: '[Booking-Event] Register account success 🔑 🎉',
+    html: `<html lang='en'>
+    <head>
+        <meta charset='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <title></title>
+        <style>
+            span { color: #333; } div { color: #333; } .bg { font-family: Arial,
+            sans-serif; background-color: #f4f4f4; color: #333; margin: 20px
+            0px; padding: 20px; inherits: none; } .container { max-width:
+            fit-content; margin: 20px auto; padding: 20px; background-color:
+            #fff; border-radius: 8px; border-width: thin; border-style: solid;
+            border-color: #dadce0; } .logo { display: block; margin: 0 auto;
+            width: 100px; } .otp { display: block; margin: 1.5rem auto; width:
+            fit-content; padding: 15px 20px; border-radius: 40px;
+            background-color: #333; color: #fff; font-size: 1.5rem; }
+        </style>
+    </head>
+    <body>
+        <div class='bg'>
+            <div class='container'>
+                <h1
+                    style='text-align: center; text-transform: capitalize'
+                >${user.user_name}</h1>
+                <p>Hi,</p>
+                <h2 style='text-align: center; margin-top: 4rem'>Dear
+                    ${user.user_name},</h2>
+                <p style='text-align: center; color: dimgray'>
+                    Your
+                    account of
+					you has been successfully created.
+                </p>
+                <a  href='http://localhost:3000/login'
+                    style='text-align: center; color: dimgray; margin-bottom: 4rem'
+                >
+                    Login now to create new event
+                </a>
+
+                <p>Thanks,<br />The Event Booking</p>
+            </div>
+        </div>
+    </body>
+</html>`
+  }
+}
