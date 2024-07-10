@@ -164,7 +164,7 @@ export const EVENT_MESSAGES = {
   TICKET_PRICE_IS_REQUIRED: 'Ticket price is required!',
   DATE_EVENT_MUST_BE_A_STRING: 'Date event must be a string!',
   DATE_EVENT_IS_REQUIRED: 'Date event is required!',
-  INVALID_DATE: 'Date event must be in the format DD-MM-YYYY',
+  INVALID_DATE: 'Date event must be in the format DD/MM/YYYY',
   DATE_EVENT_MUST_BE_IN_THE_FUTURE: 'Date event must be in the future!',
   DATE_EVENT_MUST_BE_ONE_WEEK_LATER: 'Please book the event one week in advance!',
   TIME_START_MUST_BE_A_STRING: 'Time start must be a string!',
