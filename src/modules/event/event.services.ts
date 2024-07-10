@@ -510,6 +510,14 @@ class EventService {
     return { message: 'Cancel event request successfully!' }
   }
 
+
+  async searchEventsQuery(query: string) {
+    return await databaseService.events.find({
+      status: EventStatus.APPROVED,
+      $text: { $search: query }
+    }).toArray()
+  }
+
   async getEventList({ limit, page }: { limit: number; page: number }) {
     const [events, total, event] = await Promise.all([
       databaseService.events

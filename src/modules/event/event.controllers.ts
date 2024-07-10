@@ -257,6 +257,19 @@ export const getStatisticalDataController = async (req: Request, res: Response) 
   })
 }
 
+
+export const searchEventController = async (req: Request, res: Response) => {
+  const { keyword } = req.params
+  const result = await eventService.searchEventsQuery(keyword)
+
+  return res.json({
+    message: result.length > 0 ? EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS : EVENT_MESSAGES.EVENT_NOT_FOUND,
+    data: {
+      events: result
+    }
+  })
+}
+
 export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
   const { limit = 5, page = 1 } = req.query
   const { events, sum_page, total } = await eventService.getEventList({ limit: Number(limit), page: Number(page) })

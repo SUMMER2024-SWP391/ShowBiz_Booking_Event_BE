@@ -192,4 +192,5 @@ export const EVENT_MESSAGES = {
   EVENT_IS_ALREADY_CANCELED: 'You can not cancel this event because it is already canceled by you!',
 
   EVENT_OPERATOR_IS_NOT_OWNER: 'This event is not yours!',
+  SEARCH_EVENT_SUCCESS: 'Search event success',
 } as const
