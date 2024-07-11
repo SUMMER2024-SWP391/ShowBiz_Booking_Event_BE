@@ -85,9 +85,7 @@ class RegisterService {
             'event.category': 0,
             'event.type_event': 0,
             'event.status': 0,
-            'event.ticket_price': 0,
-            'event.time_start': 0,
-            'event.time_end': 0,
+
             'event.updated_at': 0,
             'event_operator.password': 0,
             'event_operator.email': 0,
