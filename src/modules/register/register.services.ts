@@ -105,7 +105,8 @@ class RegisterService {
   async checkRegistered(event_id: string, visitor_id: string) {
     return await databaseService.registers.findOne({
       event_id: new ObjectId(event_id),
-      visitor_id: new ObjectId(visitor_id)
+      visitor_id: new ObjectId(visitor_id),
+      status_register: StatusRegisterEvent.SUCCESS
     })
   }
 
