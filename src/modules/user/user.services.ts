@@ -3,7 +3,7 @@ import databaseService from '../../database/database.services'
 import { EventOperatorRegisterReqBody, RegisterReqBody, UpdateMeReqBody } from '~/modules/user/user.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { EventStatus, TokenType, UserRole, UserStatus } from '~/constants/enums'
+import { EventCheckStatus, EventStatus, TokenType, UserRole, UserStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '../refreshToken/refreshToken.schema'
 import { env } from '~/config/environment'
@@ -330,7 +330,7 @@ class UserService {
 
     const result = await databaseService.events.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      [{ $set: { status, updated_at: '$$NOW' } }],
+      [{ $set: { status, updated_at: '$$NOW', event_check_status: EventCheckStatus.UP_COMING } }],
       { returnDocument: 'after' }
     )
 

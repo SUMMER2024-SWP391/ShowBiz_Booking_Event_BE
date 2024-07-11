@@ -3,7 +3,7 @@ import { EventRequestBody } from './event.requests'
 import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
-import { EventCategory, EventStatus, StatusRegisterEvent, UserRole } from '~/constants/enums'
+import { EventCategory, EventCheckStatus, EventStatus, StatusRegisterEvent, UserRole } from '~/constants/enums'
 import { EventReponse } from './event.response'
 import dayjs from 'dayjs'
 import User from '../user/user.schema'
@@ -17,7 +17,8 @@ class EventService {
       new Event({
         ...body,
         category: ticket_price == 0 ? EventCategory.FREE : EventCategory.PAID,
-        event_operator_id: new ObjectId(user_id)
+        event_operator_id: new ObjectId(user_id),
+        event_check_status: EventCheckStatus.NOT_ACCEPT
       })
     )
 
@@ -216,7 +217,8 @@ class EventService {
             time_start: 1,
             time_end: 1,
             image: 1,
-            address: 1
+            address: 1,
+            event_check_status: 1
           }
         }
       )

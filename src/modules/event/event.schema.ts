@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { EventCategory, EventStatus, EventTypeEnum, LocationType } from '~/constants/enums'
+import { EventCategory, EventCheckStatus, EventStatus, EventTypeEnum, LocationType } from '~/constants/enums'
 import databaseService from '~/database/database.services'
 
 export interface EventType {
@@ -21,6 +21,7 @@ export interface EventType {
   speaker_name?: string
   sponsor_name?: string
   is_required_form_register: boolean
+  event_check_status: EventCheckStatus
 }
 
 export default class Event {
@@ -42,6 +43,7 @@ export default class Event {
   speaker_name?: string
   sponsor_name?: string
   is_required_form_register: boolean
+  event_check_status: EventCheckStatus
 
   constructor({
     _id,
@@ -61,7 +63,8 @@ export default class Event {
     address,
     speaker_name,
     sponsor_name,
-    is_required_form_register
+    is_required_form_register,
+    event_check_status
   }: EventType) {
     this._id = _id
     this.name = name
@@ -83,6 +86,7 @@ export default class Event {
     this.speaker_name = speaker_name
     this.sponsor_name = sponsor_name
     this.is_required_form_register = is_required_form_register
+    this.event_check_status = event_check_status || EventCheckStatus.NOT_ACCEPT
   }
 }
 

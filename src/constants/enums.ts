@@ -48,3 +48,10 @@ export enum StatusRegisterEvent {
   SUCCESS = 'success',
   CANCEL = 'cancel'
 }
+
+export enum EventCheckStatus {
+  NOT_ACCEPT = 'Not accept',
+  DONE = 'Done',
+  IN_PROGESS = 'In progress',
+  UP_COMING = 'Upcoming'
+}

@@ -84,8 +84,6 @@ class RegisterService {
             'event.event_operator_id': 0,
             'event.category': 0,
             'event.type_event': 0,
-            'event.status': 0,
-
             'event.updated_at': 0,
             'event_operator.password': 0,
             'event_operator.email': 0,
