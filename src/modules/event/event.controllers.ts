@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { TokenPayload } from '../user/user.requests'
 import eventService from './event.services'
@@ -10,7 +10,7 @@ import {
   RegisterEventReqBody
 } from './event.requests'
 import { EVENT_MESSAGES } from '../user/user.messages'
-import { EventCategory, EventStatus } from '~/constants/enums'
+import { EventCategory, EventCheckStatus, EventStatus } from '~/constants/enums'
 import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
 import Register from '../register/register.schema'
@@ -25,6 +25,8 @@ import questionService from '../question/question.services'
 import { QUESTION_REGISTER } from '~/constants/question_register'
 import axios from 'axios'
 import moment from 'moment'
+import databaseService from '~/database/database.services'
+import { ObjectId } from 'mongodb'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -294,4 +296,16 @@ export const getEventListEventStaffController = async (req: Request, res: Respon
       events
     }
   })
+}
+
+export const handleStatusCheckEventController = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  const event = await eventService.getEventById(id)
+  if (event.event_check_status === EventCheckStatus.IN_PROGESS) {
+    await databaseService.events.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { event_check_status: EventCheckStatus.DONE }
+    )
+  }
+  next()
 }

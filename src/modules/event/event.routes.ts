@@ -17,6 +17,7 @@ import {
   getEventListOperatorController,
   getStatisticalDataController,
   getTicketByEventIdController,
+  handleStatusCheckEventController,
   handleStatusEventController,
   registerEventController,
   registerEventHasFormNoPaymentController,
@@ -36,7 +37,9 @@ const eventsRouter = Router()
  *         date_event: string, time_start: string, time_end: string,
  *         location: LocationType, } -> rest of the fields are optional
  */
-eventsRouter.post('/', accessTokenValidator,
+eventsRouter.post(
+  '/',
+  accessTokenValidator,
   wrapAsync(isUserRole([UserRole.EventOperator])),
   createEventValidator,
   wrapAsync(createEventController)
@@ -93,6 +96,7 @@ eventsRouter.post(
   '/feedback-event/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor])),
+  wrapAsync(handleStatusCheckEventController),
   wrapAsync(answerFeedbackEventController)
 )
 
