@@ -14,3 +14,7 @@ export interface CreateCheckingStaffReqBody {
   email: string
   event_id: string
 }
+
+export interface CheckInBody {
+  otp_check_in: string
+}

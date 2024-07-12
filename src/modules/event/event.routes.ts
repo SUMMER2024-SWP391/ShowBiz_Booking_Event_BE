@@ -107,6 +107,7 @@ eventsRouter.get('/ticket/:id', accessTokenValidator, wrapAsync(getTicketByEvent
  *  Path: /cancel-event/:id
  *  Method: Post
  *  Header: { Authorization: Bearer <access_token> }
+ * query : {idRegister : string}
  */
 eventsRouter.post(
   '/cancel-event/:id',

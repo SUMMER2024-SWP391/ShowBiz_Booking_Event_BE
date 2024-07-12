@@ -26,6 +26,7 @@ import checkingStaffServices from '../checking_staff/checking_staff.services'
 import eventService from '../event/event.services'
 import { sendEmail } from '../sendMail/sendMailService'
 import { templateRegisterAccountSuccess } from '~/constants/template-mail'
+import { CheckInBody } from '../event_operator/event_operator.requests'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -229,9 +230,10 @@ export const getListRegisterEventController = async (req: Request, res: Response
   })
 }
 
-export const checkInController = async (req: Request, res: Response) => {
+export const checkInController = async (req: Request<ParamsDictionary, any, CheckInBody>, res: Response) => {
   const { eventId } = req.params
-  const result = await registerService.checkIn(eventId)
+  const { otp_check_in } = req.body
+  const result = await registerService.checkIn(eventId, otp_check_in)
 
   return res.json(result)
 }
@@ -275,4 +277,21 @@ export const cancelEventRequestController = async (req: Request, res: Response) 
   const result = await eventService.cancelEventRequest(eventId)
 
   return res.json(result)
+}
+
+export const getTicketByIdController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const result = await registerService.getTicketById(id)
+  const [user, event] = await Promise.all([
+    userService.findUserById(String(result?.visitor_id)),
+    eventService.getEventById(String(result?.event_id))
+  ])
+
+  const ticket = { ...result, user, event }
+  return res.json({
+    message: USER_MESSAGES.GET_TICKET_SUCCESS,
+    data: {
+      ticket
+    }
+  })
 }

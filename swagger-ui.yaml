@@ -1,4 +1,4 @@
-openapi: 3.0.3
+git openapi: 3.0.3
 info:
   title: Swagger Showbiz Booking Event - OpenAPI 3.0
   description: |-
@@ -76,11 +76,11 @@ paths:
                 confirm_password:
                   type: string
                   example: Minat123!
-                name: 
+                name:
                   type: string
                   example: minat
                 date_of_birth:
-                  type: string 
+                  type: string
                   example: 2024-04-28T02:02:41.198Z
         required: true
       responses:
@@ -105,5 +105,3 @@ paths:
                         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYzYzdlZGNjOTA5ZTEzZGNlNTc3OWY1IiwidHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MTUyNDA2NjgsImV4cCI6MTcyMzg4MDY2OH0.3Jhf6QYx3Iv0zJ47fiAOvG4luElrRI5NYOhqN-w7y3A
         '422':
           description: VALIDATION ERROR!
-      
-        

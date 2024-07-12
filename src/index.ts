@@ -17,6 +17,7 @@ import { initFolder } from './utils/file'
 import mediaRouter from './modules/media/media.routes'
 import staticRouter from './modules/static/static.routes'
 import eventService from './modules/event/event.services'
+import registerRoutes from './modules/register/register.routes'
 
 initFolder()
 
@@ -41,6 +42,7 @@ app.use('/forms', formRouter)
 app.use('/zalo', payment)
 app.use('/upload-image', mediaRouter)
 app.use('/images', staticRouter)
+app.use('/register', registerRoutes)
 
 app.use(defaultErrorHandler)
 // Swagger

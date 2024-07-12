@@ -111,14 +111,29 @@ class RegisterService {
   }
 
   async getRegisterByEventIdAndUserId(event_id: string, visitor_id: string) {
-    return await databaseService.registers.findOne({
-      event_id: new ObjectId(event_id),
-      visitor_id: new ObjectId(visitor_id)
-    })
+    return await databaseService.registers.findOne(
+      {
+        event_id: new ObjectId(event_id),
+        visitor_id: new ObjectId(visitor_id),
+        status_register: StatusRegisterEvent.SUCCESS
+      },
+      {
+        projection: {
+          _id: 1,
+          status_check_in: 1,
+          otp_check_in: 1,
+          time_register: 1,
+          status_register: 1
+        }
+      }
+    )
   }
 
-  async checkIn(eventId: string) {
-    await databaseService.registers.updateOne({ event_id: new ObjectId(eventId) }, { $set: { status_check_in: true } })
+  async checkIn(eventId: string, otp_check_in: string) {
+    await databaseService.registers.findOneAndUpdate(
+      { event_id: new ObjectId(eventId), otp_check_in },
+      { $set: { status_check_in: true } }
+    )
 
     return { message: 'Check in success' }
   }
@@ -151,6 +166,10 @@ class RegisterService {
 
   async getNumberMemberRegister(event_id: ObjectId) {
     return await databaseService.registers.countDocuments({ event_id: new ObjectId(event_id) })
+  }
+
+  async getTicketById(id: string) {
+    return await databaseService.registers.findOne({ _id: new ObjectId(id) })
   }
 }
 
