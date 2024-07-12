@@ -189,7 +189,7 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
     eventService.getEventById(id)
   ])
 
-  const ticket = { ...register, user_profile, event }
+  const ticket = { register, user_profile, event }
 
   return res.json({
     message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
@@ -201,6 +201,7 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
 
 export const cancelEventController = async (req: Request, res: Response) => {
   const { id } = req.params
+  const { registerId } = req.query
   const { user_id } = req.decoded_authorization as TokenPayload
 
   const checkPayment = await eventService.checkPayment(id)
@@ -210,7 +211,7 @@ export const cancelEventController = async (req: Request, res: Response) => {
     })
   }
 
-  await eventService.cancelEvent(user_id, id)
+  await eventService.cancelEvent(registerId as string)
 
   return res.json({
     message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS

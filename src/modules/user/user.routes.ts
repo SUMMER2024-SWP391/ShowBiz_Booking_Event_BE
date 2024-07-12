@@ -34,7 +34,8 @@ import {
   searchEventController,
   getListVisitorController,
   getListEventOperatorController,
-  getListCheckingStaffController
+  getListCheckingStaffController,
+  getTicketByIdController
 } from '~/modules/user/user.controllers'
 import { wrapAsync } from '~/utils/handler'
 import { UserRole } from '~/constants/enums'
@@ -247,5 +248,7 @@ usersRouter.get(
   isUserRole([UserRole.Admin]),
   wrapAsync(getListCheckingStaffController)
 )
+
+usersRouter.get('/user/ticket/:id', accessTokenValidator, wrapAsync(getTicketByIdController))
 
 export default usersRouter

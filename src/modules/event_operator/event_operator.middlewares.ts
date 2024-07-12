@@ -143,22 +143,23 @@ export const checkInValidator = validate(
         }
       }
     },
-    ['params']
+    ['body']
   )
 )
 
 export const isValidEventOperator = async (req: Request, res: Response, next: NextFunction) => {
   const decoded_authorization = req.decoded_authorization as TokenPayload
-  
+
   const validEvent = await databaseService.events.findOne({
     _id: new ObjectId(req.params.eventId),
     event_operator_id: new ObjectId(decoded_authorization.user_id)
   })
-  
-  if (!validEvent) throw new ErrorWithStatus({
-    message: EVENT_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
-    status: StatusCodes.BAD_REQUEST
-  })
+
+  if (!validEvent)
+    throw new ErrorWithStatus({
+      message: EVENT_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.BAD_REQUEST
+    })
 
   next()
 }
@@ -169,15 +170,17 @@ export const isValidEvent = async (req: Request, res: Response, next: NextFuncti
 
   if (!event) throw new Error(EVENT_MESSAGES.EVENT_NOT_FOUND)
 
-  if (event.status === EventStatus.REJECTED) throw new ErrorWithStatus({
-    message: EVENT_MESSAGES.EVENT_IS_ALREADY_REJECTED,
-    status: StatusCodes.BAD_REQUEST
-  })
+  if (event.status === EventStatus.REJECTED)
+    throw new ErrorWithStatus({
+      message: EVENT_MESSAGES.EVENT_IS_ALREADY_REJECTED,
+      status: StatusCodes.BAD_REQUEST
+    })
 
-  if (event.status === EventStatus.CANCELED) throw new ErrorWithStatus({
-    message: EVENT_MESSAGES.EVENT_IS_ALREADY_CANCELED,
-    status: StatusCodes.BAD_REQUEST
-  })
+  if (event.status === EventStatus.CANCELED)
+    throw new ErrorWithStatus({
+      message: EVENT_MESSAGES.EVENT_IS_ALREADY_CANCELED,
+      status: StatusCodes.BAD_REQUEST
+    })
 
   next()
 }
