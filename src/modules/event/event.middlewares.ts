@@ -34,7 +34,6 @@ export const createEventValidator = validate(
         notEmpty: { errorMessage: EVENT_MESSAGES.NAME_IS_REQUIRED }
       },
       capacity: {
-        isNumeric: { errorMessage: EVENT_MESSAGES.CAPACITY_MUST_BE_A_NUMBER },
         notEmpty: { errorMessage: EVENT_MESSAGES.CAPACITY_IS_REQUIRED }
       },
       type_event: {
