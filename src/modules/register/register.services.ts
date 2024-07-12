@@ -55,7 +55,8 @@ class RegisterService {
       .aggregate([
         {
           $match: {
-            visitor_id: new ObjectId(user_id)
+            visitor_id: new ObjectId(user_id),
+            status_register: StatusRegisterEvent.SUCCESS
           }
         },
         {

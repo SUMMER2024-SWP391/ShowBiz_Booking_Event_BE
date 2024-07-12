@@ -151,7 +151,7 @@ export function checkActionOfEventOperatorValid(
 }
 
 export function isToday(dateString: string) {
-  const datePattern = /^([0-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-(\d{4})$/
+  const datePattern = /^([0-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/
 
   // Kiểm tra định dạng ngày
   if (!datePattern.test(dateString)) {
@@ -161,7 +161,7 @@ export function isToday(dateString: string) {
   // Lấy ngày hiện tại
   const today = new Date()
   const todayString =
-    ('0' + today.getDate()).slice(-2) + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getFullYear()
+    ('0' + today.getDate()).slice(-2) + '/' + ('0' + (today.getMonth() + 1)).slice(-2) + '/' + today.getFullYear()
 
   // So sánh ngày hiện tại với chuỗi ngày đầu vào
   return dateString === todayString
