@@ -156,7 +156,8 @@ class RegisterService {
     for (let i = 0; i < eventList.length; i++) {
       const register = await databaseService.registers
         .find({
-          event_id: eventList[i]._id
+          event_id: eventList[i]._id,
+          status_register: StatusRegisterEvent.SUCCESS
         })
         .toArray()
       result.concat(register)
@@ -171,6 +172,15 @@ class RegisterService {
 
   async getTicketById(id: string) {
     return await databaseService.registers.findOne({ _id: new ObjectId(id) })
+  }
+
+  async getListRegiserPeopleOfOneEvent(event_id: string) {
+    return await databaseService.registers
+      .find({
+        event_id: new ObjectId(event_id),
+        status_register: StatusRegisterEvent.SUCCESS
+      })
+      .toArray()
   }
 }
 
