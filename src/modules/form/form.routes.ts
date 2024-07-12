@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handler'
 import {
+  addNewQuestionController,
   createFormQuestionController,
   getFormController,
   getFormFeedbackController,
@@ -40,13 +41,7 @@ formRouter.post(
  * II ko có form và cũng ko có payment
  * III nếu có form thì trả về form
  */
-formRouter.get(
-  '/question/register/:id',
-  accessTokenValidator,
-  wrapAsync(isUserRole([UserRole.Visitor])),
-  wrapAsync(registerEventValidator),
-  wrapAsync(getFormController)
-)
+formRouter.get('/question/register/:id', wrapAsync(getFormController))
 
 /**
  * Description: Update form register or feedback
@@ -83,5 +78,7 @@ formRouter.get(
   wrapAsync(isUserRole([UserRole.Visitor, UserRole.EventOperator, UserRole.Admin])),
   wrapAsync(getFormFeedbackController)
 )
+
+formRouter.post('/question/update/feed-back/:id', wrapAsync(addNewQuestionController))
 
 export default formRouter

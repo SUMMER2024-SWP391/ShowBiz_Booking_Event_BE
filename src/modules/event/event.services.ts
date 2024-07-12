@@ -304,7 +304,7 @@ class EventService {
 
   async cancelEvent(id: string) {
     await databaseService.registers.updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(id), status_register: StatusRegisterEvent.SUCCESS },
       { $set: { status_register: StatusRegisterEvent.CANCEL } }
     )
   }

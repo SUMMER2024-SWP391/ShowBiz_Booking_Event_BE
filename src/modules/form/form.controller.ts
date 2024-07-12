@@ -1,3 +1,4 @@
+import { get } from 'axios'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Request, Response } from 'express'
 import formService from './form.services'
@@ -92,6 +93,23 @@ export const getFormFeedbackController = async (req: Request, res: Response) => 
     data: {
       formQuestion: formQuestion,
       event
+    }
+  })
+}
+
+export const addNewQuestionController = async (
+  req: Request<ParamsDictionary, any, CreateFormReqBody>,
+  res: Response
+) => {
+  const { id } = req.params
+  const { type, questions } = req.body
+  const getForm = await formService.getFormEventByIdEndType(new ObjectId(id), type)
+  const listQuestion = await questionService.addNewQuestion(getForm?._id as ObjectId, questions)
+
+  return res.json({
+    message: FORM_MESSAGE.CREATE_FORM_REGISTER_SUCCESS,
+    data: {
+      question: listQuestion
     }
   })
 }
