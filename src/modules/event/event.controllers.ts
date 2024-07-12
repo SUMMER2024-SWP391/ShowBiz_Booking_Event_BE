@@ -204,13 +204,6 @@ export const cancelEventController = async (req: Request, res: Response) => {
   const { registerId } = req.query
   const { user_id } = req.decoded_authorization as TokenPayload
 
-  const checkPayment = await eventService.checkPayment(id)
-  if (checkPayment) {
-    return res.json({
-      message: EVENT_MESSAGES.EVENT_HAVE_PAYMENT
-    })
-  }
-
   await eventService.cancelEvent(registerId as string)
 
   return res.json({

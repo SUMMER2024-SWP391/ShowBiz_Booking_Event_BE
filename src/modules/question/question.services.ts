@@ -45,6 +45,17 @@ class QuestionService {
       })
     )
   }
+
+  async addNewQuestion(idForm: ObjectId, question: string[]) {
+    //add new question to form
+    return await databaseService.questions.insertMany(
+      question.map((question) => ({
+        _id: new ObjectId(),
+        description: question,
+        form_id: idForm
+      }))
+    )
+  }
 }
 
 const questionService = new QuestionService()
