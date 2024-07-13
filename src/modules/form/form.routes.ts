@@ -3,6 +3,7 @@ import { wrapAsync } from '~/utils/handler'
 import {
   addNewQuestionController,
   createFormQuestionController,
+  deleteQuestionByIdController,
   getFormController,
   getFormFeedbackController,
   handleCheckFormController,
@@ -80,5 +81,7 @@ formRouter.get(
 )
 
 formRouter.post('/question/update/feed-back/:id', wrapAsync(addNewQuestionController))
+
+formRouter.delete('/question/delete/feed-back/:id', wrapAsync(deleteQuestionByIdController))
 
 export default formRouter
