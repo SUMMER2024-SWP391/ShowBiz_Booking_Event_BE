@@ -74,7 +74,7 @@ formRouter.get(
 )
 
 formRouter.get(
-  '/question/feedback/:id',
+  '/get/question/feedback/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor, UserRole.EventOperator, UserRole.Admin])),
   wrapAsync(getFormFeedbackController)
