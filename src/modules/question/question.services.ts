@@ -56,6 +56,11 @@ class QuestionService {
       }))
     )
   }
+
+  async deleteQuestion(id: string) {
+    //delete question by id
+    await databaseService.questions.deleteOne({ _id: new ObjectId(id) })
+  }
 }
 
 const questionService = new QuestionService()

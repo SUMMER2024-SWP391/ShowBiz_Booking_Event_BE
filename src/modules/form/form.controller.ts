@@ -113,3 +113,12 @@ export const addNewQuestionController = async (
     }
   })
 }
+
+export const deleteQuestionByIdController = async (req: Request, res: Response) => {
+  const { id } = req.params // đây là id của question
+
+  await questionService.deleteQuestion(id as string)
+  res.json({
+    message: FORM_MESSAGE.DELETE_QUESTION_SUCCESS
+  })
+}
