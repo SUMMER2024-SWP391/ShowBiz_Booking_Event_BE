@@ -256,11 +256,16 @@ export const getStatisticalDataController = async (req: Request, res: Response) 
 export const searchEventController = async (req: Request, res: Response) => {
   const { keyword } = req.params
   const result = await eventService.searchEventsQuery(keyword)
+  const newResult = []
+  for (let i = 0; i < result.length; i++) {
+    const event_operator = await userService.getUserById(result[i].event_operator_id.toString())
+    newResult.push({ ...result[i], event_operator })
+  }
 
   return res.json({
     message: result.length > 0 ? EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS : EVENT_MESSAGES.EVENT_NOT_FOUND,
     data: {
-      events: result
+      events: newResult
     }
   })
 }
