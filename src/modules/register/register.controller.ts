@@ -36,7 +36,7 @@ export const getListUserRegisterController = async (req: Request, res: Response)
         }
       }
     )
-    listUser.push(user)
+    listUser.push({ ...user, status_checkin: result[i].status_check_in })
   }
   const dataUser = { event_id: result[0].event_id, listUser }
   res.json({
