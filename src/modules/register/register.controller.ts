@@ -36,7 +36,7 @@ export const getListUserRegisterController = async (req: Request, res: Response)
         }
       }
     )
-    listUser.push({ ...user, status_check_in: result[i].status_check_in })
+    listUser.push({ ...user, statusCheckIn: result[i].status_check_in })
   }
   res.json({
     message: 'Get list user register success',
