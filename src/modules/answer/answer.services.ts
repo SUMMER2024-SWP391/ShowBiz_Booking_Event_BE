@@ -15,6 +15,13 @@ class AnswerService {
       )
     }
   }
+  async checkAnswerExist(question_id: string, user_id: string) {
+    const answer = await databaseService.answers.findOne({
+      visitor_id: new ObjectId(user_id),
+      question_id: new ObjectId(question_id)
+    })
+    return Boolean(answer)
+  }
 }
 
 const answerService = new AnswerService()

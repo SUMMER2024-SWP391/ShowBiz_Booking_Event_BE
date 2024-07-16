@@ -188,13 +188,29 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
     userService.getUserById(user_id),
     eventService.getEventById(id)
   ])
+  const formFeedback = await formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.FEEDBACK)
+  if (formFeedback) {
+    const questions = await questionService.getListQuestion(formFeedback?._id as ObjectId)
+    const isFeedback = await answerService.checkAnswerExist(questions[0]._id.toString(), user_id)
+    console.log(questions[0]._id)
+    const ticket = {
+      register: { ...register, isFeedback, isHasFormFeedback: Boolean(formFeedback) },
+      user_profile,
+      event
+    }
 
-  const ticket = { register, user_profile, event }
+    return res.json({
+      message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
+      data: {
+        ticket: ticket
+      }
+    })
+  }
 
   return res.json({
     message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
     data: {
-      ticket: ticket
+      ticket: { register: { ...register, isHasFormFeedback: false }, user_profile, event }
     }
   })
 }
