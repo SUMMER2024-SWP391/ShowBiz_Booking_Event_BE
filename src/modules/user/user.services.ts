@@ -568,6 +568,10 @@ class UserService {
   async checkMssvExist(mssv: string) {
     return Boolean(await databaseService.users.findOne({ mssv }))
   }
+
+  async removeRefreshToken(refresh_token: string) {
+    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+  }
 }
 
 const userService = new UserService()

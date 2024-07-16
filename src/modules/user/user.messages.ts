@@ -15,9 +15,11 @@ export const USER_MESSAGES = {
 
   // access token
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist!',
+  INVALID_REFRESH_TOKEN: 'Invalidd',
 
   // refresh token
   REFRESH_TOKEN_SUCCESS: 'Refresh token success!',
+  REFRESH_TOKEN_EXPIRED: 'Refresh token expired!',
 
   //search
   SEARCH_MUST_BE_A_STRING: 'Search must be a string!',
