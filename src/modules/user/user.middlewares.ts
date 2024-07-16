@@ -14,6 +14,7 @@ import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
 import { REGEX_FPT_EMAIL, REGEX_PHONE_NUMBER_VIETNAM, SEARCH_NO_SPECIAL_CHARACTERS } from '~/constants/regex'
 import userService from './user.services'
+import jwt from 'jsonwebtoken'
 
 export const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -306,9 +307,30 @@ export const refreshTokenValidator = validate(
                   status: StatusCodes.UNAUTHORIZED
                 })
               }
+              const accessToken = req?.headers?.authorization?.split(' ')[1]
+              console.log(accessToken)
+              const payload = jwt.verify(accessToken, env.JWT_SECRET_REFRESH_TOKEN as string, {
+                ignoreExpiration: true
+              }) as TokenPayload
+
+              if (payload.user_id !== decoded_refresh_token?.user_id) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.INVALID_REFRESH_TOKEN,
+                  status: StatusCodes.UNAUTHORIZED
+                })
+              }
+
               ;(req as Request).decoded_refresh_token = decoded_refresh_token
             } catch (error) {
               if (error instanceof JsonWebTokenError) {
+                //nếu token hết hạn thì xóa token đó đi
+                if (error.message === 'jwt expired') {
+                  await userService.removeRefreshToken(value)
+                  throw new ErrorWithStatus({
+                    message: USER_MESSAGES.REFRESH_TOKEN_EXPIRED,
+                    status: StatusCodes.UNAUTHORIZED
+                  })
+                }
                 throw new ErrorWithStatus({
                   message: capitalize((error as JsonWebTokenError).message),
                   status: StatusCodes.UNAUTHORIZED
