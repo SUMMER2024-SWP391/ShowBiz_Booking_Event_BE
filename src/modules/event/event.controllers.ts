@@ -300,7 +300,7 @@ export const getEventListEventStaffController = async (req: Request, res: Respon
 export const handleStatusCheckEventController = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params
   const event = await eventService.getEventById(id)
-  if (event.event_check_status === EventCheckStatus.IN_PROGESS) {
+  if (event.event_check_status === EventCheckStatus.IN_PROGRESS) {
     await databaseService.events.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { event_check_status: EventCheckStatus.DONE }

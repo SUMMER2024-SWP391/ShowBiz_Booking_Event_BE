@@ -11,9 +11,7 @@ import {
 } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
-import { createFormQuestionMiddleware, updateFormQuestionMiddleware } from './form.middlewares'
-import { isHasFormRegister, registerEventValidator } from '../event/event.middlewares'
-import { registerEventWithNoFormNoPaymentController } from '../event/event.controllers'
+import { checkTimeEventMiddleware, createFormQuestionMiddleware, updateFormQuestionMiddleware } from './form.middlewares'
 
 const formRouter = Router()
 
@@ -31,6 +29,7 @@ formRouter.post(
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.EventOperator])),
   createFormQuestionMiddleware,
+  wrapAsync(checkTimeEventMiddleware),
   wrapAsync(createFormQuestionController)
 )
 
