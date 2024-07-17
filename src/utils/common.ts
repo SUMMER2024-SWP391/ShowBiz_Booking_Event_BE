@@ -254,5 +254,5 @@ export function isBeforeToday(dateString: string): boolean {
   today.setHours(0, 0, 0, 0)
 
   // So sánh ngày nhập vào với ngày hiện tại
-  return inputDate <= today
+  return inputDate >= today
 }

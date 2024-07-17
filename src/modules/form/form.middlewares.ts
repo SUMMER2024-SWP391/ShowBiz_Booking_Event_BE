@@ -77,12 +77,11 @@ export const checkTimeEventMiddleware = async (req: Request, res: Response, next
 
   if (!event) throw new Error(EVENT_MESSAGES.EVENT_NOT_FOUND)
     
-  if (event.status !== EventStatus.APPROVED) throw new Error('EVENT_IS_NOT_APPROVED')
-
   if (!isBeforeToday(event.date_event)) throw new Error('Cannot create form as the deadline has passed!')
-  
+    
   if (!canCreateFeedBack(event.time_end)) throw new Error(EVENT_MESSAGES.CANNOT_FEEDBACK)
-
+      
+  if (event.status !== EventStatus.APPROVED) throw new Error('Event not approved yet for some reasons!')
 
   next()
 }
