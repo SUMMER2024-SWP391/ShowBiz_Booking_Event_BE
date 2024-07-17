@@ -7,7 +7,7 @@ import { EventStatus } from '~/constants/enums'
 import { EventQuestionType } from './form.enum'
 import eventService from '../event/event.services'
 import { NextFunction, Request, Response } from 'express'
-import { canCreateFeedBack, isToday } from '~/utils/common'
+import { canCreateFeedBack, isBeforeToday } from '~/utils/common'
 import { EVENT_MESSAGES } from '../user/user.messages'
 
 
@@ -76,10 +76,13 @@ export const checkTimeEventMiddleware = async (req: Request, res: Response, next
   const event = await eventService.findEventById(id)
 
   if (!event) throw new Error(EVENT_MESSAGES.EVENT_NOT_FOUND)
+    
+  if (event.status !== EventStatus.APPROVED) throw new Error('EVENT_IS_NOT_APPROVED')
 
-  if (!isToday(event.date_event)) throw new Error(EVENT_MESSAGES.EVENT_IS_NOT_TAKE_PLACE_TODAY)
+  if (!isBeforeToday(event.date_event)) throw new Error('Cannot create form as the deadline has passed!')
   
   if (!canCreateFeedBack(event.time_end)) throw new Error(EVENT_MESSAGES.CANNOT_FEEDBACK)
+
 
   next()
 }

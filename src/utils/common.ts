@@ -235,3 +235,24 @@ export function canCreateFeedBack(eventTime: string): boolean {
   return totalMinutesCurrent <= totalMinutes15BeforeInput
 }
   
+export function isBeforeToday(dateString: string): boolean {
+  const datePattern = /^([0-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/
+
+  // Kiểm tra định dạng ngày
+  if (!datePattern.test(dateString)) {
+    return false
+  }
+
+  // Tách chuỗi ngày thành các thành phần ngày, tháng, năm
+  const [day, month, year] = dateString.split('/').map(Number)
+
+  // Tạo đối tượng Date từ ngày nhập vào
+  const inputDate = new Date(year, month - 1, day)
+
+  // Lấy ngày hiện tại và đặt giờ, phút, giây, mili giây về 0
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // So sánh ngày nhập vào với ngày hiện tại
+  return inputDate <= today
+}
