@@ -6,15 +6,13 @@ import { capitalize } from '~/utils/capitalize'
 
 class FormService {
   async createFormEvent(id: string, type: EventQuestionType) {
-    const result = await databaseService.forms.insertOne(
+    return await databaseService.forms.insertOne(
       new FormEvent({
         _id: new ObjectId(),
         event_id: new ObjectId(id),
         type
       })
     )
-
-    return result
   }
 
   async getFormEventByIdEndType(id: ObjectId, type: EventQuestionType) {

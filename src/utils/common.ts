@@ -21,7 +21,7 @@ export const verifyAccessToken = async (access_token: string, req?: Request) => 
       secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
     })
     if (req) {
-      ;(req as Request).decoded_authorization = decoded_authorization
+      (req as Request).decoded_authorization = decoded_authorization
       return true
     }
     return decoded_authorization
@@ -210,3 +210,28 @@ export function canCancelEvent(dateEvent: string, timeStart: string): boolean {
 
   return diffInHours >= 48
 }
+
+export function canCreateFeedBack(eventTime: string): boolean {
+  if (!REGEX_TIME.test(eventTime)) {
+    throw new Error('Invalid time format. Please use hh:mm format.')
+  }
+
+  const [inputHours, inputMinutes] = eventTime.split(':').map(Number)
+
+  const now = new Date()
+  const currentHours = now.getHours()
+  const currentMinutes = now.getMinutes()
+
+  // Calculate total minutes from midnight for input time
+  const totalMinutesInput = inputHours * 60 + inputMinutes
+
+  // Calculate total minutes from midnight for current time
+  const totalMinutesCurrent = currentHours * 60 + currentMinutes
+
+  // Calculate total minutes from midnight for input time minus 15 minutes
+  const totalMinutes15BeforeInput = totalMinutesInput - 15
+
+  // Check if current time is before 15 minutes of input time
+  return totalMinutesCurrent <= totalMinutes15BeforeInput
+}
+  

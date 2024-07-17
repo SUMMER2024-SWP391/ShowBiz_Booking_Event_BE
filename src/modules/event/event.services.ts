@@ -4,11 +4,10 @@ import { ObjectId } from 'mongodb'
 import Event from './event.schema'
 import { env } from '~/config/environment'
 import { EventCategory, EventCheckStatus, EventStatus, StatusRegisterEvent, UserRole } from '~/constants/enums'
-import { EventReponse } from './event.response'
+import { EventResponse } from './event.response'
 import dayjs from 'dayjs'
 import User from '../user/user.schema'
 import { convertToDateEvent } from '~/utils/common'
-import { time } from 'console'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -147,7 +146,7 @@ class EventService {
 
   async getEventById(id: string) {
     const result = await databaseService.events
-      .aggregate<EventReponse>([
+      .aggregate<EventResponse>([
         {
           $match: {
             _id: new ObjectId(id)
@@ -226,8 +225,7 @@ class EventService {
   }
 
   async checkEventExist(id: string) {
-    const result = await databaseService.events.findOne({ _id: new ObjectId(id) })
-    return result
+    return await databaseService.events.findOne({ _id: new ObjectId(id) })
   }
 
   async getListRegisterEvent(event_operator_id: ObjectId) {
@@ -589,6 +587,10 @@ class EventService {
       eventList.push(eventItem as Event)
     }
     return eventList
+  }
+
+  async findEventById(event_id: string) {
+    return await databaseService.events.findOne({ _id: new ObjectId(event_id) })
   }
 }
 

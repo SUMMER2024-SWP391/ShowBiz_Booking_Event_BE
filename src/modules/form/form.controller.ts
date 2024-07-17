@@ -1,4 +1,3 @@
-import { get } from 'axios'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Request, Response } from 'express'
 import formService from './form.services'
@@ -7,7 +6,6 @@ import questionService from '../question/question.services'
 import { ObjectId } from 'mongodb'
 import { FORM_MESSAGE } from './form.messages'
 import eventService from '../event/event.services'
-import { capitalize } from '~/utils/capitalize'
 import { EventQuestionType } from './form.enum'
 import { EventStatus } from '~/constants/enums'
 import { checkActionOfEventOperatorValid } from '~/utils/common'
@@ -18,7 +16,7 @@ export const createFormQuestionController = async (
 ) => {
   const { id } = req.params
   const { type, questions } = req.body
-  const formEvent = await formService.createFormEvent(id, capitalize(type.toLowerCase()) as EventQuestionType)
+  const formEvent = await formService.createFormEvent(id, type as EventQuestionType)
   const listQuestion = await questionService.createNewListQuestion(formEvent.insertedId as ObjectId, questions)
 
   return res.json({

@@ -8,5 +8,6 @@ export const FORM_MESSAGE = {
   FORM_IS_NOT_EXIST: 'Form is not exist',
   CAN_NOT_UPDATE_FORM_REGISTER_WHEN_EVENT_OPENED: 'Can not update form register when event opened',
   CHECK_SUCCESS: 'Check success',
-  DELETE_QUESTION_SUCCESS: 'Delete question success'
+  DELETE_QUESTION_SUCCESS: 'Delete question success',
+  TYPE_IS_INVALID: 'Type is invalid!'
 } as const
