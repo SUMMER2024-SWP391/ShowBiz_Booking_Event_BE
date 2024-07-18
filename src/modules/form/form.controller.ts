@@ -61,23 +61,14 @@ export const updateFormQuestionController = async (
 
 export const handleCheckFormController = async (req: Request, res: Response) => {
   const { id } = req.params //lấy id từ params
-  //lấy event theo id
-  const event = await eventService.getEventById(id)
-  //lấy form theo id event
-  const [formRegister, formFeedback] = await Promise.all([
-    formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.REGISTER),
-    formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.FEEDBACK)
-  ])
 
-  const action = checkActionOfEventOperatorValid(
-    event.status as EventStatus,
-    Boolean(formRegister),
-    Boolean(formFeedback)
-  )
+  //lấy form theo id event
+  const formFeedback = await formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.FEEDBACK)
+
   res.json({
     message: FORM_MESSAGE.CHECK_SUCCESS,
     data: {
-      action
+      formFeedback
     }
   })
 }

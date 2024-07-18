@@ -67,13 +67,6 @@ formRouter.post(
  */
 
 formRouter.get(
-  '/handle/check/:id',
-  accessTokenValidator,
-  wrapAsync(isUserRole([UserRole.EventOperator])),
-  wrapAsync(handleCheckFormController)
-)
-
-formRouter.get(
   '/get/question/feedback/:id',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.Visitor, UserRole.EventOperator, UserRole.Admin])),
@@ -83,5 +76,13 @@ formRouter.get(
 formRouter.post('/question/update/feed-back/:id', wrapAsync(addNewQuestionController))
 
 formRouter.delete('/question/delete/feed-back/:id', wrapAsync(deleteQuestionByIdController))
+
+//id là event id
+formRouter.get(
+  '/handle/check/has-form-feedback/:id',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  wrapAsync(handleCheckFormController)
+)
 
 export default formRouter
