@@ -138,7 +138,7 @@ export const registerEventOperatorController = async (
 
 export const forgotPasswordController = async (req: Request, res: Response) => {
   const { _id } = req.user as User
-  const result = await userService.forgotPassword((_id as ObjectId).toHexString())
+  const result = await userService.forgotPassword((_id as ObjectId).toString())
 
   return res.json(result)
 }
@@ -170,7 +170,7 @@ export const updateMeController = async (
 export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
   const { forgot_password_token } = req.query
   const urlRedirect = `${env.CLIENT_REDIRECT_RESET_PASSWORD}?token=${forgot_password_token}`
-  console.log('🚀 ~ urlRedirect:', urlRedirect)
+  // console.log('🚀 ~ urlRedirect:', urlRedirect)
 
   return res.redirect(urlRedirect)
 }
