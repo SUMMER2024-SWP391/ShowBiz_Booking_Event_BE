@@ -38,7 +38,6 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   })
 
   const listEvent = await checkingStaffServices.listEventOfStaff(user_id.toString())
-
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     data: {
@@ -59,7 +58,7 @@ export const oauthController = async (req: Request, res: Response) => {
   const result = await userService.oauth(code as string)
   const listEvent = await checkingStaffServices.listEventOfStaff(String(result?.user_id))
   const urlRedirect = `${env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.status}&role=${result.user_role}&user_id=${result.user_id}&user_name=${result.user_name}&isStaff=${listEvent.length != 0 ? 'true' : 'false'}`
-
+  console.log(listEvent.length)
   return res.redirect(urlRedirect)
 }
 

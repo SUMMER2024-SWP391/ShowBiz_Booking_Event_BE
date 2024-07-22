@@ -30,6 +30,7 @@ import { ObjectId } from 'mongodb'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs'
+import { body } from 'express-validator'
 dayjs.extend(isSameOrBefore)
 dayjs.extend(customParseFormat)
 
@@ -88,6 +89,7 @@ export const registerEventController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
 
   //lưu câu trả lời của user vào bảng answers
+  console.log(req.body.answers)
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
 
   const _event = await eventService.getEventById(id)
@@ -239,7 +241,7 @@ export const registerEventHasFormNoPaymentController = async (
 ) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
-
+  console.log(req.body.answers)
   //lưu câu trả lời của user vào bảng answers
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
   //lưu user đăng ký sự kiện vào bảng register
