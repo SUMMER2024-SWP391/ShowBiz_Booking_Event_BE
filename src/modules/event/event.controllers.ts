@@ -27,7 +27,11 @@ import axios from 'axios'
 import moment from 'moment'
 import databaseService from '~/database/database.services'
 import { ObjectId } from 'mongodb'
-import { info } from 'console'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import dayjs from 'dayjs'
+dayjs.extend(isSameOrBefore)
+dayjs.extend(customParseFormat)
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -291,11 +295,24 @@ export const searchEventController = async (req: Request, res: Response) => {
 export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
   const { limit = 5, page = 1 } = req.query
   const { events, sum_page, total } = await eventService.getEventList({ limit: Number(limit), page: Number(page) })
+  events.sort((a, b) => {
+    return (
+      -dayjs(b.date_event + ' ' + b.time_start, 'DD/MM/YYYY HH:mm').valueOf() +
+      dayjs(a.date_event + ' ' + a.time_start, 'DD/MM/YYYY HH:mm').valueOf()
+    )
+  })
+
+  const result = []
+  for (let i = 0; i <= events.length - 1; i++) {
+    if (i >= Number(limit) * Number(page) - Number(limit) && i < Number(limit) * Number(page)) {
+      result.push(events[i])
+    }
+  }
 
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
     data: {
-      events,
+      events: result,
       paginate: {
         total,
         sum_page

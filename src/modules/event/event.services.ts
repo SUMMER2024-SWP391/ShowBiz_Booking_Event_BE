@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import User from '../user/user.schema'
 import { convertToDateEvent } from '~/utils/common'
 import { time } from 'console'
+import { add } from 'lodash'
 
 class EventService {
   async createEvent(user_id: string, body: EventRequestBody) {
@@ -524,7 +525,7 @@ class EventService {
   async getEventList({ limit, page }: { limit: number; page: number }) {
     const [events, total, event] = await Promise.all([
       databaseService.events
-        .aggregate([
+        .aggregate<Event & User[]>([
           { $match: { status: EventStatus.APPROVED } },
           {
             $lookup: {
@@ -534,9 +535,13 @@ class EventService {
               as: 'event_operator'
             }
           },
-          //skip , limit
-          { $skip: page * limit - limit },
-          { $limit: limit },
+          {
+            $addFields: {
+              event_operator: {
+                $arrayElemAt: ['$event_operator', 0]
+              }
+            }
+          },
           {
             $project: {
               status: 0,
@@ -563,15 +568,15 @@ class EventService {
             }
           }
         ])
-        .toArray()
-        .then((events) => {
-          return events.map((event) => {
-            return {
-              ...event,
-              event_operator: event.event_operator[0]
-            }
-          })
-        }),
+        .toArray(),
+      // .then((events) => {
+      //   return events.map((event) => {
+      //     return {
+      //       ...event,
+      //       event_operator: event.event_operator[0] as User
+      //     }
+      //   })
+      // }),
       await databaseService.events
         .aggregate([{ $skip: (page - 1) * limit }, { $limit: limit }, { $count: 'total' }])
         .toArray(),
