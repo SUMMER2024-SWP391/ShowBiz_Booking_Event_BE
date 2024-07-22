@@ -27,6 +27,7 @@ import axios from 'axios'
 import moment from 'moment'
 import databaseService from '~/database/database.services'
 import { ObjectId } from 'mongodb'
+import { info } from 'console'
 
 export const createEventController = async (req: Request<ParamsDictionary, any, EventRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
@@ -211,7 +212,7 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
   return res.json({
     message: EVENT_MESSAGES.GET_TICKET_BY_EVENT_ID_SUCCESS,
     data: {
-      ticket: { register: { ...register, isHasFormFeedback: false }, user_profile, event }
+      ticket: { register, user_profile, event, inforForm: { isHasFormFeedback: false } }
     }
   })
 }
