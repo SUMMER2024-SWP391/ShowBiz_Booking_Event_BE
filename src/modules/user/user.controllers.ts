@@ -13,7 +13,7 @@ import {
 } from '~/modules/user/user.requests'
 import { ParamsDictionary } from 'express-serve-static-core'
 import userService from '~/modules/user/user.services'
-import { USER_MESSAGES } from '~/modules/user/user.messages'
+import { EVENT_OPERATOR_MESSAGES, USER_MESSAGES } from '~/modules/user/user.messages'
 import { ObjectId } from 'mongodb'
 import User from '~/modules/user/user.schema'
 import { UserRole, UserStatus } from '~/constants/enums'
@@ -292,5 +292,15 @@ export const getTicketByIdController = async (req: Request, res: Response) => {
     data: {
       ticket
     }
+  })
+}
+
+export const listRegisteredVisistorController = async (req: Request, res: Response) => {
+  const { eventId } = req.params
+  const result = await registerService.getListRegisteredVisistorByEventOperator(eventId)
+
+  return res.json({
+    message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTERED_VISITOR_SUCCESS,
+    data: result
   })
 }

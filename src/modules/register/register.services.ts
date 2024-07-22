@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 import otpGenerator from 'otp-generator'
 import Event from '../event/event.schema'
 import { StatusRegisterEvent } from '~/constants/enums'
+import { env } from '~/config/environment'
 
 class RegisterService {
   async registerEvent(id: string, user_id: string) {
@@ -61,7 +62,7 @@ class RegisterService {
         },
         {
           $lookup: {
-            from: 'events',
+            from: env.DB_COLLECTION_EVENTS,
             localField: 'event_id',
             foreignField: '_id',
             as: 'event'
@@ -179,6 +180,60 @@ class RegisterService {
       .find({
         event_id: new ObjectId(event_id),
         status_register: StatusRegisterEvent.SUCCESS
+      })
+      .toArray()
+  }
+  async getListRegisteredVisistorByEventOperator(event_id: string) {
+    const result = await databaseService.registers
+      .aggregate([
+        {
+          $match: {
+            event_id: new ObjectId(event_id),
+            status_register: { $in: [StatusRegisterEvent.SUCCESS, StatusRegisterEvent.CANCEL] }
+          }
+        },
+        {
+          $lookup: {
+            from: env.DB_COLLECTION_USERS,
+            localField: 'visitor_id',
+            foreignField: '_id',
+            as: 'visitor'
+          }
+        },
+        {
+          $unwind: '$visitor' // Tách các phần tử của mảng visitor thành các tài liệu riêng biệt
+        },
+        {
+          $sort: {
+            status_register: -1 // "registered" trước "cancel"
+          }
+        },
+        {
+          $group: {
+            _id: '$visitor._id',
+            user_name: { $first: '$visitor.user_name' },
+            status_register: { $first: '$status_register' }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            user_name: 1,
+            status_register: 1
+          }
+        }
+      ])
+      .toArray()
+
+    return result
+  }
+
+  async checkCancelEvent(event_id: string, visitor_id: string) {
+    return await databaseService.registers
+      .find({
+        visitor_id: new ObjectId(visitor_id),
+        event_id: new ObjectId(event_id),
+        status_register: StatusRegisterEvent.CANCEL
       })
       .toArray()
   }

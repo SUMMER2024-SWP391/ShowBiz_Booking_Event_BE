@@ -20,7 +20,8 @@ import { UserRole } from '~/constants/enums'
 import {
   cancelEventRequestController,
   checkInController,
-  getListRegisterEventController
+  getListRegisterEventController,
+  listRegisteredVisistorController
 } from '../user/user.controllers'
 
 const eOperatorRouter = Router()
@@ -80,18 +81,6 @@ eOperatorRouter.delete(
   wrapAsync(isUserRole([UserRole.EventOperator])),
   wrapAsync(unassignCheckingStaffController)
 )
-/**
- * * Description: get list-event
- * Path: /list-event
- * Method: GET
- * Header: { authorization: Bearer <access_token> }
- */
-eOperatorRouter.get(
-  '/list-event',
-  accessTokenValidator,
-  isUserRole([UserRole.EventOperator]),
-  wrapAsync(getListRegisterEventController)
-)
 
 /**
  * * Description: Check in event by OTP
@@ -120,6 +109,20 @@ eOperatorRouter.patch(
   wrapAsync(isValidEventOperator), // check if event operator is the owner of the event
   wrapAsync(isValidEvent), // pending thì cho cancel
   wrapAsync(cancelEventRequestController)
+)
+
+/**
+ * * Description: get list registered visistor
+ * Path: /list-registered-visitor/:eventId
+ * Method: GET
+ * Header: { authorization: Bearer <access_token> }
+ */
+eOperatorRouter.get(
+  '/list-registered-visitor/:eventId',
+  accessTokenValidator,
+  isUserRole([UserRole.EventOperator]),
+  wrapAsync(isValidEventOperator), // check if event operator is the owner of the event
+  wrapAsync(listRegisteredVisistorController)
 )
 
 export default eOperatorRouter

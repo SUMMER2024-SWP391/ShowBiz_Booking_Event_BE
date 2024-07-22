@@ -572,6 +572,21 @@ class UserService {
   async removeRefreshToken(refresh_token: string) {
     await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
   }
+  async checkBaned(user_id: string) {
+    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    if (user?.status === UserStatus.BANNED)
+      throw new ErrorWithStatus({ message: USER_MESSAGES.YOU_ARE_BANNED, status: StatusCodes.FORBIDDEN })
+  }
+  async banVisitor(user_id: string) {
+    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          status: UserStatus.BANNED
+        }
+      }
+    ])
+    return { message: USER_MESSAGES.YOU_ARE_BANNED }
+  }
 }
 
 const userService = new UserService()
