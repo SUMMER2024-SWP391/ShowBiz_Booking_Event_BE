@@ -194,9 +194,10 @@ export const getTicketByEventIdController = async (req: Request, res: Response) 
     const isFeedback = await answerService.checkAnswerExist(questions[0]._id.toString(), user_id)
     console.log(questions[0]._id)
     const ticket = {
-      register: { ...register, isFeedback, isHasFormFeedback: Boolean(formFeedback) },
+      register,
       user_profile,
-      event
+      event,
+      inforForm: { isFeedback, isHasFormFeedback: Boolean(formFeedback) }
     }
 
     return res.json({
