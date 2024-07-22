@@ -252,6 +252,8 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: env.JWT_SECRET_ACCESS_TOKEN as string
               })
+              const user_id = (decoded_authorization as TokenPayload).user_id
+              await userService.checkBaned(user_id)
               ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
