@@ -210,3 +210,9 @@ export function canCancelEvent(dateEvent: string, timeStart: string): boolean {
 
   return diffInHours >= 48
 }
+
+export function isErrorUnauthhoriztionn(
+  result: unknown
+): result is { message: 'UNAUTHORIZED! Not have enough permission!' } {
+  return result != null && typeof result === 'object' && 'message' in result && typeof result.message === 'string'
+}

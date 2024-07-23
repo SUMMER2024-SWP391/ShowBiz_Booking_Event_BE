@@ -27,6 +27,7 @@ import eventService from '../event/event.services'
 import { sendEmail } from '../sendMail/sendMailService'
 import { templateRegisterAccountSuccess } from '~/constants/template-mail'
 import { CheckInBody } from '../event_operator/event_operator.requests'
+import { isErrorUnauthhoriztionn } from '~/utils/common'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -56,6 +57,10 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
 export const oauthController = async (req: Request, res: Response) => {
   const { code } = req.query
   const result = await userService.oauth(code as string)
+  // if (isErrorUnauthhoriztionn(result)) {
+  //   const urlRedirect = `${env.CLIENT_REDIRECT_LOGIN_GOOGLE_ERROR}?error=${result.message}`
+  //   return res.redirect(urlRedirect)
+  // }
   const listEvent = await checkingStaffServices.listEventOfStaff(String(result?.user_id))
   const urlRedirect = `${env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.status}&role=${result.user_role}&user_id=${result.user_id}&user_name=${result.user_name}&isStaff=${listEvent.length != 0 ? 'true' : 'false'}`
   console.log(listEvent.length)
@@ -298,7 +303,6 @@ export const getTicketByIdController = async (req: Request, res: Response) => {
 export const listRegisteredVisistorController = async (req: Request, res: Response) => {
   const { eventId } = req.params
   const result = await registerService.getListRegisteredVisistorByEventOperator(eventId)
-
   return res.json({
     message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTERED_VISITOR_SUCCESS,
     data: result

@@ -68,7 +68,7 @@ export const approveEventController = async (
   const { id } = req.params
   const { status } = req.body
   const result = await userService.approveEvent(id, status as any)
-
+  // const template = tem
   return res.json({ message: 'APPROVE_EVENT_SUCCESS', result })
 }
 

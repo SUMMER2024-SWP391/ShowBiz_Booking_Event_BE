@@ -183,17 +183,22 @@ class UserService {
     const { id_token, access_token } = await this.getOauthGoogleToken(code)
     const userInfo = await this.getGoogleUserInfo(access_token, id_token)
     // nếu email không match với regex thì throw lỗi
-    if (!REGEX_FPT_EMAIL.test(userInfo.email))
-      throw new ErrorWithStatus({ message: USER_MESSAGES.EMAIL_NOT_MATCH_REGEX, status: StatusCodes.BAD_REQUEST })
+    // if (!REGEX_FPT_EMAIL.test(userInfo.email))
+    //   throw new ErrorWithStatus({ message: USER_MESSAGES.EMAIL_NOT_MATCH_REGEX, status: StatusCodes.BAD_REQUEST })
 
-    //! Check user have already verified or not ?
-    if (!userInfo.verified_email)
-      throw new ErrorWithStatus({ message: USER_MESSAGES.GMAIL_NOT_VERIFIED, status: StatusCodes.BAD_REQUEST })
+    // //! Check user have already verified or not ?
+    // if (!userInfo.verified_email)
+    //   throw new ErrorWithStatus({ message: USER_MESSAGES.GMAIL_NOT_VERIFIED, status: StatusCodes.BAD_REQUEST })
 
     //! Check user have already existed in db or not ?
     const user = await databaseService.users.findOne({ email: userInfo.email })
 
     if (user) {
+      if ([UserStatus.DELETE, UserStatus.BANNED].includes(user.status as UserStatus)) {
+        throw new ErrorWithStatus({ message: USER_MESSAGES.ACC_ALREADY_REMOVE, status: StatusCodes.BAD_REQUEST })
+        // return { message: USER_MESSAGES.UNAUTHORIZED }
+      }
+
       const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
         user_id: user._id.toString(),
         status: user.status as UserStatus,

@@ -231,9 +231,9 @@ export const cancelEventController = async (req: Request, res: Response) => {
   await eventService.cancelEvent(registerId as string)
   const checkCancel = await registerService.checkCancelEvent(id, user_id)
 
-  if (checkCancel.length >= 3) {
-    await userService.banVisitor(user_id)
-  }
+  // if (checkCancel.length >= 3) {
+  //   await userService.banVisitor(user_id)
+  // }
 
   return res.json({
     message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS
