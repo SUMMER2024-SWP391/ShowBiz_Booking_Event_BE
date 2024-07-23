@@ -20,8 +20,7 @@ import { UserRole } from '~/constants/enums'
 import {
   cancelEventRequestController,
   checkInController,
-  getListRegisterEventController,
-  listRegisteredVisistorController
+  listRegisteredVisistorController,
 } from '../user/user.controllers'
 
 const eOperatorRouter = Router()

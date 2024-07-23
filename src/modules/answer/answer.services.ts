@@ -15,6 +15,7 @@ class AnswerService {
       )
     }
   }
+
   async checkAnswerExist(question_id: string, user_id: string) {
     const answer = await databaseService.answers.findOne({
       visitor_id: new ObjectId(user_id),
@@ -22,6 +23,19 @@ class AnswerService {
     })
     return Boolean(answer)
   }
+
+  async getListAnswer(question_id: string) {
+    return await databaseService.answers.find(
+      { question_id: new ObjectId(question_id) },
+      {
+        projection: {
+          visitor_id: 0,
+          question_id: 0
+        }
+      }
+    ).toArray()
+  }
+
 }
 
 const answerService = new AnswerService()

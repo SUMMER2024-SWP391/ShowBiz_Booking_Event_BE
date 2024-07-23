@@ -184,3 +184,21 @@ export const isValidEvent = async (req: Request, res: Response, next: NextFuncti
 
   next()
 }
+
+export const isValidEventOperatorAndAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  const decoded_authorization = req.decoded_authorization as TokenPayload
+
+  const validEvent = await databaseService.events.findOne({
+    _id: new ObjectId(req.params.eventId),
+    event_operator_id: new ObjectId(decoded_authorization.user_id)
+  })
+
+  if (!validEvent && decoded_authorization.role !== UserRole.Admin) {
+    throw new ErrorWithStatus({
+      message: EVENT_MESSAGES.EVENT_OPERATOR_IS_NOT_OWNER,
+      status: StatusCodes.BAD_REQUEST
+    })
+  }
+
+  next()
+}

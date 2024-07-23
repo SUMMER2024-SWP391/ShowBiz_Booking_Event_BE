@@ -20,6 +20,10 @@ class FormService {
   async getFormEventByIdEndType(id: ObjectId, type: EventQuestionType) {
     return await databaseService.forms.findOne({ event_id: id, type: type })
   }
+
+  async getFormEventByEventId(id: string) {
+    return await databaseService.forms.find({ event_id: new ObjectId(id) }).toArray()
+  }
 }
 
 const formService = new FormService()
