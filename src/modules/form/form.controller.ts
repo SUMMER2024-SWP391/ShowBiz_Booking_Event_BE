@@ -1,4 +1,3 @@
-import { get } from 'axios'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Request, Response } from 'express'
 import formService from './form.services'
@@ -9,8 +8,7 @@ import { FORM_MESSAGE } from './form.messages'
 import eventService from '../event/event.services'
 import { capitalize } from '~/utils/capitalize'
 import { EventQuestionType } from './form.enum'
-import { EventStatus } from '~/constants/enums'
-import { checkActionOfEventOperatorValid } from '~/utils/common'
+import answerService from '../answer/answer.services'
 
 export const createFormQuestionController = async (
   req: Request<ParamsDictionary, any, CreateFormReqBody>,
@@ -111,5 +109,37 @@ export const deleteQuestionByIdController = async (req: Request, res: Response) 
   await questionService.deleteQuestion(id as string)
   res.json({
     message: FORM_MESSAGE.DELETE_QUESTION_SUCCESS
+  })
+}
+
+export const getListAnswerController = async (req: Request, res: Response) => {
+  const { eventId } = req.params
+  // Lấy form theo eventId
+  const formRegister = await formService.getFormEventByEventId(eventId)
+  // Lấy list question theo form
+  const listQuestion = await questionService.getListQuestion(formRegister[0]?._id as ObjectId)
+  // Lấy list answer theo list question dựa vào id question
+  const listFeedback = await questionService.getListQuestion(formRegister[1]?._id as ObjectId)
+  // push tất cả phần tử trong listFeedback vào listQuestion
+  listFeedback.forEach((feedback) => {
+    listQuestion.push(feedback)
+  })
+
+  const listAns = await Promise.all(
+    listQuestion.map(async (question) => {
+      let questionId = question._id.toString()
+      const answers = await answerService.getListAnswer(questionId)
+
+      return {
+        question_id: question._id,
+        question_description: question.description,
+        answers
+      }
+    })
+  )
+
+  return res.json({
+    message: FORM_MESSAGE.GET_LIST_ANSWER_SUCCESS,
+    List_answer: listAns
   })
 }

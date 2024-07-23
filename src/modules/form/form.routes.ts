@@ -6,14 +6,14 @@ import {
   deleteQuestionByIdController,
   getFormController,
   getFormFeedbackController,
+  getListAnswerController,
   handleCheckFormController,
   updateFormQuestionController
 } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
 import { createFormQuestionMiddleware, updateFormQuestionMiddleware } from './form.middlewares'
-import { isHasFormRegister, registerEventValidator } from '../event/event.middlewares'
-import { registerEventWithNoFormNoPaymentController } from '../event/event.controllers'
+import { isValidEventOperatorAndAdmin } from '../event_operator/event_operator.middlewares'
 
 const formRouter = Router()
 
@@ -83,6 +83,22 @@ formRouter.get(
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.EventOperator])),
   wrapAsync(handleCheckFormController)
+)
+
+/**
+ * Description: Get list answer
+ * Path: /form/answer/:eventId 
+ * Headers: { Authorization }
+ * Params: eventId
+ * response:
+ *  Array{question_id : string, question description : string, answer
+    Array<{answer_id : string, description : string}>}
+ */
+formRouter.get('/answer/:eventId',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Admin])),
+  wrapAsync(isValidEventOperatorAndAdmin),
+  wrapAsync(getListAnswerController)
 )
 
 export default formRouter
