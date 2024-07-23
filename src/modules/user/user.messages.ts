@@ -131,7 +131,8 @@ export const EVENT_OPERATOR_MESSAGES = {
   DOES_NOT_HAVE_CHECKING_STAFF: 'Does not have checking staff',
   UNASSIGN_CHECKING_STAFF_SUCCESS: 'Unassign checking staff successfully',
   GET_LIST_REGISTER_EVENT_SUCCESS: 'Get list register event successfully',
-  GET_LIST_REGISTERED_VISITOR_SUCCESS: 'Get list registered visitor success'
+  GET_LIST_REGISTERED_VISITOR_SUCCESS: 'Get list registered visitor success',
+  INVITE_USER_SUCCESS: 'Invite user success'
 } as const
 
 export const EVENT_MESSAGES = {

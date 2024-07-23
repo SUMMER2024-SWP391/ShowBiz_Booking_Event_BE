@@ -18,3 +18,8 @@ export interface CreateCheckingStaffReqBody {
 export interface CheckInBody {
   otp_check_in: string
 }
+
+export interface InviteUserReqBody {
+  email: string
+  user_name: string
+}

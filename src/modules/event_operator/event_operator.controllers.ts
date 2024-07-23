@@ -3,7 +3,8 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateCheckingStaffReqBody,
   EventOperatorLoginReqBody,
-  EventOperatorRegisterReqBody
+  EventOperatorRegisterReqBody,
+  InviteUserReqBody
 } from './event_operator.requests'
 import eventOperatorService from './event_operator.services'
 import { ObjectId } from 'mongodb'
@@ -106,4 +107,14 @@ export const getListRegisterEventController = async (req: Request<ParamsDictiona
   const result = await eventService.getListRegisterEvent(event_operator_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
+}
+
+export const inviteUserController = async (req: Request<ParamsDictionary, any, InviteUserReqBody>, res: Response) => {
+  const { event_id } = req.params
+  const { email, user_name } = req.body
+  const event = await eventService.getEventById(event_id)
+  //ban mail o day
+  res.json({
+    message: EVENT_OPERATOR_MESSAGES.INVITE_USER_SUCCESS
+  })
 }
