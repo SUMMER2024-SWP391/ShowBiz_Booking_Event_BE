@@ -21,7 +21,7 @@ export const verifyAccessToken = async (access_token: string, req?: Request) => 
       secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
     })
     if (req) {
-      ;(req as Request).decoded_authorization = decoded_authorization
+      (req as Request).decoded_authorization = decoded_authorization
       return true
     }
     return decoded_authorization
@@ -167,33 +167,6 @@ export function isToday(dateString: string) {
   return dateString === todayString
 }
 
-export function canCheckIn(eventTime: string): boolean {
-  if (!REGEX_TIME.test(eventTime)) {
-    throw new Error("Invalid time format. Please use 'HH:mm' format.")
-  }
-
-  const [inputHours, inputMinutes] = eventTime.split(':').map(Number)
-
-  const now = new Date()
-  const currentHours = now.getHours()
-  const currentMinutes = now.getMinutes()
-
-  // Calculate total minutes from midnight for input time
-  const totalMinutesInput = inputHours * 60 + inputMinutes
-
-  // Calculate total minutes from midnight for current time
-  const totalMinutesCurrent = currentHours * 60 + currentMinutes
-
-  // Calculate total minutes from midnight for current time minus 30 minutes
-  const totalMinutes30BeforeCurrent = totalMinutesCurrent - 30
-
-  // Calculate total minutes from midnight for current time plus 5 minutes
-  const totalMinutes5AfterCurrent = totalMinutesCurrent + 5
-
-  // Check if input time is within the valid range
-  return totalMinutesInput <= totalMinutes30BeforeCurrent || totalMinutesInput >= totalMinutes5AfterCurrent
-}
-
 export function canCancelEvent(dateEvent: string, timeStart: string): boolean {
   const date = convertToDate(dateEvent)
 
@@ -209,6 +182,56 @@ export function canCancelEvent(dateEvent: string, timeStart: string): boolean {
   const diffInHours = diff / (1000 * 60 * 60)
 
   return diffInHours >= 48
+}
+
+export function isPastTime(eventTime: string): boolean {
+  // Kiểm tra định dạng thời gian hợp lệ
+  const REGEX_TIME = /^([01]\d|2[0-3]):([0-5]\d)$/
+  if (!REGEX_TIME.test(eventTime)) {
+    throw new Error("Invalid time format. Please use 'HH:mm' format.")
+  }
+
+  // Tách giờ và phút từ thời gian đầu vào
+  const [inputHours, inputMinutes] = eventTime.split(':').map(Number)
+
+  // Lấy thời gian hiện tại
+  const now = new Date()
+  const currentHours = now.getHours()
+  const currentMinutes = now.getMinutes()
+
+  // Tính tổng số phút từ nửa đêm cho thời gian đầu vào
+  const totalMinutesInput = inputHours * 60 + inputMinutes
+
+  // Tính tổng số phút từ nửa đêm cho thời gian hiện tại
+  const totalMinutesCurrent = currentHours * 60 + currentMinutes
+
+  // Kiểm tra nếu thời gian hiện tại đã vượt qua thời gian đầu vào
+  return totalMinutesCurrent < totalMinutesInput
+}
+
+export function canCheckIn(eventTime: string): boolean {
+  // Kiểm tra định dạng thời gian hợp lệ
+  const REGEX_TIME = /^([01]\d|2[0-3]):([0-5]\d)$/
+  if (!REGEX_TIME.test(eventTime)) {
+    throw new Error("Invalid time format. Please use 'HH:mm' format.")
+  }
+
+  // Tách giờ và phút từ thời gian đầu vào
+  const [inputHours, inputMinutes] = eventTime.split(':').map(Number)
+
+  // Lấy thời gian hiện tại
+  const now = new Date()
+  const currentHours = now.getHours()
+  const currentMinutes = now.getMinutes()
+
+  // Tính tổng số phút từ nửa đêm cho thời gian đầu vào
+  const totalMinutesInput = inputHours * 60 + inputMinutes - 30
+
+  // Tính tổng số phút từ nửa đêm cho thời gian hiện tại
+  const totalMinutesCurrent = currentHours * 60 + currentMinutes
+
+  // Kiểm tra nếu thời gian hiện tại đã vượt qua thời gian đầu vào
+  return totalMinutesCurrent < totalMinutesInput
 }
 
 export function isErrorUnauthhoriztionn(
