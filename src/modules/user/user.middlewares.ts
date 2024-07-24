@@ -149,7 +149,7 @@ export const loginValidator = validate(
             if (!user) throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
 
             if ([UserStatus.BANNED, UserStatus.DELETE].includes(user?.status as UserStatus))
-              throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: StatusCodes.UNAUTHORIZED })
+              throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: StatusCodes.FORBIDDEN })
 
             req.user = user
             return true

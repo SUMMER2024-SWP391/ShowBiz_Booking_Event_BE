@@ -233,3 +233,9 @@ export function canCheckIn(eventTime: string): boolean {
   // Kiểm tra nếu thời gian hiện tại đã vượt qua thời gian đầu vào
   return totalMinutesCurrent < totalMinutesInput
 }
+
+export function isErrorUnauthhoriztionn(
+  result: unknown
+): result is { message: 'UNAUTHORIZED! Not have enough permission!' } {
+  return result != null && typeof result === 'object' && 'message' in result && typeof result.message === 'string'
+}

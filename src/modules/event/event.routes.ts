@@ -51,7 +51,7 @@ eventsRouter.post(
  * Method: GET
  * Query: { page: number, limit: number }
  */
-eventsRouter.get('/', paginationValidator, wrapAsync(getEventListController))
+eventsRouter.get('/', wrapAsync(getEventListController))
 
 /**
  * * Description: Accept or reject event

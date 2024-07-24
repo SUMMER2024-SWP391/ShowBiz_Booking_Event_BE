@@ -22,6 +22,8 @@ export interface EventType {
   sponsor_name?: string
   is_required_form_register: boolean
   event_check_status: EventCheckStatus
+  speaker_mail: string
+  sponsor_mail: string
 }
 
 export default class Event {
@@ -44,6 +46,8 @@ export default class Event {
   sponsor_name?: string
   is_required_form_register: boolean
   event_check_status: EventCheckStatus
+  speaker_mail: string
+  sponsor_mail: string
 
   constructor({
     _id,
@@ -64,7 +68,9 @@ export default class Event {
     speaker_name,
     sponsor_name,
     is_required_form_register,
-    event_check_status
+    event_check_status,
+    speaker_mail,
+    sponsor_mail
   }: EventType) {
     this._id = _id
     this.name = name
@@ -87,6 +93,8 @@ export default class Event {
     this.sponsor_name = sponsor_name
     this.is_required_form_register = is_required_form_register
     this.event_check_status = event_check_status || EventCheckStatus.NOT_ACCEPT
+    this.speaker_mail = speaker_mail
+    this.sponsor_mail = sponsor_mail
   }
 }
 

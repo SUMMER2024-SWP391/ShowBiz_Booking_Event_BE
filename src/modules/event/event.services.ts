@@ -583,7 +583,7 @@ class EventService {
       this.getAllEventListApproved()
     ])
     const sum_page = Math.ceil(event / limit)
-    return { events, total: total[0].total, sum_page }
+    return { events }
   }
 
   async getListEventOfStaff(user_id: string) {

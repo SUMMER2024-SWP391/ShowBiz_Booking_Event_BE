@@ -11,6 +11,7 @@ import {
 } from './event_operator.middlewares'
 import {
   assignCheckingStaffController,
+  inviteUserController,
   listCheckingStaffController,
   loginController,
   registerEventOperatorController,
@@ -20,7 +21,7 @@ import { UserRole } from '~/constants/enums'
 import {
   cancelEventRequestController,
   checkInController,
-  listRegisteredVisistorController,
+  listRegisteredVisistorController
 } from '../user/user.controllers'
 
 const eOperatorRouter = Router()
@@ -122,6 +123,13 @@ eOperatorRouter.get(
   isUserRole([UserRole.EventOperator]),
   wrapAsync(isValidEventOperator), // check if event operator is the owner of the event
   wrapAsync(listRegisteredVisistorController)
+)
+
+eOperatorRouter.post(
+  '/invite/user/:eventId',
+  accessTokenValidator,
+  wrapAsync(isUserRole([UserRole.EventOperator])),
+  wrapAsync(inviteUserController)
 )
 
 export default eOperatorRouter

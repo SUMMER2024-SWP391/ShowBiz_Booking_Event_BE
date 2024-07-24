@@ -1,9 +1,11 @@
+import { templateSendMailForSomeOne } from './../../constants/template-mail'
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateCheckingStaffReqBody,
   EventOperatorLoginReqBody,
-  EventOperatorRegisterReqBody
+  EventOperatorRegisterReqBody,
+  InviteUserReqBody
 } from './event_operator.requests'
 import eventOperatorService from './event_operator.services'
 import { ObjectId } from 'mongodb'
@@ -13,6 +15,8 @@ import checkingStaffServices from '../checking_staff/checking_staff.services'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import eventService from '../event/event.services'
+import Event from '../event/event.schema'
+import { sendEmail } from '../sendMail/sendMailService'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
@@ -106,4 +110,17 @@ export const getListRegisterEventController = async (req: Request<ParamsDictiona
   const result = await eventService.getListRegisterEvent(event_operator_id)
 
   return res.json({ message: EVENT_OPERATOR_MESSAGES.GET_LIST_REGISTER_EVENT_SUCCESS, data: result })
+}
+
+export const inviteUserController = async (req: Request<ParamsDictionary, any, InviteUserReqBody>, res: Response) => {
+  const { eventId } = req.params
+
+  const { email, user_name } = req.body
+  const event = await eventService.getEventById(eventId)
+  const template = templateSendMailForSomeOne(req.body, event as Event)
+  await sendEmail(template)
+
+  res.json({
+    message: EVENT_OPERATOR_MESSAGES.INVITE_USER_SUCCESS
+  })
 }

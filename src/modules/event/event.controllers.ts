@@ -40,7 +40,7 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   const formEvent = await formService.createFormEvent(String(result?._id), EventQuestionType.REGISTER)
   await questionService.createNewListQuestion(formEvent.insertedId, QUESTION_REGISTER)
 
-  return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
+  return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, data: { event: result } })
 }
 
 export const getEventListAdminController = async (req: Request, res: Response) => {
@@ -231,9 +231,9 @@ export const cancelEventController = async (req: Request, res: Response) => {
   await eventService.cancelEvent(registerId as string)
   const checkCancel = await registerService.checkCancelEvent(id, user_id)
 
-  if (checkCancel.length >= 3) {
-    await userService.banVisitor(user_id)
-  }
+  // if (checkCancel.length >= 3) {
+  //   await userService.banVisitor(user_id)
+  // }
 
   return res.json({
     message: EVENT_MESSAGES.CANCEL_EVENT_SUCCESS
@@ -301,7 +301,7 @@ export const searchEventController = async (req: Request, res: Response) => {
 
 export const getEventListController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
   const { limit = 5, page = 1 } = req.query
-  const { events, sum_page, total } = await eventService.getEventList({ limit: Number(limit), page: Number(page) })
+  const { events } = await eventService.getEventList({ limit: Number(limit), page: Number(page) })
   events.sort((a, b) => {
     return (
       -dayjs(b.date_event + ' ' + b.time_start, 'DD/MM/YYYY HH:mm').valueOf() +
@@ -309,21 +309,11 @@ export const getEventListController = async (req: Request<ParamsDictionary, any,
     )
   })
 
-  const result = []
-  for (let i = 0; i <= events.length - 1; i++) {
-    if (i >= Number(limit) * Number(page) - Number(limit) && i < Number(limit) * Number(page)) {
-      result.push(events[i])
-    }
-  }
-
   return res.json({
     message: EVENT_MESSAGES.GET_EVENT_LIST_SUCCESS,
     data: {
-      events: result,
-      paginate: {
-        total,
-        sum_page
-      }
+      events,
+      paginate: {}
     }
   })
 }

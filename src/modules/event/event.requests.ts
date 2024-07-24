@@ -19,6 +19,8 @@ export interface EventRequestBody {
   speaker_name: string
   sponsor_name: string
   is_required_form_register: boolean
+  speaker_mail: string
+  sponsor_mail: string
 }
 
 export interface Pagination {
