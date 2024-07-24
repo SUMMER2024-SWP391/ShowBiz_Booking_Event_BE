@@ -89,12 +89,12 @@ export const registerEventController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.getUserById(user_id)
   //lưu câu trả lời của user vào bảng answers
-  const ans: Array<{ user_name: string; description: string }> = []
+  const ans: Array<{ question_id: string, user_name: string; description: string }> = []
   req.body.answers.map((item) => {
-    ans.push({ user_name: user?.user_name as string, description: item.description })
+    ans.push({ user_name: user?.user_name as string, description: item.description, question_id: item.question_id.toString() })
   })
   const form = await formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.REGISTER)
-  await questionService.addAnswer(form?._id as ObjectId, ans as Array<{ user_name: string; description: string }>)
+  await questionService.addAnswer(form?._id as ObjectId, ans as Array<{ user_name: string; description: string; question_id: string }>)
   const listAnswer = await answerService.createListAnswer(user_id, req.body.answers)
 
   const _event = await eventService.getEventById(id)
@@ -181,6 +181,15 @@ export const answerFeedbackEventController = async (
 ) => {
   const { id } = req.params
   const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await userService.getUserById(user_id)
+  //lưu câu trả lời của user vào bảng answers
+  const ans: Array<{ question_id: string, user_name: string; description: string }> = []
+  req.body.answers.map((item) => {
+    ans.push({ user_name: user?.user_name as string, description: item.description, question_id: item.question_id.toString() })
+  })
+  const form = await formService.getFormEventByIdEndType(new ObjectId(id), EventQuestionType.FEEDBACK)
+  await questionService.addAnswer(form?._id as ObjectId, ans as Array<{ user_name: string; description: string; question_id: string }>)
+  
   const result = await answerService.createListAnswer(user_id, req.body.answers)
 
   return res.json({

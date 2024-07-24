@@ -50,19 +50,24 @@ class QuestionService {
 
   async deleteQuestion(id: string) {
     //delete question by id
-    await databaseService.questions.deleteOne({ _id: new ObjectId(id) })
+    return await databaseService.questions.deleteOne({ _id: new ObjectId(id) })
   }
 
-  async addAnswer(form_id: ObjectId, answer: Array<{ user_name: string; description: string }>) {
-    await databaseService.forms.updateOne(
-      {
-        form_id: form_id
-      },
-      {
-        $set: {
-          answer: answer
-        }
-      }
+  async addAnswer(form_id: ObjectId, answer: Array<{ user_name: string; description: string; question_id: string }>) {
+    return await Promise.all(
+      answer.map(async (answer) => {
+        await databaseService.questions.updateOne(
+          { _id: new ObjectId(answer.question_id), form_id },
+          {
+            $push: {
+              answer: {
+                user_name: answer.user_name,
+                description: answer.description
+              }
+            }
+          }
+        )
+      })
     )
   }
 }
