@@ -24,6 +24,10 @@ import { templateRegisterEvent } from '~/constants/template-mail'
 import { sendEmail } from '~/modules/sendMail/sendMailService'
 import Event from '~/modules/event/event.schema'
 import User from '~/modules/user/user.schema'
+import checkingStaffServices from '~/modules/checking_staff/checking_staff.services'
+import { ErrorWithStatus } from '~/models/Errors'
+import { EVENT_MESSAGES } from '~/modules/user/user.messages'
+import { wrapAsync } from '~/utils/handler'
 const payment = express()
 
 // APP INFO, STK TEST: 4111 1111 1111 1111
@@ -39,72 +43,85 @@ payment.use(bodyParser.json())
  * Sandbox POST https://sb-openapi.zalopay.vn/v2/create
  * Real POST https://openapi.zalopay.vn/v2/create
  */
-payment.post('/payment/:eventId', accessTokenValidator, async (_req: Request, res: Response): Promise<Response> => {
-  const { eventId } = _req.params
-  const user = _req.decoded_authorization as TokenPayload
-  const _user = await databaseService.users.findOne({ _id: new ObjectId(user.user_id) })
-  const event = await databaseService.events.findOne({ _id: new ObjectId(eventId) })
+payment.post(
+  '/payment/:eventId',
+  accessTokenValidator,
+  wrapAsync(async (_req: Request, res: Response): Promise<Response> => {
+    const { eventId } = _req.params
+    const user = _req.decoded_authorization as TokenPayload
+    const user_id = user.user_id
+    const _user = await databaseService.users.findOne({ _id: new ObjectId(user.user_id) })
+    const event = await databaseService.events.findOne({ _id: new ObjectId(eventId) })
 
-  if (event?.ticket_price !== 0 && event?.category === EventCategory.PAID) {
-    const embed_data = {
-      // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
-      redirecturl: `${env.DB_HOST}:${env.PORT}/zalo/info/import?user_id=${user.user_id}&event_id=${event._id}`
-    }
+    const isCheckingStaff = await checkingStaffServices.isCheckingStaff(eventId, user_id)
 
-    const items = [{ itemid: event._id, itename: event.name, iteprice: event.ticket_price }]
-    const transID: number = Math.floor(Math.random() * 1000000)
-
-    const order = {
-      app_id: config.app_id,
-      app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
-      app_user: _user?.user_name,
-      app_time: Date.now(),
-      item: JSON.stringify(items),
-      embed_data: JSON.stringify(embed_data),
-      amount: event?.ticket_price,
-      // khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
-      // Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
-      callback_url: 'https://b074-1-53-37-194.ngrok-free.app/callback',
-      description: `Booking Event - Payment for the order #${transID}`,
-      bank_code: '',
-      mac: ''
-    }
-
-    // appid|app_trans_id|appuser|amount|apptime|embeddata|item
-    const data: string =
-      config.app_id +
-      '|' +
-      order.app_trans_id +
-      '|' +
-      order.app_user +
-      '|' +
-      order.amount +
-      '|' +
-      order.app_time +
-      '|' +
-      order.embed_data +
-      '|' +
-      order.item
-    order.mac = CryptoJS.HmacSHA256(data, config.key1).toString()
-
-    try {
-      const result = await axios.post(config.endpoint, null, { params: order })
-      return res.json({
-        message: 'To payment form success',
-        data: {
-          url: result.data.order_url
-        }
+    if (isCheckingStaff)
+      throw new ErrorWithStatus({
+        message: EVENT_MESSAGES.YOU_ARE_CHECKING_STAFF_OF_THIS_EVENT,
+        status: StatusCodes.FORBIDDEN
       })
-    } catch (error) {
-      // console.log('🚀 ~ error:', error)
 
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
+    if (event?.ticket_price !== 0 && event?.category === EventCategory.PAID) {
+      const embed_data = {
+        // sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
+        redirecturl: `${env.DB_HOST}:${env.PORT}/zalo/info/import?user_id=${user.user_id}&event_id=${event._id}`
+      }
+
+      const items = [{ itemid: event._id, itename: event.name, iteprice: event.ticket_price }]
+      const transID: number = Math.floor(Math.random() * 1000000)
+
+      const order = {
+        app_id: config.app_id,
+        app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
+        app_user: _user?.user_name,
+        app_time: Date.now(),
+        item: JSON.stringify(items),
+        embed_data: JSON.stringify(embed_data),
+        amount: event?.ticket_price,
+        // khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
+        // Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
+        callback_url: 'https://b074-1-53-37-194.ngrok-free.app/callback',
+        description: `Booking Event - Payment for the order #${transID}`,
+        bank_code: '',
+        mac: ''
+      }
+
+      // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+      const data: string =
+        config.app_id +
+        '|' +
+        order.app_trans_id +
+        '|' +
+        order.app_user +
+        '|' +
+        order.amount +
+        '|' +
+        order.app_time +
+        '|' +
+        order.embed_data +
+        '|' +
+        order.item
+      order.mac = CryptoJS.HmacSHA256(data, config.key1).toString()
+
+      try {
+        const result = await axios.post(config.endpoint, null, { params: order })
+        return res.json({
+          message: 'To payment form success',
+          data: {
+            url: result.data.order_url
+          }
+        })
+      } catch (error) {
+        // console.log('🚀 ~ error:', error)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' })
+      }
     }
-  }
-  return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
-  // return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
-  // return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
-})
+    return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
+    // return res.redirect(`${env.DB_HOST}:${env.PORT_FE}`) as any
+    // return res.status(StatusCodes.BAD_REQUEST).json({ error: 'This event is free' })
+  })
+)
 
 /**
  * * Description: Callback để Zalopay Server call đến khi thanh toán thành công.

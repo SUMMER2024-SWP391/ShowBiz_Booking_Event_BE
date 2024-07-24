@@ -25,6 +25,7 @@ import { ObjectId } from 'mongodb'
 import { env } from '~/config/environment'
 import moment from 'moment'
 import CryptoJS from 'crypto-js'
+import checkingStaffServices from '../checking_staff/checking_staff.services'
 
 export const createEventValidator = validate(
   checkSchema(
@@ -151,6 +152,13 @@ export const paginationValidator = validate(
 export const registerEventValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const { id } = req.params // eventId
+  const isCheckingStaff = await checkingStaffServices.isCheckingStaff(id, user_id)
+
+  if (isCheckingStaff)
+    throw new ErrorWithStatus({
+      message: EVENT_MESSAGES.YOU_ARE_CHECKING_STAFF_OF_THIS_EVENT,
+      status: StatusCodes.FORBIDDEN
+    })
   const checkRegistered = await registerService.checkRegistered(id, user_id)
   if (checkRegistered) {
     throw new ErrorWithStatus({ message: EVENT_MESSAGES.YOU_REGISTERED_THIS_EVENT, status: StatusCodes.CONFLICT })

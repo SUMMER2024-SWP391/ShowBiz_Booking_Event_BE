@@ -596,6 +596,5 @@ class EventService {
     return eventList
   }
 }
-
 const eventService = new EventService()
 export default eventService

@@ -17,6 +17,7 @@ import { StatusCodes } from 'http-status-codes'
 import eventService from '../event/event.services'
 import Event from '../event/event.schema'
 import { sendEmail } from '../sendMail/sendMailService'
+import registerService from '../register/register.services'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
@@ -51,6 +52,14 @@ export const assignCheckingStaffController = async (
   const user_id = user?._id as ObjectId
   const event_id = new ObjectId(req.body.event_id)
   const event_operator_id = new ObjectId(req.decoded_authorization?.user_id)
+
+  const isRegisteredEvent = await registerService.isRegisteredEvent(event_id, user_id)
+  if (isRegisteredEvent) {
+    throw new ErrorWithStatus({
+      message: EVENT_OPERATOR_MESSAGES.THIS_ACCOUNT_ALREADY_REGISTERED_THIS_EVENT,
+      status: StatusCodes.FORBIDDEN
+    })
+  }
 
   const checkingEventOwner = await eventOperatorService.checkEventOwner(event_id, event_operator_id)
   if (!checkingEventOwner)

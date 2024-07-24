@@ -237,6 +237,15 @@ class RegisterService {
       })
       .toArray()
   }
+
+  async isRegisteredEvent(event_id: ObjectId, visitor_id: ObjectId) {
+    return Boolean(
+      await databaseService.registers.findOne({
+        event_id,
+        visitor_id
+      })
+    )
+  }
 }
 
 const registerService = new RegisterService()
