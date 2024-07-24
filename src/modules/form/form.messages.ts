@@ -9,5 +9,6 @@ export const FORM_MESSAGE = {
   CAN_NOT_UPDATE_FORM_REGISTER_WHEN_EVENT_OPENED: 'Can not update form register when event opened',
   CHECK_SUCCESS: 'Check success',
   DELETE_QUESTION_SUCCESS: 'Delete question success',
-  GET_LIST_ANSWER_SUCCESS: 'Get list answer success'
+  GET_LIST_ANSWER_SUCCESS: 'Get list answer success',
+  UPDATE_QUESTION_SUCCESS: 'Update question success'
 } as const

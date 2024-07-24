@@ -70,6 +70,17 @@ class QuestionService {
       })
     )
   }
+
+  async updateOneQuestion(id: string, description: string) {
+    return await databaseService.questions.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          description
+        }
+      }
+    )
+  }
 }
 
 const questionService = new QuestionService()

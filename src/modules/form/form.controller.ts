@@ -112,34 +112,43 @@ export const deleteQuestionByIdController = async (req: Request, res: Response) 
   })
 }
 
-export const getListAnswerController = async (req: Request, res: Response) => {
-  const { eventId } = req.params
-  // Lấy form theo eventId
-  const formRegister = await formService.getFormEventByEventId(eventId)
-  // Lấy list question theo form
-  const listQuestion = await questionService.getListQuestion(formRegister[0]?._id as ObjectId)
-  // Lấy list answer theo list question dựa vào id question
-  const listFeedback = await questionService.getListQuestion(formRegister[1]?._id as ObjectId)
-  // push tất cả phần tử trong listFeedback vào listQuestion
-  listFeedback.forEach((feedback) => {
-    listQuestion.push(feedback)
-  })
+// export const getListAnswerController = async (req: Request, res: Response) => {
+//   const { eventId } = req.params
+//   // Lấy form theo eventId
+//   const formRegister = await formService.getFormEventByEventId(eventId)
+//   // Lấy list question theo form
+//   const listQuestion = await questionService.getListQuestion(formRegister[0]?._id as ObjectId)
+//   // Lấy list answer theo list question dựa vào id question
+//   const listFeedback = await questionService.getListQuestion(formRegister[1]?._id as ObjectId)
+//   // push tất cả phần tử trong listFeedback vào listQuestion
+//   listFeedback.forEach((feedback) => {
+//     listQuestion.push(feedback)
+//   })
 
-  const listAns = await Promise.all(
-    listQuestion.map(async (question) => {
-      let questionId = question._id.toString()
-      const answers = await answerService.getListAnswer(questionId)
+//   const listAns = await Promise.all(
+//     listQuestion.map(async (question) => {
+//       let questionId = question._id.toString()
+//       const answers = await answerService.getListAnswer(questionId)
 
-      return {
-        question_id: question._id,
-        question_description: question.description,
-        answers
-      }
-    })
-  )
+//       return {
+//         question_id: question._id,
+//         question_description: question.description,
+//         answers
+//       }
+//     })
+//   )
 
-  return res.json({
-    message: FORM_MESSAGE.GET_LIST_ANSWER_SUCCESS,
-    List_answer: listAns
+//   return res.json({
+//     message: FORM_MESSAGE.GET_LIST_ANSWER_SUCCESS,
+//     List_answer: listAns
+//   })
+// }
+
+export const updateOneQuestionController = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { description } = req.body
+  await questionService.updateOneQuestion(id, description)
+  res.json({
+    message: FORM_MESSAGE.UPDATE_QUESTION_SUCCESS
   })
 }

@@ -6,9 +6,9 @@ import {
   deleteQuestionByIdController,
   getFormController,
   getFormFeedbackController,
-  getListAnswerController,
   handleCheckFormController,
-  updateFormQuestionController
+  updateFormQuestionController,
+  updateOneQuestionController
 } from './form.controller'
 import { accessTokenValidator, isUserRole } from '../user/user.middlewares'
 import { UserRole } from '~/constants/enums'
@@ -85,6 +85,9 @@ formRouter.get(
   wrapAsync(handleCheckFormController)
 )
 
+//id o la id question
+formRouter.post('/question/one/update/:id', wrapAsync(updateOneQuestionController))
+
 /**
  * Description: Get list answer
  * Path: /form/answer/:eventId 
@@ -94,12 +97,12 @@ formRouter.get(
  *  Array{question_id : string, question description : string, answer
     Array<{answer_id : string, description : string}>}
  */
-formRouter.get(
-  '/answer/:eventId',
-  accessTokenValidator,
-  wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Admin])),
-  wrapAsync(isValidEventOperatorAndAdmin),
-  wrapAsync(getListAnswerController)
-)
+// formRouter.get(
+//   '/answer/:eventId',
+//   accessTokenValidator,
+//   wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Admin])),
+//   wrapAsync(isValidEventOperatorAndAdmin),
+//   wrapAsync(getListAnswerController)
+// )
 
 export default formRouter
