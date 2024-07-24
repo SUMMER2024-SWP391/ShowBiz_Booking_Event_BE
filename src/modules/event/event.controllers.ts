@@ -40,7 +40,7 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   const formEvent = await formService.createFormEvent(String(result?._id), EventQuestionType.REGISTER)
   await questionService.createNewListQuestion(formEvent.insertedId, QUESTION_REGISTER)
 
-  return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, result })
+  return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, data: { event: result } })
 }
 
 export const getEventListAdminController = async (req: Request, res: Response) => {

@@ -81,7 +81,7 @@ formRouter.delete('/question/delete/feed-back/:id', wrapAsync(deleteQuestionById
 formRouter.get(
   '/handle/check/has-form-feedback/:id',
   accessTokenValidator,
-  wrapAsync(isUserRole([UserRole.EventOperator])),
+  wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Visitor])),
   wrapAsync(handleCheckFormController)
 )
 
@@ -94,7 +94,8 @@ formRouter.get(
  *  Array{question_id : string, question description : string, answer
     Array<{answer_id : string, description : string}>}
  */
-formRouter.get('/answer/:eventId',
+formRouter.get(
+  '/answer/:eventId',
   accessTokenValidator,
   wrapAsync(isUserRole([UserRole.EventOperator, UserRole.Admin])),
   wrapAsync(isValidEventOperatorAndAdmin),
