@@ -200,7 +200,7 @@ export function isPastTime(eventTime: string): boolean {
   const currentMinutes = now.getMinutes()
 
   // Tính tổng số phút từ nửa đêm cho thời gian đầu vào
-  const totalMinutesInput = inputHours * 60 + inputMinutes
+  const totalMinutesInput = inputHours * 60 + inputMinutes - 15
 
   // Tính tổng số phút từ nửa đêm cho thời gian hiện tại
   const totalMinutesCurrent = currentHours * 60 + currentMinutes
