@@ -1,4 +1,10 @@
-import { templateApproveEvent, templateBanAccountSuccess, templateRejectEvent } from './../../constants/template-mail'
+import {
+  templateApproveEvent,
+  templateBanAccountSuccess,
+  templateRejectEvent,
+  templateSendMailForSpeaker,
+  templateSendMailForSponsor
+} from './../../constants/template-mail'
 import User from '~/modules/user/user.schema'
 import databaseService from '../../database/database.services'
 import { EventOperatorRegisterReqBody, RegisterReqBody, UpdateMeReqBody } from '~/modules/user/user.requests'
@@ -348,6 +354,11 @@ class UserService {
     if (status === EventStatus.APPROVED) {
       const template = templateApproveEvent(user, event)
       await sendEmail(template)
+      const speaker = { email: event.speaker_mail as string, user_name: event.speaker_name as string }
+      const templateMailSpeaker = templateSendMailForSpeaker(speaker, event)
+      const sponsor = { email: event.sponsor_mail as string, user_name: event.sponsor_name as string }
+      const templateMailSponsor = templateSendMailForSponsor(sponsor, event)
+      await Promise.all([sendEmail(templateMailSpeaker), sendEmail(templateMailSponsor)])
     } else {
       const template = templateRejectEvent(user, event)
       await sendEmail(template)

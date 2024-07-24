@@ -1,3 +1,4 @@
+import { templateSendMailForSomeOne } from './../../constants/template-mail'
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
@@ -14,6 +15,8 @@ import checkingStaffServices from '../checking_staff/checking_staff.services'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusCodes } from 'http-status-codes'
 import eventService from '../event/event.services'
+import Event from '../event/event.schema'
+import { sendEmail } from '../sendMail/sendMailService'
 
 export const registerEventOperatorController = async (
   req: Request<ParamsDictionary, any, EventOperatorRegisterReqBody>,
@@ -110,10 +113,13 @@ export const getListRegisterEventController = async (req: Request<ParamsDictiona
 }
 
 export const inviteUserController = async (req: Request<ParamsDictionary, any, InviteUserReqBody>, res: Response) => {
-  const { event_id } = req.params
+  const { eventId } = req.params
+
   const { email, user_name } = req.body
-  const event = await eventService.getEventById(event_id)
-  //ban mail o day
+  const event = await eventService.getEventById(eventId)
+  const template = templateSendMailForSomeOne(req.body, event as Event)
+  await sendEmail(template)
+
   res.json({
     message: EVENT_OPERATOR_MESSAGES.INVITE_USER_SUCCESS
   })
