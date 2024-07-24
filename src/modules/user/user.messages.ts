@@ -132,7 +132,8 @@ export const EVENT_OPERATOR_MESSAGES = {
   UNASSIGN_CHECKING_STAFF_SUCCESS: 'Unassign checking staff successfully',
   GET_LIST_REGISTER_EVENT_SUCCESS: 'Get list register event successfully',
   GET_LIST_REGISTERED_VISITOR_SUCCESS: 'Get list registered visitor success',
-  INVITE_USER_SUCCESS: 'Invite user success'
+  INVITE_USER_SUCCESS: 'Invite user success',
+  THIS_ACCOUNT_ALREADY_REGISTERED_THIS_EVENT: 'This account already registered this event'
 } as const
 
 export const EVENT_MESSAGES = {
@@ -146,6 +147,7 @@ export const EVENT_MESSAGES = {
   EVENT_HAVE_PAYMENT: 'Event have payment!',
   YOU_REGISTERED_THIS_EVENT: 'You already registered this event!',
   GET_EVENT_LIST_EVENT_STAFF_SUCCESS: 'Get event list event staff successfully!',
+  YOU_ARE_CHECKING_STAFF_OF_THIS_EVENT: 'You are checking staff of this event!',
 
   //statistical
   GET_STATISTICAL_DATA_SUCCESS: 'Get statistical data successfully!',

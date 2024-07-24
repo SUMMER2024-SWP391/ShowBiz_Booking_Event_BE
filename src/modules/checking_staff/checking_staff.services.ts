@@ -28,6 +28,15 @@ class CheckingStaffServices {
 
     return result
   }
+
+  async isCheckingStaff(event_id: string, user_id: string) {
+    return Boolean(
+      await databaseService.checking_staffs.findOne({
+        event_id: new ObjectId(event_id),
+        user_id: new ObjectId(user_id)
+      })
+    )
+  }
 }
 
 const checkingStaffServices = new CheckingStaffServices()
