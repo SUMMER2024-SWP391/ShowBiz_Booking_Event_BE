@@ -1,3 +1,4 @@
+import { templateApproveEvent, templateBanAccountSuccess, templateRejectEvent } from './../../constants/template-mail'
 import User from '~/modules/user/user.schema'
 import databaseService from '../../database/database.services'
 import { EventOperatorRegisterReqBody, RegisterReqBody, UpdateMeReqBody } from '~/modules/user/user.requests'
@@ -314,23 +315,28 @@ class UserService {
     return userList
   }
 
-  // delete account dành cho admin
+  // ban account dành cho admin
   async deleteAccountById(id: string) {
     const user = await this.findUserById(id)
-    if (user.status === UserStatus.DELETE)
+    if (user.status === UserStatus.BANNED)
       throw new ErrorWithStatus({ message: USER_MESSAGES.ACC_ALREADY_REMOVE, status: StatusCodes.BAD_REQUEST })
 
     const result = await databaseService.users.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      [{ $set: { status: UserStatus.DELETE, updated_at: '$$NOW' } }],
+      [{ $set: { status: UserStatus.BANNED, updated_at: '$$NOW' } }],
       { returnDocument: 'after' }
     )
+
+    const template = templateBanAccountSuccess(user)
+    await sendEmail(template)
 
     return result.value
   }
 
   async approveEvent(id: string, status: EventStatus) {
     const event = await databaseService.events.findOne({ _id: new ObjectId(id) })
+    const user = await databaseService.users.findOne({ _id: event?.event_operator_id })
+    if (!user) throw new ErrorWithStatus({ message: 'USER_NOT_FOUND', status: StatusCodes.NOT_FOUND })
     if (!event) throw new ErrorWithStatus({ message: 'EVENT_NOT_FOUND', status: StatusCodes.NOT_FOUND })
 
     const result = await databaseService.events.findOneAndUpdate(
@@ -338,6 +344,14 @@ class UserService {
       [{ $set: { status, updated_at: '$$NOW', event_check_status: EventCheckStatus.UP_COMING } }],
       { returnDocument: 'after' }
     )
+
+    if (status === EventStatus.APPROVED) {
+      const template = templateApproveEvent(user, event)
+      await sendEmail(template)
+    } else {
+      const template = templateRejectEvent(user, event)
+      await sendEmail(template)
+    }
 
     return result.value
   }
