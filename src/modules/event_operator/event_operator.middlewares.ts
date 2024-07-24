@@ -8,7 +8,7 @@ import eventOperatorService from './event_operator.services'
 import eventService from '../event/event.services'
 import userService from '../user/user.services'
 import { EventStatus, UserRole } from '~/constants/enums'
-import { canCheckIn, isToday } from '~/utils/common'
+import { canCheckIn, isPastTime, isToday } from '~/utils/common'
 import registerService from '../register/register.services'
 import { NextFunction, Request, Response } from 'express'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -126,7 +126,6 @@ export const checkInValidator = validate(
             if (result.status_check_in) throw new Error('ALREADY_CHECKED_IN')
 
             const event = await eventService.getEventById(result.event_id.toString())
-            console.log('🚀 ~ event:', event)
 
             // người checkin chỉ có thể check in trước 30 phút so với thời gian bắt đầu của event
             if (!isToday(event.date_event)) {
@@ -134,8 +133,16 @@ export const checkInValidator = validate(
             }
 
             // chỉ được check in trước 30 phút so với thời gian bắt đầu của event
+            // if (isPastTime(event.time_start)) {
+            //   throw new Error('The event not start!')
+            // }
             if (canCheckIn(event.time_start)) {
-              throw new Error('You can only check in 30 minutes before the event starts!')
+              throw new Error('Can register 30 minutes before the event starts!')
+            }
+
+            // nếu thời gian hiện tại đã vượt quá thời gian kết thúc event thì không thể check in
+            if (!isPastTime(event.time_end)) {
+              throw new Error('The event has ended!')
             }
 
             return true
