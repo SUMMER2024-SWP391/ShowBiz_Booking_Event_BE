@@ -23,7 +23,7 @@ class EventService {
       })
     )
 
-    return await databaseService.events.findOne({ _id: result.insertedId })
+    return await this.getEventById(result.insertedId.toString())
   }
 
   async getAllEventListApproved() {

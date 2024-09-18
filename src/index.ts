@@ -18,6 +18,10 @@ import mediaRouter from './modules/media/media.routes'
 import staticRouter from './modules/static/static.routes'
 import eventService from './modules/event/event.services'
 import registerRoutes from './modules/register/register.routes'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import { UserRole } from './constants/enums'
+import userService from './modules/user/user.services'
 
 initFolder()
 
@@ -26,8 +30,24 @@ const swaggerDocument = YAML.parse(file)
 
 const app = express()
 
-// Enable CORS
+export const users: Array<{ role: UserRole; socket_id: string; user_id: string }> = []
+
 app.use(cors(corsOption))
+// Enable CORS
+const httpServer = createServer(app)
+export const io = new Server(httpServer, {
+  cors: corsOption
+})
+//setting cors for socket.io
+io.on('connection', async (socket) => {
+  const user_id = socket.handshake.auth._id as string
+  const user = await userService.getUserById(user_id)
+  if (!user || user.role == UserRole.Visitor) return
+  if (users.find((u) => u.user_id === user_id)) return
+  users.push({ role: user.role as UserRole, socket_id: socket.id, user_id: user_id })
+  console.log(users)
+})
+
 const PORT = env.PORT
 databaseService.connect()
 
@@ -48,19 +68,7 @@ app.use(defaultErrorHandler)
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`🚀 SHOWBIZ BOOKING EVENT - Server is running at ${env.DB_HOST}:${PORT}        🚀`)
   console.log(`🚀 You can test Swagger, which is running at ${env.DB_HOST}:${PORT}/api-docs  🚀`)
 })
-
-// function toBase64(filePath = 'C:\\Users\\hoangnv\\Desktop\\vnpay_nodejs\\badtrip.jpg') {
-//   const img = fs.readFileSync(filePath)
-
-//   return Buffer.from(img).toString('base64')
-// }
-
-// const base64String = toBase64()
-// console.log(base64String)
-
-// const withPrefix = 'data:image/png;base64,' + base64String
-// console.log(withPrefix)

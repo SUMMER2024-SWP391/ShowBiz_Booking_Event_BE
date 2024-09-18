@@ -10,7 +10,7 @@ import {
   RegisterEventReqBody
 } from './event.requests'
 import { EVENT_MESSAGES } from '../user/user.messages'
-import { EventCategory, EventCheckStatus, EventStatus } from '~/constants/enums'
+import { EventCategory, EventCheckStatus, EventStatus, UserRole } from '~/constants/enums'
 import answerService from '../answer/answer.services'
 import registerService from '../register/register.services'
 import Register from '../register/register.schema'
@@ -31,6 +31,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs'
 import { body } from 'express-validator'
+import { io, users } from '~/index'
 dayjs.extend(isSameOrBefore)
 dayjs.extend(customParseFormat)
 
@@ -39,6 +40,15 @@ export const createEventController = async (req: Request<ParamsDictionary, any, 
   const result = await eventService.createEvent(user_id, req.body)
   const formEvent = await formService.createFormEvent(String(result?._id), EventQuestionType.REGISTER)
   await questionService.createNewListQuestion(formEvent.insertedId, QUESTION_REGISTER)
+
+  const listUsers = [...users]
+
+  //lấy ra list admin rồi gửi thông tin event mới tạo đến admin
+  const listAdmin = listUsers.filter((user) => user.role === UserRole.Admin)
+
+  for (const admin of listAdmin) {
+    io.to(admin.socket_id).emit('new_event', { event: result })
+  }
 
   return res.json({ message: EVENT_MESSAGES.CREATE_EVENT_REQUEST_SUCCESS, data: { event: result } })
 }
